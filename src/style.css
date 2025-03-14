@@ -1,0 +1,52 @@
+.card_dialog {
+    width: 600px;
+}
+.card_width {
+    width: 45%;
+    border: 1px solid #dddddd; 
+    background-color: rgb(255, 255, 255);
+}
+.card_login {
+    width: 300px;
+}
+.body_login {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.897);
+  }
+  .swal2-container {
+    z-index: 20000 !important;
+  }
+@media only screen and (max-width: 600px) {
+    .card_dialog {
+        width: 350px;
+    }
+    .card_width {
+        width: 100%;
+    }
+    .card_login {
+        /* margin-top: 200px; */
+        width: 350px;  
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .card_dialog {
+        width: 350px;
+    }
+    .card_width {
+        width: 100%;
+    }
+    .card_login {
+        width: 350px;  
+    }
+    .body_login {
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.897);
+      }
+}

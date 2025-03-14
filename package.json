@@ -1,0 +1,28 @@
+{
+  "name": "sdd-sunsweet-frontend",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy:production": "scp -r dist/* root@141.11.159.83:/var/www/visitor.zoftdd.com"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "@vuepic/vue-datepicker": "^11.0.1",
+    "axios": "^1.8.2",
+    "dayjs": "^1.11.13",
+    "sweetalert2": "^11.17.2",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "vue-sweetalert2": "^5.0.11",
+    "vuetify": "^3.7.15",
+    "vuex": "^4.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.2.0"
+  }
+}
