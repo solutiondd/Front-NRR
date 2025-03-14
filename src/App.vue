@@ -1,7 +1,8 @@
 <template>
-  <v-layout class="rounded rounded-md">
-    <Sidebar v-if="$route.path != '/login'" />
-    <Navbar v-if="$route.path != '/login'" />
+  <v-layout :key="$route.path" class="rounded rounded-md">
+    <Sidebar v-if="showSidebarAndNavbar" />
+    <Navbar v-if="showSidebarAndNavbar" />
+    <NavBarVisitor v-if="isRegisterPage" />
     <v-main>
       <router-view />
     </v-main>
@@ -9,15 +10,24 @@
 </template>
 
 <script>
+import NavBarVisitor from './components/NavBar-visitor.vue'
 import Navbar from './components/Navbar.vue'
 import Sidebar from './components/Sidebar.vue'
 export default {
   components: {
     Navbar,
-    Sidebar
+    Sidebar,
+    NavBarVisitor
+  },
+  computed: {
+    showSidebarAndNavbar() {
+      return this.$route.path !== '/login' && this.$route.path !== '/register';
+    },
+    isRegisterPage() {
+      return this.$route.path === '/register';
+    }
   },
   mounted() {
-
   },
   methods: {
 

@@ -127,6 +127,7 @@ export default {
         VehicleType: [
             'CAR',
             'MOTORCYCLE',
+            'TRUCK'
         ],
         ProvinceType: [
             'กรุงเทพฯ',

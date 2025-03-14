@@ -2,19 +2,20 @@
     <v-navigation-drawer v-model="drawer">
         <v-list-item class="pl-1 pb-2">
             <div class="d-flex align-center justify-center">
-                <img src="/src/assets/logo-Sdd.png" alt="blank" cover style="width: 18%;">
-                <p class="ml-5">VISITOR sys</p>
+                <img src="/src/assets/Logo-Sunsweet-Final.svg" alt="blank" cover style="width: 40%;">
             </div>
         </v-list-item>
         <v-divider></v-divider>
-        <v-list denstity="compact" nav>
+        <v-list density="compact" nav>
             <!-- //NOTE - Visitor -->
             <v-list-item v-if="this.$store.state.role === 'visitor' || role === 'park user'" prepend-icon="mdi-home"
-                title="หน้าหลัก" @click="$router.push({ name: 'AdminHome' })"></v-list-item>
+                value="home" title="หน้าหลัก" @click="$router.push({ name: 'AdminHome' })"></v-list-item>
             <!-- //NOTE - Provider Admin -->
             <v-list-item v-if="this.$store.state.role === 'park admin'" prepend-icon="mdi-home" title="หน้าหลัก"
-                @click="$router.push({ name: 'AdminHome' })"></v-list-item>
-            <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-account" title="ผู้ใช้งาน"
+                value="home" @click="$router.push({ name: 'AdminHome' })"></v-list-item>
+            <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-car" title="จัดการทะเบียนรถ" value="licenseplate"
+                @click="$router.push({ name: 'LicensePlate' })"></v-list-item>
+            <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-account" title="ผู้ใช้งาน" value="account"
                 @click="$router.push({ name: 'AdminAccount' })"></v-list-item>
             <v-list-item prepend-icon="mdi-logout" title="ออกจากระบบ" value="logout" @click="logout()"></v-list-item>
         </v-list>

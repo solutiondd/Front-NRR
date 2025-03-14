@@ -27,7 +27,7 @@
             <template v-slot:item="row">
                 <tr>
                     <td class="text-center">
-                        {{ row.index + 1 }}
+                        {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
                     </td>
                     <td class="text-center">
                         {{ row.item.licensePlate }}
