@@ -5,7 +5,7 @@ import Login from "../views/Login.vue";
 import Home from "../views/Admin/Home.vue";
 import Account from "../views/Admin/Account.vue";
 import RegisterHome from "../views/Visitor/Home.vue";
-import LicensePlate from '../views/Admin/licensePlate.vue';
+import LicensePlate from "../views/Admin/licensePlate.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -46,7 +46,7 @@ const router = createRouter({
 router.beforeResolve(async (to, from, next) => {
   // ตรวจสอบว่าอยู่ในหน้า Register หรือไม่
   if (to.name !== "RegisterHome") {
-    const auth = await Authorize();  // เรียกฟังก์ชัน Authorize เฉพาะถ้าไม่ใช่หน้า Register
+    const auth = await Authorize(); // เรียกฟังก์ชัน Authorize เฉพาะถ้าไม่ใช่หน้า Register
     store.replaceState.baseURL = import.meta.env.VITE_APP_BASE_URL;
 
     // ถ้ายังไม่ได้ login และไปหน้าอื่นๆ ให้ redirect ไปหน้า Register

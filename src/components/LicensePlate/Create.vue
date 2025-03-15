@@ -213,6 +213,7 @@ export default {
         async submit(event) {
             const res = await event
             if (res.valid === true) {
+                const token = localStorage.getItem("token");
                 const data = {
                     licensePlate: this.sendData.lp.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
                     licensePlateProvince: this.sendData.province,
@@ -223,7 +224,7 @@ export default {
                     listType: this.sendData.listType,
                     userId: this.$store.state.userId ? this.$store.state.userId : '',
                 }
-                await this.lp.CreateLP(this.$store.state.park, data).then(res => {
+                await this.lp.CreateLP(this.$store.state.park, data, token).then(res => {
                     if (res.message === 'ok') {
                         this.$swal({
                             icon: 'success',

@@ -64,6 +64,7 @@
 
                     </td>
                     <td class="text-center">
+                        <Detail :data="row.item" />
                         <Delete @success="getData()" :id="row.item._id" />
                     </td>
                 </tr>
@@ -83,6 +84,7 @@ import UploadToCloud from './UploadToCloud.vue';
 import Delete from "../../components/LicensePlate/Delete.vue";
 import Create from "../../components/LicensePlate/Create.vue";
 import { dateFormat } from "../../function/day";
+import Detail from '../../components/LicensePlate/Detail.vue';
 export default {
     setup() {
         const lp = new LPService();
@@ -95,6 +97,7 @@ export default {
         UploadToCloud,
         Delete,
         Create,
+        Detail
     },
     computed: {
         pageCount() {

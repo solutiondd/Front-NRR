@@ -31,7 +31,7 @@ export class LPService {
     return data;
   }
 
-  async CreateLP(parkId, sendData) {
+  async CreateLP(parkId, sendData, refreshToken) {
     let data = null;
 
     let config = {
@@ -39,7 +39,7 @@ export class LPService {
       maxBodyLength: Infinity,
       url: `${this.baseUrl}api/v1/licenseplate/${parkId}`,
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${refreshToken}`,
       },
       data: sendData,
     };
