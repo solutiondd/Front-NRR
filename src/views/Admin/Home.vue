@@ -3,7 +3,6 @@
         <v-breadcrumbs color="white" :items="items"></v-breadcrumbs>
         <!-- //NOTE - หน้าแสดง DashBoard -->
         <DashBoard />
-
         <v-card>
             <v-tabs v-model="tab" bg-color="primary">
                 <v-tab value="history" style="font-weight: bold;">ประวัติการเข้า-ออก</v-tab>
@@ -22,7 +21,7 @@
 
 <script>
 import HistoryLog from '../../components/DashBoard/HistoryLog.vue';
-import DashBoard from '../../components/DashBoard/DashBoard.vue';
+import DashBoard from './DashBoard.vue';
 export default {
     components: {
         HistoryLog,

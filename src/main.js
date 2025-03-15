@@ -33,6 +33,12 @@ const vuetify = createVuetify({
   directives,
   theme: {
     defaultTheme: "dark",
+    dark: {
+      colors: {
+        primary: "#1976D2",
+        text: "#ffffff", // ต้องแน่ใจว่า text เป็นสีขาว
+      },
+    },
   },
 });
 

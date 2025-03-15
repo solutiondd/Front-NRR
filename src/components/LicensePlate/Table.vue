@@ -2,9 +2,11 @@
     <div class="pa-5">
         <v-row>
             <v-col cols="12" sm="6" class="pb-3">
-                <p style="font-size: 25px; font-weight: bold;">รายการทะเบียนรถ</p>
+                <p style="font-size: 25px; font-weight: bold;">รายการทะเบียนรถ<v-icon
+                        class="ml-2">mdi-card-text</v-icon>
+                </p>
             </v-col>
-            <v-col cols="7" sm="6" class="pb-3 text-end">
+            <v-col cols="12" sm="6" class="pb-3 text-end">
                 <Create @success="getData()" />
             </v-col>
             <v-col cols="12" class="pt-0">
@@ -100,8 +102,8 @@ export default {
         },
     },
     data: () => ({
-        page: 1,             // หน้าปัจจุบัน
-        itemsPerPage: 10,    // ใช้ค่าเริ่มต้นจาก API
+        page: 1,
+        itemsPerPage: 10,
         totalItems: 0,
         data: [],
         search: '',

@@ -125,7 +125,7 @@ export default {
             guestName: '',
             licensePlate: '',
             licensePlateProvince: '',
-            listeType: 'fixedlist',
+            listType: 'fixedlist',
 
             agency: '',
             identityNumber: '',
@@ -150,7 +150,7 @@ export default {
                     guestName: this.sendData.guestName,
                     licensePlate: this.sendData.licensePlate,
                     licensePlateProvince: this.sendData.licensePlateProvince,
-                    listeType: this.sendData.listeType,
+                    listType: this.sendData.listType,
                     start: dateFormatValue(this.sendData.start_date),
                     expire: '2025-12-31',
 
@@ -171,7 +171,7 @@ export default {
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
-                            timer: 3000,
+                            timer: 5000,
                             timerProgressBar: true,
                         });
                         this.sendData = {
@@ -189,6 +189,21 @@ export default {
                             vehicleType: '',
                         }
 
+                    } else if (res.data.message === 'validate error') {
+                        this.$swal({
+                            title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                            icon: 'warning',
+                        })
+                    } else {
+                        this.$swal({
+                            icon: 'warning',
+                            title: `มีบางอย่างผิดพลาด !`,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
                     }
                 })
             }

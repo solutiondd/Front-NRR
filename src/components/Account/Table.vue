@@ -1,10 +1,10 @@
 <template>
     <div class="pa-5">
         <v-row>
-            <v-col cols="6" class="pb-3">
+            <v-col cols="12" sm="6" class="pb-3">
                 <p style="font-size: 25px; font-weight: bold;">รายการผู้ใช้งาน</p>
             </v-col>
-            <v-col cols="6" class="pb-3 text-end">
+            <v-col cols="12" sm="6" class="pb-3 text-end">
                 <Create @success="getData()" />
             </v-col>
             <v-col cols="12" class="pt-0">

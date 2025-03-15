@@ -53,6 +53,10 @@ function dateFormatDayandTime(date) {
   return dayjs(date).format("DD/MM/YYYY");
 }
 
+function dateFormatWithFixedTime(date) {
+  return dayjs(date).utc().format("YYYY-MM-DDT00:00:00.000[Z]");
+}
+
 function dateObjectFormat(dateObj, time) {
   // แปลงวันที่เป็นสตริงในรูปแบบ ISO 8601
   const dateString = dateObj.toISOString();
@@ -183,4 +187,5 @@ export {
   dateObjectFormat,
   dateFormatValue2,
   dateFormatDayandTime,
+  dateFormatWithFixedTime
 };
