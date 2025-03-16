@@ -13,26 +13,27 @@
                             <v-row>
                                 <v-col cols="12" sm="6" class="px-2 pb-0">
                                     <p class="mb-2" style="color: white;">เลขทะเบียน</p>
-                                    <v-text-field variant="outlined" density="compact" placeholder="ทะเบียนรถ"
-                                        v-model="sendData.lp" required
+                                    <v-text-field prepend-inner-icon="mdi-card-text" variant="outlined"
+                                        density="compact" placeholder="ทะเบียนรถ" v-model="sendData.lp" required
                                         :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" class="px-2 pb-0">
                                     <p class="mb-2" style="color: white;">จังหวัด</p>
-                                    <v-autocomplete :items="ProvinceType" variant="outlined" density="compact"
+                                    <v-autocomplete prepend-inner-icon="mdi-map-marker" :items="ProvinceType" variant="outlined" density="compact"
                                         placeholder="ระบุจังหวัด" v-model="sendData.province" required
                                         :rules="[v => !!v || 'โปรดระบุจังหวัด']"></v-autocomplete>
                                 </v-col>
                                 <v-col cols="12" sm="6" class="px-2 py-0">
                                     <p class="mb-2" style="color: white;">ชื่อเจ้าของ</p>
-                                    <v-text-field variant="outlined" density="compact" placeholder="ระบุชื่อเจ้าของ"
-                                        v-model="sendData.name" required
+                                    <v-text-field prepend-inner-icon="mdi-account" variant="outlined" density="compact"
+                                        placeholder="ระบุชื่อเจ้าของ" v-model="sendData.name" required
                                         :rules="[v => !!v || 'โปรดระบุชื่อ']"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" class="px-2 py-0">
                                     <p class="mb-2" style="color: white;">ประเภทยานพาหนะ</p>
-                                    <v-select :items="VehicleType" variant="outlined" density="compact"
-                                        placeholder="ระบุประเภทยานพาหนะ" v-model="sendData.type" required
+                                    <v-select prepend-inner-icon="mdi-format-list-bulleted" :items="VehicleType"
+                                        variant="outlined" density="compact" placeholder="ระบุประเภทยานพาหนะ"
+                                        v-model="sendData.type" required
                                         :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
                                 </v-col>
                             </v-row>

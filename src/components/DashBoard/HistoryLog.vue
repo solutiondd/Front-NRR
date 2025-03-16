@@ -72,10 +72,10 @@
                         {{ formatDateTime(row.item.time) }}
                     </td>
                     <td class="text-center">
-                        {{ row.item.msg }}
+                        <p>{{ row.item.msg }}</p>
                     </td>
                     <td class="text-center">
-                        {{ row.item.inout }}
+                        <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>
                     </td>
                     <td class="text-center">
                         <v-chip v-if="row.item.hooked === false" color="red-lighten-2">
@@ -146,7 +146,7 @@ export default {
         dialogEnd: false,
     }),
     mounted() {
-        this.startDate = this.addDays(this.startDate, -1)
+        this.endDate = this.addDays(this.startDate, +1)
         this.getData();
     },
     methods: {
@@ -185,6 +185,7 @@ export default {
             return newDate;
         },
         clearFilter() {
+            this.licenseplate = '';
             this.getData();
         },
     }

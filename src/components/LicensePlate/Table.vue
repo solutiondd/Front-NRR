@@ -10,15 +10,23 @@
                 <Create @success="getData()" />
             </v-col>
             <v-col cols="12" class="pt-0">
-                <v-text-field prepend-inner-icon="mdi-magnify" density="comfortable" variant="outlined" label="ค้นหา"
-                    v-model="search"></v-text-field>
+                <v-row class="d-flex align-center">
+                    <v-col cols="12" sm="8" md="9" lg="10">
+                        <v-text-field hide-details prepend-inner-icon="mdi-magnify" density="comfortable"
+                            variant="outlined" label="ค้นหา" v-model="search"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="3" lg="2">
+                        <v-btn prepend-icon="mdi-magnify" color="primary" @click="getData()">ค้นหา</v-btn>
+                        <v-btn icon="mdi-refresh" color="grey-darken-2" size="small" class="ml-3"
+                            @click="clearSearch()"></v-btn>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
     </div>
     <v-card variant="flat">
         <v-data-table fixed-header :headers="headers" :page="page" :items-per-page="itemsPerPage"
-            :server-items-length="totalItems" :items="data" class="elevation-1 no-border-table" :search="search"
-            item-value="_id">
+            :server-items-length="totalItems" :items="data" class="elevation-1 no-border-table" item-value="_id">
             <template v-slot:headers="column">
                 <tr>
                     <th class="text-center" v-for="hd in column.headers[0]" :key="hd.title">
@@ -61,7 +69,10 @@
                     </td>
                     <td class="text-center">
                         <UploadToCloud @success="getData()" :id="row.item._id" :data="row.item" />
-
+                    </td>
+                    <td class="text-center">
+                        <v-chip v-if="!row.item.cate" color="#689F38">พนักงาน</v-chip>
+                        <v-chip v-if="row.item.cate" color="#CFD8DC">ผู้มาติดต่อ</v-chip>
                     </td>
                     <td class="text-center">
                         <Detail :data="row.item" />
@@ -119,7 +130,8 @@ export default {
             { title: 'วันที่หมดอายุ', align: 'center', sortable: false, key: 'expire' },
             { title: 'เจ้าของ', align: 'center', sortable: false, key: 'guestName' },
             { title: 'อุปกรณ์', align: 'center', sortable: false, key: 'devices' },
-            { title: 'การอนุมัติ / สถานะ', align: 'center', sortable: false, key: 'devices' },
+            { title: 'การอนุมัติ', align: 'center', sortable: false, key: 'devices' },
+            { title: 'สถานะ', align: 'center', sortable: false, key: 'status' },
             { title: 'จัดการ', align: 'center', sortable: false, key: 'manage' },
         ],
     }),
@@ -128,7 +140,8 @@ export default {
     },
     methods: {
         async getData() {
-            await this.lp.getAll(this.$store.state.park, this.page, this.itemsPerPage).then(res => {
+            const licenseplate = this.search
+            await this.lp.getAll(this.$store.state.park, this.page, this.itemsPerPage, licenseplate).then(res => {
                 if (res.status === 'success') {
                     this.data = res.data;
                     this.totalItems = res.totalItem;
@@ -136,6 +149,10 @@ export default {
                 }
             })
         },
+        clearSearch() {
+            this.search = '';
+            this.getData();
+        }
     }
 }
 </script>

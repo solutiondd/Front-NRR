@@ -7,13 +7,13 @@ export class LPService {
     this.token = localStorage.getItem("token");
   }
 
-  async getAll(parkId, page, itemPerPage) {
+  async getAll(parkId, page, itemPerPage, license) {
     let data = null;
 
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${this.baseUrl}api/v1/licenseplate/${parkId}?page=${page}&limit=${itemPerPage}`,
+      url: `${this.baseUrl}api/v1/licenseplate/${parkId}?page=${page}&limit=${itemPerPage}&license=${license}`,
       headers: {
         Authorization: `Bearer ${this.token}`,
       },

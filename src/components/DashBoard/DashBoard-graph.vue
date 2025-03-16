@@ -35,7 +35,7 @@
                             <p style="font-size: 18px;">รวมทั้งหมด</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
                                 dataDashBoard.visitor + dataDashBoard.stranger
-                                }} คัน</p>
+                            }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -145,7 +145,7 @@ export default {
         },
     },
     mounted() {
-        this.startDate = this.addDays(this.startDate, -1)
+        this.endDate = this.addDays(this.startDate, +1)
         this.getData();
     },
     methods: {
