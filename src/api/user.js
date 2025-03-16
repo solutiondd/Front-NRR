@@ -78,11 +78,9 @@ export class UserService {
       .request(config)
       .then((response) => {
         data = response.data;
-        console.log(data);
       })
       .catch((error) => {
         data = { error: error.message, data: error.response.data };
-        console.log(error);
       });
 
     return data;

@@ -77,14 +77,14 @@
                     <td class="text-center">
                         <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>
                     </td>
-                    <td class="text-center">
+                    <!-- <td class="text-center">
                         <v-chip v-if="row.item.hooked === false" color="red-lighten-2">
                             {{ row.item.hooked }}
                         </v-chip>
                         <v-chip v-if="row.item.hooked === true" color="green-lighten-2">
                             {{ row.item.hooked }}
                         </v-chip>
-                    </td>
+                    </td> -->
                 </tr>
             </template>
             <template v-slot:bottom>
@@ -140,7 +140,7 @@ export default {
             { title: 'วันที่/เวลา', align: 'center', sortable: false, key: 'entry.time' },
             { title: 'รายละเอียด', align: 'center', sortable: false, key: 'entry.msg' },
             { title: 'ประเภทการเข้า/ออก', align: 'center', sortable: false, key: 'inout' },
-            { title: 'สถานะการเชื่อมต่อ', align: 'center', sortable: false, key: 'hooked' },
+            // { title: 'สถานะการเชื่อมต่อ', align: 'center', sortable: false, key: 'hooked' },
         ],
         dialogStart: false,
         dialogEnd: false,

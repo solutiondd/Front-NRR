@@ -9,7 +9,7 @@
         <v-list density="compact" nav>
             <!-- //NOTE - Visitor -->
             <v-list-item v-if="this.$store.state.role === 'visitor' || role === 'park user'" prepend-icon="mdi-home"
-                value="home" title="หน้าหลัก" @click="$router.push({ name: 'AdminHome' })"></v-list-item>
+                value="home" title="หน้าหลัก" @click="$router.push('/home')"></v-list-item>
             <!-- //NOTE - Provider Admin -->
             <v-list-item v-if="this.$store.state.role === 'park admin'" prepend-icon="mdi-home" title="หน้าหลัก"
                 value="home" @click="$router.push({ name: 'AdminHome' })"></v-list-item>

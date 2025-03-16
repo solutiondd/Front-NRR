@@ -19,23 +19,23 @@
                         </v-card>
                     </v-col>
                     <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#42A5F5">
-                            <p style="font-size: 18px;">รถผู้ติดต่อที่ลงทะเบียน</p>
+                        <v-card class="pa-3" color="#F57F17">
+                            <p style=" font-size: 18px;">รถผู้ติดต่อที่ลงทะเบียน</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.visitor }} คัน</p>
                         </v-card>
                     </v-col>
                     <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#78909C">
+                        <v-card class="pa-3" color="#E53935">
                             <p style="font-size: 18px;">รถผู้ติดต่อที่ไม่ได้ลงทะเบียน</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.stranger }} คัน</p>
                         </v-card>
                     </v-col>
                     <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#FB8C00">
+                        <v-card class="pa-3" color="primary">
                             <p style="font-size: 18px;">รวมทั้งหมด</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
                                 dataDashBoard.visitor + dataDashBoard.stranger
-                            }} คัน</p>
+                                }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -50,7 +50,7 @@
                         </v-card>
                     </v-col>
                     <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#42A5F5">
+                        <v-card class="pa-3" color="#F57F17">
                             <p style="font-size: 18px;">รถผู้มาติดต่อที่ลงทะเบียน (คัน)</p>
                             <p style="font-size: 22px; font-weight: bold;">{{ dataDashBoard.totalVisitor }} คัน
                             </p>
@@ -97,7 +97,7 @@ export default {
                 datasets: [
                     {
                         data: [0, 0, 0],
-                        backgroundColor: ["#66BB6A", "#42A5F5", "#78909C"],
+                        backgroundColor: ["#66BB6A", "#F57F17", "#E53935"],
                     },
                 ],
             },
@@ -165,7 +165,7 @@ export default {
                                     this.dataDashBoard.visitor || 0, // รถผู้ติดต่อที่ลงทะเบียน
                                     this.dataDashBoard.stranger || 0, // รถผู้ติดต่อที่ไม่ได้ลงทะเบียน
                                 ],
-                                backgroundColor: ["#66BB6A", "#42A5F5", "#78909C"],
+                                backgroundColor: ["#66BB6A", "#F57F17", "#E53935"],
                             },
                         ],
                     };
