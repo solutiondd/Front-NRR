@@ -1,8 +1,9 @@
 <template>
-    <div class="pa-0">
-        <v-breadcrumbs color="white" :items="items"></v-breadcrumbs>
+    <div class="pa-5">
+        <v-breadcrumbs class="pt-0" color="white" :items="items"></v-breadcrumbs>
         <!-- //NOTE - หน้าแสดง DashBoard -->
         <DashBoard />
+        <DashBoardLine />
         <v-card>
             <v-tabs v-model="tab" bg-color="primary">
                 <v-tab value="history" style="font-weight: bold;">ประวัติการเข้า-ออก</v-tab>
@@ -22,10 +23,12 @@
 <script>
 import HistoryLog from '../../components/DashBoard/HistoryLog.vue';
 import DashBoard from './DashBoard.vue';
+import DashBoardLine from '../../components/DashBoard/DashBoard-line.vue';
 export default {
     components: {
         HistoryLog,
-        DashBoard
+        DashBoard,
+        DashBoardLine
     },
     data: () => ({
         items: [

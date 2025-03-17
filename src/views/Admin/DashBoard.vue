@@ -1,5 +1,5 @@
 <template>
-    <div class="pa-5 pt-0">
+    <div class="py-5">
         <DashBoardGraph />
     </div>
 </template>

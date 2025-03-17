@@ -1,15 +1,15 @@
 <template>
-    <v-row>
+    <v-row class="pa-0">
         <v-col cols="12" sm="12" md="6">
-            <v-card class="pa-5">
+            <v-card class="pa-5 " width="100%">
                 <h3 class="pb-5">ข้อมูลกราฟ วันนี้</h3>
-                <div class="chart-container">
-                    <DoughnutChart :chart-data="chartData" :chart-options="chartOptions" />
+                <div class="chart-container mx-auto">
+                    <DoughnutChart :chart-data="chartData" :options="chartOptions" />
                 </div>
             </v-card>
         </v-col>
         <v-col cols="12" sm="12" md="6">
-            <v-card class="pa-5">
+            <v-card class="pa-5" width="100%">
                 <h3 class="pb-5">ข้อมูลตัวเลข วันนี้</h3>
                 <v-row>
                     <v-col cols="12" sm="6">
@@ -35,12 +35,12 @@
                             <p style="font-size: 18px;">รวมทั้งหมด</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
                                 dataDashBoard.visitor + dataDashBoard.stranger
-                                }} คัน</p>
+                            }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>
             </v-card>
-            <v-card class="mt-5 pa-5">
+            <v-card class="mt-5 pa-5" width="100%">
                 <h3 class="pb-5">ข้อมูลทั้งหมด</h3>
                 <v-row>
                     <v-col cols="12" sm="6" color="primary">
@@ -64,7 +64,7 @@
 
 <script>
 import { HistorylogSer } from '../../api/Historylog';
-import { dateFormatValue, datetimeFormat, dateFormatWithFixedTime } from "../../function/day";
+import { dateFormatValue, datetimeFormat, dateFormatWithFixedTime, datetimeFormatLimit } from "../../function/day";
 import { useTheme } from 'vuetify';
 import { DoughnutChart } from "vue-chart-3";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, DoughnutController } from 'chart.js';
@@ -84,7 +84,8 @@ export default {
             datetimeFormat,
             dateFormatWithFixedTime,
             his,
-            theme
+            theme,
+            datetimeFormatLimit
         }
     },
     components: {
@@ -94,64 +95,121 @@ export default {
         return {
             chartData: {
                 labels: ["รถพนักงาน", "รถผู้ติดต่อที่ลงทะเบียน", "รถผู้ติดต่อที่ไม่ได้ลงทะเบียน"],
-                datasets: [
-                    {
-                        data: [0, 0, 0],
-                        backgroundColor: ["#66BB6A", "#F57F17", "#E53935"],
-                    },
-                ],
+                // datasets: [
+                //     {
+                //         data: [0, 0, 0],
+                //         backgroundColor: ["#66BB6A", "#F57F17", "#E53935"],
+                //     },
+                // ],
             },
-            dataDashBoard: [],
-            startDate: new Date(),
-            endDate: new Date(),
-        };
-    },
-    computed: {
-        chartOptions() {
-            const isDark = this.theme.global.current.value.dark; // เช็คว่าธีมเป็น dark หรือไม่
-            return {
+            chartOptions: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: {
                             color: '#ffffff', // กำหนดสีให้เป็นขาวเสมอ
+                            font: {
+                                size: this.getFontSize(),
+                                family: 'K2D',
+                            }
                         },
+
+                    },
+                    title: {
+                        font: {
+                            size: this.getFontSize()
+                        }
                     },
                     tooltip: {
                         titleFont: {
                             color: '#ffffff', // สีฟอนต์ของ tooltip
+                            size: this.getFontSize(),
+                            family: 'K2D',
                         },
                         bodyFont: {
-                            color: '#ffffff', // สีฟอนต์ของ body ใน tooltip
+                            color: '#ffffff',
+                            size: this.getFontSize(),
+                            family: 'K2D',
+                            // สีฟอนต์ของ body ใน tooltip
                         },
                         footerFont: {
                             color: '#ffffff', // สีฟอนต์ของ footer ใน tooltip
+                            size: this.getFontSize(),
+                            family: 'K2D',
                         },
                     },
                     datalabels: {
                         color: '#ffffff', // กำหนดสีของ datalabels เป็นสีขาว
                         font: {
-                            weight: "bold",
-                            size: 14,
+                            size: this.getFontSize(),
+                            family: 'K2D',
+                            weight: 'bold',
                         },
                         anchor: "center",
                         align: "center",
+                        formatter: (value, context) => {
+                            // หากค่าคือ 0 ก็จะไม่แสดงค่า
+                            if (value === 0) {
+                                return '';
+                            }
+                            return value;
+                        },
                     },
+                    cutout: '10%',
                 },
-                // เพิ่ม cutout เพื่อให้เป็น Donut Chart
-                cutout: '70%',
-            };
-        },
+            },
+            dataDashBoard: [],
+            startDate: new Date(),
+            endDate: new Date(),
+        };
     },
+    // computed: {
+    //     chartOptions() {
+    //         const isDark = this.theme.global.current.value.dark; // เช็คว่าธีมเป็น dark หรือไม่
+    //         return {
+    //             responsive: true,
+    //             maintainAspectRatio: false,
+    //             plugins: {
+    //                 legend: {
+    //                     labels: {
+    //                         color: '#ffffff', // กำหนดสีให้เป็นขาวเสมอ
+    //                     },
+    //                 },
+    //                 tooltip: {
+    //                     titleFont: {
+    //                         color: '#ffffff', // สีฟอนต์ของ tooltip
+    //                     },
+    //                     bodyFont: {
+    //                         color: '#ffffff', // สีฟอนต์ของ body ใน tooltip
+    //                     },
+    //                     footerFont: {
+    //                         color: '#ffffff', // สีฟอนต์ของ footer ใน tooltip
+    //                     },
+    //                 },
+    //                 datalabels: {
+    //                     color: '#ffffff', // กำหนดสีของ datalabels เป็นสีขาว
+    //                     font: {
+    //                         weight: "bold",
+    //                         size: 16,
+    //                     },
+    //                     anchor: "center",
+    //                     align: "center",
+    //                 },
+    //             },
+    //             // เพิ่ม cutout เพื่อให้เป็น Donut Chart
+    //             cutout: '70%',
+    //         };
+    //     },
+    // },
     mounted() {
         this.endDate = this.addDays(this.startDate, +1)
         this.getData();
     },
     methods: {
         async getData() {
-            const start = dateFormatWithFixedTime(this.startDate);
-            const end = dateFormatWithFixedTime(this.endDate);
+            const start = datetimeFormatLimit(this.startDate);
+            const end = datetimeFormatLimit(this.endDate);
             const parkId = this.$store.state.park
             await this.his.getDashBoard(start, end, parkId).then(res => {
                 if (res.message === 'ok') {
@@ -169,6 +227,32 @@ export default {
                             },
                         ],
                     };
+
+                    //NOTE - กรณีที่หากไม่มีข้อมูลก็ไม่แสดงออกมาเลย
+                    // const member = this.dataDashBoard.member || 0;
+                    // const visitor = this.dataDashBoard.visitor || 0;
+                    // const stranger = this.dataDashBoard.stranger || 0;
+
+                    // // จับคู่ข้อมูลและสีที่คงที่
+                    // const data = [
+                    //     { label: "รถพนักงาน", value: member, color: "#66BB6A" },  // สีเขียว
+                    //     { label: "รถผู้ติดต่อที่ลงทะเบียน", value: visitor, color: "#F57F17" },  // สีส้ม
+                    //     { label: "รถผู้ติดต่อที่ไม่ได้ลงทะเบียน", value: stranger, color: "#E53935" }  // สีแดง
+                    // ];
+
+                    // // กรองข้อมูลที่มีค่าเป็น 0 ออก
+                    // const filteredData = data.filter(item => item.value !== 0);
+
+                    // // กำหนดข้อมูลที่ต้องการแสดงในกราฟ
+                    // this.chartData = {
+                    //     labels: filteredData.map(item => item.label),
+                    //     datasets: [
+                    //         {
+                    //             data: filteredData.map(item => item.value),
+                    //             backgroundColor: filteredData.map(item => item.color),
+                    //         },
+                    //     ],
+                    // };
                 }
             })
 
@@ -178,13 +262,23 @@ export default {
             newDate.setDate(newDate.getDate() + days);
             return newDate;
         },
+        getFontSize() {
+            const screenWidth = window.innerWidth;
+            if (screenWidth < 600) {
+                return 12;  // สำหรับหน้าจอเล็ก
+            } else if (screenWidth < 1024) {
+                return 16;  // สำหรับหน้าจอปานกลาง
+            } else {
+                return 18;  // สำหรับหน้าจอใหญ่
+            }
+        }
     },
 };
 </script>
 
 <style>
 .chart-container {
-    width: 100%;
+    width: 85%;
     height: 385px;
 }
 
