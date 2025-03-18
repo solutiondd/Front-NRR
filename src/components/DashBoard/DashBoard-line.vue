@@ -32,7 +32,7 @@ export default defineComponent({
     data() {
         return {
             chartData: {
-                labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+                labels: Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0")),
                 datasets: [
                     {
                         label: "พนักงาน",

@@ -62,11 +62,12 @@ export default {
             // signOut: "auth/signOut",
         }),
         openDrawer() {
-            if (this.drawer) {
-                this.switchDrawer(false);
-            } else {
-                this.switchDrawer(true);
-            }
+            // if (this.drawer) {
+            //     this.switchDrawer(false);
+            // } else {
+            //     this.switchDrawer(true);
+            // }
+            this.switchDrawer(!this.drawer);
         },
         async logout() {
             this.$swal({

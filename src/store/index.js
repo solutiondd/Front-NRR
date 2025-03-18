@@ -5,7 +5,7 @@ export default createStore({
   state: {
     colorNavbarMode: "dark",
     colorMode: "dark",
-    drawer: true,
+    drawer: false,
     user: null,
     hideConfigButton: false,
     isPinned: true,

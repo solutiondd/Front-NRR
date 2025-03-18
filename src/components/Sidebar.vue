@@ -1,5 +1,5 @@
 <template>
-    <v-navigation-drawer v-model="drawer">
+    <v-navigation-drawer v-model="drawer" app>
         <v-list-item class="pl-1 pb-2">
             <div class="d-flex align-center justify-center">
                 <img src="/src/assets/Logo-Sunsweet-Final.svg" alt="blank" cover style="width: 40%;">

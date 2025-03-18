@@ -41,15 +41,14 @@
                     </v-col>
                     <v-col cols="12" class="py-0">
                         <p class="pb-1 text-subtitle-1 text-medium-emphasis">เลขบัตรประจำตัว
-                            <span style="color: red;">*</span>
+                            <!-- <span style="color: red;">*</span> -->
                         </p>
                         <v-text-field prepend-inner-icon="mdi-card-account-details" density="compact" variant="outlined"
-                            placeholder="ตัวอย่าง. 1234567891011"
-                            :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
-                            required v-model="sendData.identityNumber" maxlength="13"></v-text-field>
+                            placeholder="ตัวอย่าง. 1234567891011" v-model="sendData.identityNumber"
+                            maxlength="13"></v-text-field>
                     </v-col>
                     <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">ทะเบียนรถ
+                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">ทะเบียนรถ (ไม่ต้องระบุจังหวัด)
                             <span style="color: red;">*</span>
                         </p>
                         <v-text-field prepend-inner-icon="mdi-card-text" density="compact" variant="outlined"
@@ -137,7 +136,7 @@ export default {
         },
         selectedDate: '',
         VehicleType: [
-            { name: 'รถยนตร์', value: 'CAR' },
+            { name: 'รถยนต์', value: 'CAR' },
             { name: 'รถจักรยานยนต์', value: 'MOTORCYCLE' },
             { name: 'รถบรรทุก', value: 'TRUCK' },
         ],
@@ -153,14 +152,14 @@ export default {
                 const token = import.meta.env.VITE_REFRESH_TOKEN;
                 const data = {
                     guestName: this.sendData.guestName,
-                    licensePlate: this.sendData.licensePlate,
+                    licensePlate: this.sendData.licensePlate.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
                     licensePlateProvince: this.sendData.licensePlateProvince,
                     listType: this.sendData.listType,
                     start: dateFormatValue(this.sendData.start_date),
                     expire: '2025-12-31',
 
                     agency: this.sendData.agency,
-                    identityNumber: this.sendData.identityNumber,
+                    identityNumber: this.sendData.identityNumber || '',
                     brand: this.sendData.brand,
                     carColor: this.sendData.carColor,
                     object: this.sendData.object,
@@ -172,15 +171,9 @@ export default {
                         this.$swal({
                             icon: 'success',
                             title: `ลงทะเบียนสำเร็จ!`,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 5000,
-                            timerProgressBar: true,
-                        });
-                        setTimeout(() => {
+                        }).then(() => {
                             window.location.reload();
-                        }, 5000);
+                        });
                     } else if (res.data.message === 'validate error') {
                         this.$swal({
                             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
