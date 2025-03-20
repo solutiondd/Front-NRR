@@ -9,7 +9,7 @@
         <v-list density="compact" nav>
             <!-- //NOTE - Visitor -->
             <v-list-item v-if="this.$store.state.role === 'visitor' || role === 'park user'" prepend-icon="mdi-home"
-                value="home" title="หน้าหลัก" @click="$router.push('/home')"></v-list-item>
+                value="home" title="หน้าหลัก" @click="$router.push({ name: 'LicensePlate' })"></v-list-item>
             <!-- //NOTE - Provider Admin -->
             <v-list-item v-if="this.$store.state.role === 'park admin'" prepend-icon="mdi-home" title="หน้าหลัก"
                 value="home" @click="$router.push({ name: 'AdminHome' })"></v-list-item>
@@ -17,6 +17,8 @@
                 @click="$router.push({ name: 'LicensePlate' })"></v-list-item>
             <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-account" title="ผู้ใช้งาน" value="account"
                 @click="$router.push({ name: 'AdminAccount' })"></v-list-item>
+            <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-camera-iris" title="จัดการรถ (ขาเข้า)"
+                value="security" @click="$router.push({ name: 'Stranger' })"></v-list-item>
             <v-list-item prepend-icon="mdi-logout" title="ออกจากระบบ" value="logout" @click="logout()"></v-list-item>
         </v-list>
     </v-navigation-drawer>

@@ -11,7 +11,7 @@ function numberFormat(num) {
 }
 
 function formatitemdevice(date) {
-  return dayjs(date).format("HH:mm");
+  return dayjs(date).format("HH:mm:ss");
 }
 
 function timeFormat(date) {

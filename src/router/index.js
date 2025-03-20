@@ -8,6 +8,8 @@ import Home from "../views/Admin/Home.vue";
 import Login from "../views/Login.vue";
 import Account from "../views/Admin/Account.vue";
 import LicensePlate from "../views/Admin/licensePlate.vue";
+import Stranger from "../views/Security-Guard/OnsiteRegister.vue";
+import SecurityGuard from "../layouts/Security-Guard.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -15,7 +17,7 @@ const router = createRouter({
     {
       path: "/",
       name: "/",
-      redirect: "/register", // redirect ไปหน้า RegisterHome
+      redirect: "/register",
     },
     {
       path: "/login",
@@ -54,6 +56,18 @@ const router = createRouter({
           path: "licenseplate",
           name: "LicensePlate",
           component: LicensePlate,
+        },
+      ],
+    },
+    {
+      path: "/stranger",
+      name: "SecurityGuard",
+      component: SecurityGuard,
+      children: [
+        {
+          path: "",
+          name: "Stranger",
+          component: Stranger,
         },
       ],
     },
@@ -102,7 +116,13 @@ router.beforeEach(async (to, from, next) => {
   ) {
     next({ name: "RegisterHome" });
   } else {
-    next();
+    const userRole = store.state.user?.role;
+
+    if (userRole === "visitor" && to.name !== "LicensePlate") {
+      next({ name: "LicensePlate" }); // Redirect ไปหน้า LicensePlate
+    } else {
+      next();
+    }
   }
 });
 
