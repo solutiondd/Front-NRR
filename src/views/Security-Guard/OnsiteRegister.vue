@@ -1,27 +1,41 @@
 <template>
     <v-container fluid class="d-flex pa-0">
-        <v-sheet width="20%" height="93vh" class="pa-4 overflow-y-auto">
+        <v-sheet width="22%" height="93vh" class="pa-4 overflow-y-auto">
             <h2 class="text-h5 font-weight-bold mb-4">🚗 รายการล่าสุด</h2>
             <v-list class="pa-0">
                 <v-list-item v-for="(entry, index) in recentEntries" :key="index" @click="selectCar(entry)"
                     class="pa-0 mb-3">
                     <v-card class="pa-2 cursor-pointer" style="background-color:  #424242;">
-                        <v-img :src="baseUrl + entry.platesPhoto2" width="100%" class="rounded-lg"></v-img>
-                        <v-card-title class="px-2">
-                            <p style="font-size: 1.1rem;">ทะเบียน : {{ entry.licensePlate.License }}</p>
-                        </v-card-title>
-                        <v-card-subtitle class="px-2 ">
-                            <p style="font-size: 1rem;">🕒 เวลา {{ formatitemdevice(entry.time) }}</p>
-                        </v-card-subtitle>
+                        <v-row>
+                            <v-col cols="12" class="pa-3 pb-0">
+                                <v-img :src="baseUrl + entry.platesPhoto2" width="100%" class="rounded-lg"></v-img>
+                                <v-card-title class="px-2">
+                                    <p style="font-size: 1.1rem;">ทะเบียน : {{ entry.licensePlate.License }}</p>
+                                </v-card-title>
+                            </v-col>
+                            <v-row class="px-2">
+                                <v-col cols="9">
+                                    <v-card-subtitle class="px-2 pb-3">
+                                        <p style="font-size: 1rem;">🕒 เวลา {{ formatitemdevice(entry.time) }}</p>
+                                    </v-card-subtitle>
+                                </v-col>
+                                <v-col cols="3" class="text-end pa-0 pr-4">
+                                    <v-btn icon="" style="width: 30px; height: 30px;" color="#E53935"
+                                        @click="deleteEntry(entry)">
+                                        <v-icon style="font-size: 18px;" icon="mdi-delete"></v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-row>
                     </v-card>
                 </v-list-item>
             </v-list>
         </v-sheet>
 
         <v-sheet width="50%" height="93vh" class="d-flex pt-10 align-start justify-center bg-grey-darken-4 text-white">
-            <v-card v-if="selectedCar" style="background-color:  #424242;" width="90%" class="pa-4 ">
+            <v-card v-if="selectedCar" style="background-color:  #424242;" width="95%" class="pa-4">
                 <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img>
-                <v-row>
+                <v-row class="pt-3">
                     <v-col cols="6" class="pt-5">
                         <v-img :src="baseUrl + selectedCar.platesPhoto2" width="100%"></v-img>
                     </v-col>
@@ -33,15 +47,15 @@
                                 </h1>
                             </v-col>
                             <v-col cols="12" class="pa-0 text-center">
-                                <p v-if="selectedCar.msg === 'บุคคลภายนอก'" style="font-size: 2rem; color: #E53935;">{{
-                                    selectedCar.msg }} <br />
+                                <p v-if="selectedCar.msg === 'บุคคลภายนอก'" style="font-size: 2rem; color: #E53935;">
+                                    {{ selectedCar.msg }} <br />
                                     <span style="font-size: 1.5rem; color: #F57F17;">(กรุณาลงทะเบียน)</span>
                                 </p>
-                                <p v-if="selectedCar.msg === 'บุคคลภายใน'" style="font-size: 2rem; color: #66BB6A;">{{
-                                    selectedCar.msg }}
+                                <p v-if="selectedCar.msg === 'บุคคลภายใน'" style="font-size: 2rem; color: #66BB6A;">
+                                    {{ selectedCar.msg }}
                                 </p>
                                 <p v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                                    style="font-size: 2rem; color: #F57F17;">{{ selectedCar.msg }}</p>
+                                    style="font-size: 2rem; color: #F57F17;">ผู้ติดต่อที่ลงทะเบียน</p>
                             </v-col>
                         </v-row>
                     </v-col>
@@ -49,35 +63,58 @@
             </v-card>
         </v-sheet>
 
-        <v-sheet width="35%" height="93vh" class="pa-4 pt-10">
+        <v-sheet width="35%" height="93vh" class="pa-0 pr-3 pt-10">
+            <v-toolbar density="compact" style="background-color: #F57F17; font-size: 20px;">
+                <v-toolbar-title>
+                    <p style="font-size: 22px; font-weight: bold;" class="d-flex align-center">
+                        <v-icon size="small" class="mr-2">mdi-file-document-edit-outline</v-icon>ลงทะเบียน
+                    </p>
+                </v-toolbar-title>
+            </v-toolbar>
             <v-card class="pa-4" style="background-color: #424242;">
-                <v-card-title class="text-h6 pb-5">📝 กรอกข้อมูล</v-card-title>
-                <v-form v-if="selectedCar" fast-fail>
+                <v-form fast-fail @submit.prevent="submit">
                     <v-row class="d-flex align-center px-3 pb-7">
+                        <v-col cols="12">
+                            <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
+                                <v-icon icon="mdi-car" size="small" class="mr-2"></v-icon>ข้อมูลรถ
+                            </p>
+                        </v-col>
                         <v-col cols="5" class="text-start">
                             <p>ทะเบียนรถ</p>
                         </v-col>
                         <v-col cols="7" class="pa-0">
-                            <v-text-field v-model="selectedCar.licensePlate.License" label="ทะเบียนรถ"
-                                variant="outlined" density="compact" hide-details="auto"></v-text-field>
+                            <v-text-field v-model="sendData.licensePlate.License" label="ทะเบียนรถ" variant="outlined"
+                                density="compact" hide-details="auto"></v-text-field>
                         </v-col>
                         <v-col cols="5" class="text-start">
                             <p>เวลาเข้า</p>
                         </v-col>
                         <v-col cols="7" class="pa-0">
-                            <v-text-field v-model="selectedCar.time" label="เวลาเข้า" variant="outlined"
+                            <v-text-field readonly v-model="formatTime" label="เวลาเข้า" variant="outlined"
                                 density="compact" hide-details="auto"></v-text-field>
                         </v-col>
                         <v-col cols="5">
                             <p>ประเภทยานพาหนะ</p>
                         </v-col>
                         <v-col cols="7" class="pa-0">
-                            <v-select v-model="selectedCar.note" label="ประเภทยานพาหนะ" variant="outlined"
-                                density="compact" hide-details="auto"></v-select>
+                            <v-select v-model="sendData.vehicleType" label="ประเภทยานพาหนะ" variant="outlined"
+                                density="compact" hide-details="auto" :items="vehicleList" item-title="name"
+                                item-value="value"></v-select>
                         </v-col>
                     </v-row>
                     <v-divider :thickness="2"></v-divider>
-                    <v-row class="d-flex align-center pt-7 px-3">
+                    <v-row class="d-flex align-center pt-4 pb-2 px-3">
+                        <v-col cols="12">
+                            <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
+                                <v-icon icon="mdi-card-account-details" size="small" class="mr-2"></v-icon>ข้อมูลคนขับ
+                            </p>
+                        </v-col>
+                        <v-col cols="5">
+                            <p>รูปภาพ</p>
+                        </v-col>
+                        <v-col cols="7">
+                            <img src="" alt="image">
+                        </v-col>
                         <v-col cols="5" class="text-start">
                             <p>เลขประจำตัวประชาชน</p>
                         </v-col>
@@ -95,12 +132,16 @@
                         <v-col cols="5">
                             <p>ที่อยู่</p>
                         </v-col>
-                        <v-col cols="7" class="pa-0">
-                            <v-textarea variant="outlined" placeholder="ที่อยู่"></v-textarea>
+                        <v-col cols="7" class="pa-0 d-flex align-top">
+                            <v-textarea variant="outlined" placeholder="ที่อยู่" rows="2"
+                                hide-details="auto"></v-textarea>
                         </v-col>
                     </v-row>
-                    <div class="pt-3">
-                        <v-btn color="#66BB6A" block class="mt-4">บันทึก</v-btn>
+                    <v-divider class="mt-5" :thickness="2"></v-divider>
+                    <div>
+                        <v-btn
+                            :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                            type="submit" color="#66BB6A" block class="mt-4">บันทึก</v-btn>
                     </div>
                 </v-form>
             </v-card>
@@ -109,15 +150,24 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, toRaw, reactive } from 'vue'
 import { openDB } from 'idb'
 import { formatitemdevice } from '../../function/day'
+import Swal from "sweetalert2";
+import { LPService } from '../../api/licenseplate';
 
 export default {
     setup() {
+        const lp = new LPService();
         const baseUrl = import.meta.env.VITE_APP_BASE_URL
         const recentEntries = ref([]) // 🔥 เก็บรายการรถของวันนี้
         const selectedCar = ref(null) // รถที่เลือก (หรือรถล่าสุด)
+        const sendData = ref({
+            msg: '',
+            licensePlate: { License: '' },
+            vehicleType: null,
+            time: new Date(),
+        })
         let ScreenSocket = null
 
         // 👉 เปิดหรือสร้างฐานข้อมูล IndexedDB
@@ -131,24 +181,23 @@ export default {
             })
         }
 
-        // 👉 ลบข้อมูลวันเก่าออกจาก IndexedDB
-        const clearOldHistory = async () => {
-            const db = await initDB()
-            const tx = db.transaction('history', 'readwrite')
-            const store = tx.objectStore('history')
-            const allEntries = await store.getAll()
+        // const clearOldHistory = async () => {
+        //     const db = await initDB()
+        //     const tx = db.transaction('history', 'readwrite')
+        //     const store = tx.objectStore('history')
+        //     const allEntries = await store.getAll()
 
-            const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
-            for (let entry of allEntries) {
-                if (entry.date !== today) {
-                    await store.delete(entry.id) // ❌ ลบข้อมูลที่ไม่ใช่ของวันนี้
-                }
-            }
-        }
+        //     const today = new Date().toISOString().split('T')[0]
+        //     for (let entry of allEntries) {
+        //         if (entry.date !== today) {
+        //             await store.delete(entry.id)
+        //         }
+        //     }
+        // }
 
         // 👉 ดึงข้อมูลของวันนี้จาก IndexedDB
         const loadTodayHistory = async () => {
-            await clearOldHistory();
+            // await clearOldHistory();
 
             const db = await initDB();
             const tx = db.transaction('history', 'readonly');
@@ -181,15 +230,16 @@ export default {
             const tx = db.transaction('history', 'readwrite');
             const store = tx.objectStore('history');
 
-            // 🛑 เช็กก่อนว่าข้อมูลซ้ำหรือไม่
+            // 🔥 ดึงข้อมูลทั้งหมดในวันนี้
             const existingEntries = await store.getAll();
+
+            // 🛑 ตรวจสอบว่ามีทะเบียนรถนี้อยู่ในวันนี้หรือยัง
             const isDuplicate = existingEntries.some(entry =>
-                entry.licensePlate.License === newEntry.licensePlate.License &&
-                entry.timeStamp === newEntry.timeStamp
+                entry._id === newEntry._id
             );
 
             if (!isDuplicate) {
-                await store.add(newEntry); // ✅ บันทึกเฉพาะข้อมูลใหม่
+                await store.add(newEntry); // ✅ บันทึกเฉพาะข้อมูลใหม่ที่ไม่ซ้ำ
                 loadTodayHistory(); // โหลดข้อมูลใหม่หลังเพิ่มรายการ
             }
         }
@@ -211,14 +261,8 @@ export default {
                             date: new Date().toISOString().split('T')[0]
                         };
 
-                        // 🔥 เช็กก่อนว่า `selectedCar` เป็นข้อมูลซ้ำหรือไม่
-                        if (
-                            !selectedCar.value ||
-                            selectedCar.value.licensePlate.License !== newEntry.licensePlate.License ||
-                            selectedCar.value.timeStamp !== newEntry.timeStamp
-                        ) {
-                            selectedCar.value = newEntry;
-                        }
+                        selectedCar.value = newEntry;
+                        // sendData.value = JSON.parse(JSON.stringify(newEntry));
 
                         await saveHistory(newEntry);
                     }
@@ -231,6 +275,54 @@ export default {
             ScreenSocket.onclose = () => console.log('🔴 WebSocket Closed')
         }
 
+        const deleteEntry = async (entry) => {
+
+            const confirm = await Swal.fire({
+                title: "ต้องการลบรายการนี้หรือไม่?",
+                text: `ทะเบียน: ${entry.licensePlate.License}`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก'
+            });
+
+            if (confirm.isConfirmed) {
+                const db = await initDB();
+                const tx = db.transaction('history', 'readwrite');
+                const store = tx.objectStore('history');
+                await store.delete(entry.id);
+
+                // ✅ อัปเดตรายการหลังจากลบ
+                await loadTodayHistory();
+
+                Swal.fire({
+                    title: 'ลบข้อมูลเรียบร้อย !',
+                    icon: 'success',
+                })
+            }
+
+        }
+
+        const submit = async (event) => {
+            const res = await event
+            if (res.valid === true) {
+                // const data = {
+                //     guestName: this.selectedCar,
+                //     licensePlate: this.selectedCar,
+                //     licensePlateProvince: this.selectedCar,
+                //     start: this.selectedCar,
+                //     listType: 'fixedlist',
+                //     expire: '2025-12-31',
+
+                //     identityNumber: this.selectedCar,
+                //     address: this.selectedCar,
+                //     vehicleType: this.selectedCar,
+                //     cate: 'stranger',
+                // }
+                console.log('เข้าจ้า' + JSON.stringify(sendData.value))
+            }
+        }
+
         onMounted(() => {
             loadTodayHistory() // โหลดข้อมูลของวันนี้ก่อน
             connectScreen() // เริ่มเชื่อมต่อ WebSocket
@@ -238,14 +330,77 @@ export default {
 
         const selectCar = (entry) => {
             selectedCar.value = { ...entry } // กดเลือกรายการ -> อัปเดตแถวกลาง
+            sendData.value = JSON.parse(JSON.stringify(entry));
+
         }
 
-        return { baseUrl, recentEntries, selectedCar, selectCar, formatitemdevice }
-    }
+        return { baseUrl, recentEntries, selectedCar, selectCar, formatitemdevice, deleteEntry, lp, toRaw, submit, sendData }
+    },
+    computed: {
+        formatTime() {
+            return this.formatDateTime(this.sendData.time)
+        }
+    },
+    data: () => ({
+        vehicleList: [
+            { name: 'รถยนต์', value: 'CAR' },
+            { name: 'รถจักรยานยนต์', value: 'MOTORCYCLE' },
+            { name: 'รถบรรทุก', value: 'TRUCK' },
+        ],
+        sendData: {
+            name: '',
+            startDate: '',
+            vehicleType: '',
+            licensePlate: '',
+            identityNumber: '',
+            address: '',
+        },
+    }),
+    methods: {
+        formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString("th-TH", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            }).replace(",", "");
+        },
+        // async submit(event) {
+        //     const res = await event
+        //     if (res.valid === true) {
+        //         const sendData = JSON.stringify(this.selectedCar, null, 2)
+        //         const token = import.meta.env.VITE_REFRESH_TOKEN;
+        //         const data = {
+        //             guestName: this.selectedCar,
+        //             licensePlate: this.selectedCar,
+        //             licensePlateProvince: this.selectedCar,
+        //             start: this.selectedCar,
+        //             listType: 'fixedlist',
+        //             expire: '2025-12-31',
+
+        //             identityNumber: this.selectedCar,
+        //             address: this.selectedCar,
+        //             vehicleType: this.selectedCar,
+        //             cate: 'stranger',
+        //         }
+        //         console.log("ข้อมูลใน selectedCar : " + sendData)
+        //     }
+        // },
+        // copyData() {
+        //     if (this.selectedCar) {
+        //         this.sendData = this.selectedCar;
+        //         console.log(this.sendData)
+        //     } else {
+        //         console.log('ไม่ได้จ้า')
+        //     }
+        // }
+    },
 }
 </script>
-
-
 
 <style scoped>
 .overflow-y-auto {
