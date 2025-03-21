@@ -72,7 +72,9 @@
                         {{ formatDateTime(row.item.time) }}
                     </td>
                     <td class="text-center">
-                        <p>{{ row.item.msg }}</p>
+                        <p v-if="row.item.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'">ผู้ติดต่อที่ลงทะเบียน</p>
+                        <p v-else>{{ row.item.msg }}</p>
+
                     </td>
                     <td class="text-center">
                         <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>

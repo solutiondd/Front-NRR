@@ -17,8 +17,8 @@
                 @click="$router.push({ name: 'LicensePlate' })"></v-list-item>
             <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-account" title="ผู้ใช้งาน" value="account"
                 @click="$router.push({ name: 'AdminAccount' })"></v-list-item>
-            <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-camera-iris" title="จัดการรถ (ขาเข้า)"
-                value="security" @click="$router.push({ name: 'Stranger' })"></v-list-item>
+            <!-- <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-camera-iris" title="จัดการรถ (ขาเข้า)"
+                value="security" @click="$router.push({ name: 'Stranger' })"></v-list-item> -->
             <v-list-item prepend-icon="mdi-logout" title="ออกจากระบบ" value="logout" @click="logout()"></v-list-item>
         </v-list>
     </v-navigation-drawer>
