@@ -1,5 +1,5 @@
 <template>
-    <v-btn v-if="data.cate === 'visitor'" color="primary" icon="" @click="dialog === true"
+    <v-btn v-if="data.cate === 'visitor' || data.cate === 'stranger'" color="primary" icon="" @click="dialog === true"
         size="small"><v-icon>mdi-magnify</v-icon>
         <v-dialog v-model="dialog" activator="parent" width="400px">
             <v-toolbar color="primary" density="compact">

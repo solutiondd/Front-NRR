@@ -42,6 +42,10 @@
                     <v-col cols="12" class="py-0">
                         <p class="pb-1 text-subtitle-1 text-medium-emphasis">เลขบัตรประจำตัว
                             <!-- <span style="color: red;">*</span> -->
+
+                            <!-- //NOTE - ถ้ากลับมาบังคับเลขประจำตัวประชาชนให้เติม Code ข้างล่างนี้  -->
+                            <!-- :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
+                            required -->
                         </p>
                         <v-text-field prepend-inner-icon="mdi-card-account-details" density="compact" variant="outlined"
                             placeholder="ตัวอย่าง. 1234567891011" v-model="sendData.identityNumber"

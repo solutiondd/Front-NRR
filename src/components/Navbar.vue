@@ -82,18 +82,7 @@ export default {
                 if (res.isConfirmed) {
                     localStorage.removeItem("token");
                     window.location.href = '/';
-                } else {
-                    this.$swal({
-                        icon: 'warning',
-                        title: `มีบางอย่างผิดพลาด !`,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
                 }
-
             })
         },
     }

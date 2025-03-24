@@ -15,14 +15,40 @@
                     <p class="pl-3" style="font-size: 15px;">{{ $store.state.displayName }}</p>
                 </v-btn>
             </template>
+            <v-list class="bg-grey-darken-3">
+                <v-list-item value="2">
+                    <template v-slot:prepend>
+                        <v-icon icon="mdi-logout"></v-icon>
+                    </template>
+                    <v-list-item-title @click="logout()">{{ 'ออกจากระบบ' }}</v-list-item-title>
+                </v-list-item>
+            </v-list>
         </v-menu>
     </v-app-bar>
 </template>
 
 <script>
 export default {
-
+    methods: {
+        async logout() {
+            this.$swal({
+                title: 'ออกจากระบบ',
+                text: 'คุณต้องการออกจากระบบหรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ใช่',
+                cancelButtonText: 'ไม่ใช่'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('token')
+                    window.location.href = '/login';
+                }
+            })
+        }
+    }
 }
 </script>
 
-<style></style>
+<style scoped></style>

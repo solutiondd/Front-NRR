@@ -72,7 +72,8 @@
                     </td>
                     <td class="text-center">
                         <v-chip v-if="!row.item.cate" color="#689F38">พนักงาน</v-chip>
-                        <v-chip v-if="row.item.cate" color="#CFD8DC">ผู้มาติดต่อ</v-chip>
+                        <v-chip v-if="row.item.cate === 'visitor'" color="#F57F17">ผู้ติดต่อที่ลงทะเบียน</v-chip>
+                        <v-chip v-if="row.item.cate === 'stranger'" color="#E53935">ผู้ติดต่อที่ไม่ได้ลงทะเบียน</v-chip>
                     </td>
                     <td class="text-center">
                         <Detail :data="row.item" />

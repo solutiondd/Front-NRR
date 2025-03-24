@@ -120,6 +120,8 @@ router.beforeEach(async (to, from, next) => {
 
     if (userRole === "visitor" && to.name !== "LicensePlate") {
       next({ name: "LicensePlate" }); // Redirect ไปหน้า LicensePlate
+    } else if (userRole === "security" && to.name !== "Stranger") {
+      next({ name: "Stranger" });
     } else {
       next();
     }

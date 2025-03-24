@@ -73,6 +73,7 @@ export default {
         RoleList: [
             'park user',
             'visitor',
+            'security',
         ]
     }),
     methods: {

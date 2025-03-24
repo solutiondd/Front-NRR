@@ -1,10 +1,10 @@
 <template>
-    <div v-if="this.data.devices?.length === 0">
+    <div v-if="this.data.devices?.length === 0 && this.data.cate !== 'stranger'">
         <v-btn v-if="role != 'visitor'" color="success" icon="" size="small" variant="flat"
             @click="getData()"><v-icon>mdi-check</v-icon>
         </v-btn>
     </div>
-    <div v-else>
+    <div v-else-if="this.data.devices?.length > 0">
         <v-chip color="green">อนุมัติสำเร็จ</v-chip>
     </div>
 
