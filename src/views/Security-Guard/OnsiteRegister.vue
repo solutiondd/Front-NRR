@@ -1,6 +1,5 @@
 <template>
     <v-container fluid class="d-flex pa-0">
-
         <v-sheet width="22%" height="93vh" class="pa-4 overflow-y-auto">
             <h2 class="text-h5 font-weight-bold mb-4">🚗 รายการล่าสุด</h2>
             <v-list class="pa-0">
@@ -62,7 +61,7 @@
                     <v-col cols="6" class="d-flex align-center justify-center">
                         <v-row>
                             <v-col cols="12" class="pa-0 text-center">
-                                <h1 style="font-size: 5rem;" class="font-weight-bold">
+                                <h1 style="font-size: 4rem;" class="font-weight-bold">
                                     {{ selectedCar.licensePlate.License }}
                                 </h1>
                             </v-col>
@@ -83,7 +82,7 @@
             </v-card>
         </v-sheet>
 
-        <v-sheet width="35%" height="93vh" class="pa-0 pr-3 pt-5">
+        <v-sheet width="35%" height="93vh" class="pa-0 pr-3 pt-5 overflow-y-auto">
             <v-toolbar density="compact" style="background-color: #F57F17; font-size: 20px;">
                 <v-toolbar-title>
                     <p style="font-size: 22px; font-weight: bold;" class="d-flex align-center">
@@ -97,73 +96,88 @@
                         <v-col cols="12">
                             <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
                                 <v-icon icon="mdi-car" size="small" class="mr-2"></v-icon>ข้อมูลรถ
+                                <!-- <v-spacer>
+                                </v-spacer>
+                                <v-btn icon="mdi-refresh" size="small" color="grey-darken-4"
+                                    @click="resetSendData()"></v-btn> -->
                             </p>
                         </v-col>
-                        <v-col cols="5" class="text-start">
+                        <v-col cols="5" class="text-start pb-5 pt-0">
                             <p>ทะเบียนรถ</p>
                         </v-col>
-                        <v-col cols="7" class="pa-0">
-                            <v-text-field v-model="sendData.licensePlate.License" label="ทะเบียนรถ" variant="outlined"
-                                density="compact" hide-details="auto" required
+                        <v-col cols="7" class="pa-0 ">
+                            <v-text-field v-model="sendData.licensePlate.License" placeholder="ระบุทะเบียนรถ"
+                                variant="outlined" density="compact" required
                                 :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']"></v-text-field>
                         </v-col>
-                        <v-col cols="5" class="text-start">
+                        <v-col cols="5" class="text-start py-2 pt-0">
                             <p>เวลาเข้า</p>
                         </v-col>
-                        <v-col cols="7" class="pa-0">
-                            <v-text-field readonly v-model="formatTime" label="เวลาเข้า" variant="outlined"
-                                density="compact" hide-details="auto"></v-text-field>
+                        <v-col cols="7" class="pa-0 py-2">
+                            <v-text-field readonly v-model="formatTime" placeholder="เวลาเข้า" variant="outlined"
+                                density="compact"></v-text-field>
                         </v-col>
-                        <v-col cols="5">
+                        <v-col cols="5" class="pb-5 pt-0">
                             <p>ประเภทยานพาหนะ</p>
                         </v-col>
                         <v-col cols="7" class="pa-0">
-                            <v-select v-model="sendData.vehicleType" label="ประเภทยานพาหนะ" variant="outlined"
-                                density="compact" hide-details="auto" :items="vehicleList" item-title="name"
-                                item-value="value" required :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
+                            <v-select v-model="sendData.vehicleType" placeholder="ระบุประเภทยานพาหนะ" variant="outlined"
+                                density="compact" :items="vehicleList" item-title="name" item-value="value" required
+                                :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
                         </v-col>
                     </v-row>
                     <v-divider :thickness="2"></v-divider>
-                    <v-row class="d-flex align-center pt-4 pb-2 px-3">
-                        <v-col cols="12">
+                    <v-row class="d-flex align-top pt-4 pb-2 px-3">
+                        <v-col v-if="loading" class="pa-2">
+                            <div>
+                                <v-progress-linear color="cyan" indeterminate></v-progress-linear>
+                            </div>
+                        </v-col>
+                        <v-col cols="12" class="pb-4 pr-0">
                             <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
                                 <v-icon icon="mdi-card-account-details" size="small" class="mr-2"></v-icon>ข้อมูลคนขับ
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" @click="readIDCard()"><v-icon
+                                        class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn>
+                                <v-btn :ripple="false" class="ml-2" color="white" variant="text" icon="mdi-refresh"
+                                    size="small" @click="resetSendData"></v-btn>
                             </p>
                         </v-col>
                         <!-- <v-col cols="5">
                             <p>รูปภาพ</p>
                         </v-col>
-                        <v-col cols="7">
-                            <img src="" alt="image">
+                        <v-col cols="7" class="d-flex align-center justify-center">
+                            <img id="Photo" src="../../assets/Logo-Sunsweet-Final_White.svg" alt="image"
+                                style="width: 130px;">
                         </v-col> -->
-                        <v-col cols="5" class="text-start">
+                        <v-col cols="5" class="text-start pt-2">
                             <p>เลขประจำตัวประชาชน</p>
                         </v-col>
-                        <v-col cols="7" class="pa-0">
-                            <v-text-field label="เลขประจำตัวประชาชน" variant="outlined" density="compact"
-                                hide-details="auto" v-model="sendData.identityNumber"
+                        <v-col cols="7" class="pa-0 pb-2">
+                            <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined" density="compact"
+                                v-model="sendData.identityNumber"
                                 :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
                                 required maxlength="13"></v-text-field>
                         </v-col>
-                        <v-col cols="5" class="text-start">
+                        <v-col cols="5" class="text-start pt-2">
                             <p>ชื่อ-นามสกุล</p>
                         </v-col>
-                        <v-col cols="7" class="pa-0">
-                            <v-text-field density="compact" variant="outlined" hide-details="auto"
-                                placeholder="ชื่อ-นามสกุล" v-model="sendData.name"
-                                :rules="sendData.guestName ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
+                        <v-col cols="7" class="pa-0 pb-2">
+                            <v-text-field density="compact" variant="outlined" placeholder="ระบุชื่อ-นามสกุล"
+                                v-model="sendData.name"
+                                :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
                                 required></v-text-field>
                         </v-col>
-                        <v-col cols="5">
+                        <v-col cols="5" class="pt-0">
                             <p>ที่อยู่</p>
                         </v-col>
                         <v-col cols="7" class="pa-0 d-flex align-top">
-                            <v-textarea variant="outlined" placeholder="ที่อยู่" rows="2" hide-details="auto"
-                                v-model="sendData.address"
-                                :rules="sendData.agency ? [] : [v => !!v || 'โปรดระบุที่อยู่']" required></v-textarea>
+                            <v-textarea variant="outlined" placeholder="ระบุที่อยู่" rows="2" v-model="sendData.address"
+                                :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']" required
+                                auto-grow></v-textarea>
                         </v-col>
                     </v-row>
-                    <v-divider class="mt-5" :thickness="2"></v-divider>
+                    <v-divider class="mt-2" :thickness="2"></v-divider>
                     <div>
                         <v-btn
                             :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
@@ -266,7 +280,6 @@ export default {
 
             // 🔥 ดึงข้อมูลทั้งหมดในวันนี้
             const existingEntries = await store.getAll();
-            console.log('🚗 รายการที่มีใน IndexedDB:', existingEntries);
 
             // 🛑 ตรวจสอบว่ามีทะเบียนรถนี้อยู่ในวันนี้หรือยัง
             const isDuplicate = existingEntries.some(entry =>
@@ -297,8 +310,7 @@ export default {
                             date: new Date().toISOString().split('T')[0]
                         };
 
-                        selectedCar.value = newEntry;
-                        // sendData.value = JSON.parse(JSON.stringify(newEntry));
+                        selectedCar.value = newEntry; // อัปเดตแถวกลาง
 
                         await saveHistory(newEntry);
                     }
@@ -308,11 +320,9 @@ export default {
             };
 
             ScreenSocket.onerror = (error) => console.error('WebSocket Error:', error)
-            // ScreenSocket.onclose = () => console.log('🔴 WebSocket Closed');
 
             ScreenSocket.onclose = () => {
                 console.log('🔴 WebSocket Closed');
-                // ถ้า WebSocket ปิดให้ลองเชื่อมต่อใหม่
                 reconnectWebSocket();
             }
         }
@@ -412,7 +422,7 @@ export default {
                 const store = tx.objectStore('history');
 
                 await store.delete(id);
-                console.log(`🚗 ลบรายการ ID: ${id} ออกจาก IndexedDB แล้ว`);
+                // console.log(`🚗 ลบรายการ ID: ${id} ออกจาก IndexedDB แล้ว`);
 
                 await tx.done;
                 await loadTodayHistory();
@@ -429,20 +439,22 @@ export default {
             const currentTime = new Date().getTime();
             const allEntries = await store.getAll();
 
-            for (let entry of allEntries) {
-                if (entry.expireTime < currentTime) {
-                    await store.delete(entry.id);
-                    console.log(`🚗 ลบรายการที่หมดอายุ ID: ${entry}`);
-                    await loadTodayHistory();
-                }
-            }
-            console.log("ตรวจสอบเสร็จสิ้น");
-        }
+            const deletePromises = allEntries
+                .filter(entry => entry.expireTime < currentTime)
+                .map(entry => store.delete(entry.id));
+
+            await Promise.all(deletePromises);
+            // console.log("🚗 ลบรายการที่หมดอายุเรียบร้อย");
+
+            await loadTodayHistory();
+            // console.log("ตรวจสอบเสร็จสิ้น");
+        };
+
 
         const reconnectWebSocket = () => {
             console.log('กำลังเชื่อมต่ออีกครั้ง กรุณารอสักครู่...');
             if (navigator.onLine) {
-                connectScreen();  // เรียก connectScreen เพื่อเชื่อมต่อใหม่
+                connectScreen();
             } else {
                 console.log('ไม่มีการเชื่อมต่ออินเทอร์เน็ต, กรุณาตรวจสอบอินเตอร์เน็ตของท่าน...');
             }
@@ -458,20 +470,277 @@ export default {
         });
 
 
+        //NOTE - สำหรับอ่านบัตรประชาชน
+        let wSocket = ref(null);
+        let debugFlag = ref(true);
+        let data = ref(null);
+        let ReaderData = ref({});
+        let loading = ref(false);
+
+        const initWebsocket = () => {
+            wSocket = new WebSocket("ws://localhost:14820/TDKWAgent");
+            wSocket.onopen = function () {
+                if (debugFlag) {
+                    console.log("Card Reader is connected.");
+                }
+            }
+            wSocket.onmessage = (evt) => onGetMessage(evt.data);
+            wSocket.onclose = (evt) => {
+                if (debugFlag) {
+                    console.log("WebSocket: onclose() event called." + evt);
+                }
+            }
+            wSocket.onerror = (evt) => {
+                if (debugFlag) {
+                    console.log("WebSocket: onerror() event called." + evt);
+                }
+            };
+        }
+
+        const wSocketSend = (json_Str) => {
+            if (debugFlag) {
+                console.log(">" + JSON.parse(json_Str).Command);
+            }
+            wSocket.send(json_Str);
+        }
+
+        const GetAutoReadOptions = () => {
+            const JS_OBJ = {
+                command: "GetAutoReadOptions",
+            };
+            const jsonStr = JSON.stringify(JS_OBJ);
+            wSocketSend(jsonStr);
+        }
+
+        const setAutoReadOptions = () => {
+            const JS_OBJ = {
+                Command: "SetAutoReadOptions",
+                AutoRead: true,
+                IDNumberRead: false,
+                IDTextRead: true,
+                IDATextRead: false,
+                IDPhotoRead: true,
+            };
+            const jsonStr = JSON.stringify(JS_OBJ);
+            console.log("auto setup : ", jsonStr);
+            wSocketSend(jsonStr);
+            GetAutoReadOptions();
+        }
+
+        const getReaderlist = () => {
+            const JS_OBJ = {
+                Command: "GetReaderList",
+            };
+            const jsonStr = JSON.stringify(JS_OBJ);
+            wSocketSend(jsonStr);
+        }
+
+        const selectReader = () => {
+            const JS_OBJ = {
+                Command: "SelectReader",
+                ReaderName: "Identiv uTrust 2700 R Smart Card Reader 0",
+            };
+            const jsonStr = JSON.stringify(JS_OBJ);
+            wSocketSend(jsonStr);
+        }
+
+        //NOTE - GET ข้อมูลแบบกดเอง (Manual) เอาไปใส่ปุ่มอะไรประมาณนั้น
+        const readIDCard = () => {
+            selectReader();
+            const JS_OBJ = {
+                Command: "ReadIDCard",
+                IDNumberRead: false,
+                IDTextRead: true,
+                IDATextRead: false,
+                IDPhotoRead: true,
+            };
+            const jsonStr = JSON.stringify(JS_OBJ);
+            wSocketSend(jsonStr);
+        }
+
+        const onGetMessage = (jsonString) => {
+            const msgObj = JSON.parse(jsonString);
+
+            if (msgObj.Message != "ReadingProgressE" && msgObj.Message != "CardStatusChangeE") {
+                if (debugFlag) {
+                    console.log("<" + msgObj.Message + "(" + msgObj.Status + ")");
+                }
+            }
+
+            if (msgObj.Message === "AgentStatusE") {
+                if (msgObj.Status === 1) {
+                    setAutoReadOptions();
+                    getReaderlist();
+                } else {
+                    Swal.fire({
+                        title: 'มีบางอย่างผิดพลาด !',
+                        icon: 'error',
+                    })
+                }
+
+            }
+
+            //NOTE - Response หลังจาก อ่านบัตรอัตโนมัติ
+            if (msgObj.Message == "AutoReadIDCardE") {
+                // stopTimer();
+                data.value = JSON.parse(JSON.stringify(msgObj));
+                ReaderData.value = parseIDText(data.value.ID_Text);
+                // putimagtoScreen(data.value.ID_Photo);
+                putDatatoSendData(ReaderData.value);
+                console.log("ReaderData : ", ReaderData.value);
+            }
+
+            //NOTE - Response หลังจาก กดอ่านบัตร เอง
+            if (msgObj.Message == "ReadIDCardR") {
+                // stopTimer();
+                data.value = JSON.parse(JSON.stringify(msgObj));
+                ReaderData.value = parseIDText(data.value.ID_Text);
+                // putimagtoScreen(data.value.ID_Photo);
+                putDatatoSendData(ReaderData.value);
+                console.log("ReaderData : ", ReaderData.value);
+            }
+
+            if (msgObj.Message == "ReadingProgressE") {
+                loading.value = true;
+                if (msgObj.Status == 0) {
+                    if (debugFlag) {
+                        console.log(
+                            "<ReadingProgressE" +
+                            "(" +
+                            msgObj.Status +
+                            "): " +
+                            msgObj.Progress +
+                            "%"
+                        );
+                    }
+                    if (msgObj.Progress === 100) {
+                        loading.value = false;
+                    }
+                }
+                if (msgObj.Status == -1 || msgObj.Status == -1001) {
+                    Swal.fire({
+                        title: 'มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง !',
+                        icon: 'error',
+                        showConfirmButton: true,
+                    })
+                }
+            }
+
+            if (msgObj.Status === -1004) {
+                Swal.fire({
+                    title: 'ไม่สามารถดึงข้อมูลจากบัตรได้ กรุณาลองใหม่อีกครั้ง !',
+                    icon: 'error',
+                    showConfirmButton: true,
+                    confirmButtonColor: '#E53935',
+                })
+            } else if (msgObj.Status == -16) {
+                Swal.fire({
+                    title: 'ไม่พบบัตรในเครื่องอ่าน กรุณาลองใหม่อีกครั้ง !',
+                    icon: 'error',
+                    showConfirmButton: true,
+                    confirmButtonColor: '#E53935',
+                })
+            } else if (msgObj.Status == -7) {
+                Swal.fire({
+                    title: 'บัตรที่อ่านไม่ใชบัตรประชชน  กรุณาลองใหม่อีกครั้ง !',
+                    icon: 'error',
+                    showConfirmButton: true,
+                    confirmButtonColor: '#E53935',
+                })
+            }
+        }
+
+        //NOTE - ตัวแปลงค่าจากเครื่องอ่านบัตร
+        const parseIDText = (idText) => {
+            const keys = [
+                "idNumber", "titleTh", "firstNameTh", "", "lastNameTh",
+                "titleEn", "firstNameEn", "", "lastNameEn",
+                "houseNo", "villageNo", "", "", "subDistrict",
+                "district", "province", "gender", "birthDate",
+                "issueAt", "issueDate", "expiryDate", "laserCode"
+            ];
+
+            const data = idText.split("#").map((item) => item.trim()).reduce((obj, val, index) => {
+                if (keys[index]) obj[keys[index]] = val || ""; // เก็บเฉพาะ key ที่ไม่ใช่ค่าว่าง
+                return obj;
+            }, {});
+
+            // รวมข้อมูล name และ address ตามที่ต้องการ
+            const name = `${data.firstNameTh} ${data.lastNameTh}`;
+            const address = `${data.houseNo} ${data.villageNo} ต. ${data.subDistrict} อ. ${data.district} จ. ${data.province}`;
+            const identityNumber = data.idNumber;
+
+            // เก็บผลลัพธ์ในรูปแบบที่ต้องการ
+            return {
+                name,
+                address,
+                identityNumber
+            };
+        };
+
+        //NOTE - ตัวแปลงข้อมูลรูปภาพ
+        const putimagtoScreen = (IDPhoto) => {
+            var base64str = IDPhoto;
+            var photo = document.getElementById("Photo");  // เลือก element img ที่มี id = "Photo"
+
+            if (base64str != null && base64str !== "") {
+                // กรณีที่ Base64 string ถูกต้อง
+                photo.setAttribute(
+                    "src",
+                    "data:image/png;base64," + base64str
+                );
+            } else {
+                // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
+                photo.src = "../../assets/Logo-Sunsweet-Final_White.svg";
+            }
+
+            if (debugFlag) {
+                console.log("Reading is finished");
+            }
+        }
+
+        const putDatatoSendData = (data) => {
+            sendData.value.name = data.name;
+            sendData.value.identityNumber = data.identityNumber;
+            sendData.value.address = data.address;
+        }
+
         onMounted(() => {
             loadTodayHistory() // โหลดข้อมูลของวันนี้ก่อน
             connectScreen() // เริ่มเชื่อมต่อ WebSocket
             checkExpire() // ตรวจสอบข้อมูลที่หมดอายุ
             setInterval(checkExpire, 60000); // ตรวจสอบทุกๆ 1 นาที
+
+            initWebsocket();
         })
 
         const selectCar = (entry) => {
             selectedCar.value = { ...entry } // กดเลือกรายการ -> อัปเดตแถวกลาง
             sendData.value = JSON.parse(JSON.stringify(entry));
-
         }
 
-        return { baseUrl, recentEntries, selectedCar, selectCar, formatitemdevice, deleteEntry, lp, toRaw, submit, sendData, dateFormat }
+        const resetSendData = () => {
+            sendData.value.name = '';
+            sendData.value.identityNumber = '';
+            sendData.value.address = '';
+        }
+
+        return {
+            baseUrl,
+            recentEntries,
+            selectedCar,
+            selectCar,
+            formatitemdevice,
+            deleteEntry,
+            lp,
+            toRaw,
+            submit,
+            sendData,
+            dateFormat,
+            readIDCard,
+            loading,
+            resetSendData
+        }
     },
     computed: {
         formatTime() {

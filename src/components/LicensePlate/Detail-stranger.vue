@@ -1,6 +1,6 @@
 <template>
-    <v-btn v-if="data.cate === 'visitor'" color="primary" icon="" @click="dialog === true"
-        size="small"><v-icon>mdi-magnify</v-icon>
+    <v-btn v-if="data.cate === 'stranger'" color="primary" icon="" size="small" @click="dialog === true">
+        <v-icon>mdi-magnify</v-icon>
         <v-dialog v-model="dialog" activator="parent" width="400px">
             <v-toolbar color="primary" density="compact">
                 <v-toolbar-title>
@@ -10,26 +10,18 @@
             <v-card class="pa-5">
                 <v-row>
                     <v-col cols="12">
-                        <h3 class="d-flex align-center pb-2"><v-icon size="small" class="mr-2">mdi-account</v-icon>
-                            ข้อมูลผู้ลงทะเบียน</h3>
+                        <h3 class="d-flex align-center pb-2"><v-icon size="small"
+                                class="mr-2">mdi-account</v-icon>ข้อมูลผู้ลงทะเบียน</h3>
                         <p>ชื่อ-นานสกุล : {{ data.guestName }}</p>
-                        <p>หน่วยงาน : {{ data.agency }}</p>
                         <p>วันที่เข้า : {{ data.start }}</p>
                         <p>เลขบัตรประจำตัว : {{ data.identityNumber }}</p>
-                    </v-col>
-                    <v-col>
-                        <h3 class="d-flex align-center pb-2"><v-icon size="small"
-                                class="mr-2">mdi-car</v-icon>ข้อมูลยานพาหนะ</h3>
-                        <p>ป้ายทะเบียน : {{ data.licensePlate }}</p>
-                        <p>ยี่ห้อรถ : {{ data.brand }}</p>
-                        <p>สีรถ : {{ data.carColor }}</p>
-                        <p>ประเภทยานพาหนะ : {{ vehicleLabel }}</p>
+                        <p>ที่อยู่ : {{ data.address }}</p>
                     </v-col>
                     <v-col cols="12">
                         <h3 class="d-flex align-center pb-2"><v-icon size="small"
-                                class="mr-2">mdi-file-document</v-icon>วัตถุประสงค์
-                        </h3>
-                        <p>{{ data.object }}</p>
+                                class="mr-2">mdi-car</v-icon>ข้อมูลยานพาหนะ</h3>
+                        <p>ป้ายทะเบียน : {{ data.licensePlate }}</p>
+                        <p>ประเภทยานพาหนะ : {{ vehicleLabel }}</p>
                     </v-col>
                 </v-row>
                 <v-card-actions>
@@ -53,11 +45,11 @@ export default {
                 TRUCK: "รถบรรทุก (TRUCK)",
             };
             return vehicleMap[this.data.vehicleType] || "ไม่ทราบประเภท";
-        },
+        }
     },
     data: () => ({
         dialog: false
-    })
+    }),
 }
 </script>
 
