@@ -373,7 +373,6 @@ export default {
                     vehicleType: sendData.value.vehicleType,
                     cate: 'stranger',
                 }
-                console.log('เข้าจ้า' + JSON.stringify(sendData.value.id))
                 await lp.CreateLP(park, data, token).then(async (res) => {
                     if (res.message === 'ok') {
                         Swal.fire({
@@ -396,12 +395,20 @@ export default {
                             address: '',
                         };
                     } else if (res.data.message === 'validate error') {
-                        this.$swal({
+                        Swal.fire({
                             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
                             icon: 'warning',
                         })
+                    } else if (res.data.message === 'This license has been added') {
+                        Swal.fire({
+                            title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
+                            text: 'กรุณาลองใหม่อีกครั้ง',
+                            icon: 'warning',
+                            showConfirmButton: true,
+                            confirmButtonColor: '#E53935',
+                        })
                     } else {
-                        this.$swal({
+                        Swal.fire({
                             icon: 'warning',
                             title: `มีบางอย่างผิดพลาด !`,
                             toast: true,
@@ -619,7 +626,8 @@ export default {
                 }
                 if (msgObj.Status == -1 || msgObj.Status == -1001) {
                     Swal.fire({
-                        title: 'มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง !',
+                        title: 'มีบางอย่างผิดพลาด !',
+                        text: 'กรุณาลองใหม่อีกครั้ง',
                         icon: 'error',
                         showConfirmButton: true,
                     })
@@ -628,21 +636,24 @@ export default {
 
             if (msgObj.Status === -1004) {
                 Swal.fire({
-                    title: 'ไม่สามารถดึงข้อมูลจากบัตรได้ กรุณาลองใหม่อีกครั้ง !',
+                    title: 'ไม่สามารถดึงข้อมูลจากบัตรได้ !',
+                    text: 'กรุณาลองใหม่อีกครั้ง',
                     icon: 'error',
                     showConfirmButton: true,
                     confirmButtonColor: '#E53935',
                 })
             } else if (msgObj.Status == -16) {
                 Swal.fire({
-                    title: 'ไม่พบบัตรในเครื่องอ่าน กรุณาลองใหม่อีกครั้ง !',
-                    icon: 'error',
+                    title: 'ไม่พบบัตรในเครื่องอ่าน !',
+                    text: 'กรุณาลองใหม่อีกครั้ง',
+                    icon: 'warning',
                     showConfirmButton: true,
                     confirmButtonColor: '#E53935',
                 })
             } else if (msgObj.Status == -7) {
                 Swal.fire({
-                    title: 'บัตรที่อ่านไม่ใชบัตรประชชน  กรุณาลองใหม่อีกครั้ง !',
+                    title: 'บัตรที่อ่านไม่ใชบัตรประชชน !',
+                    text: 'กรุณาลองใหม่อีกครั้ง',
                     icon: 'error',
                     showConfirmButton: true,
                     confirmButtonColor: '#E53935',
