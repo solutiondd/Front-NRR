@@ -666,26 +666,38 @@ export default {
             const keys = [
                 "idNumber", "titleTh", "firstNameTh", "", "lastNameTh",
                 "titleEn", "firstNameEn", "", "lastNameEn",
-                "houseNo", "villageNo", "", "", "subDistrict",
+                "houseNo", "villageNo", "", "", "roadOrVillage", "subDistrict",
                 "district", "province", "gender", "birthDate",
                 "issueAt", "issueDate", "expiryDate", "laserCode"
             ];
 
-            const data = idText.split("#").map((item) => item.trim()).reduce((obj, val, index) => {
-                if (keys[index]) obj[keys[index]] = val || ""; // เก็บเฉพาะ key ที่ไม่ใช่ค่าว่าง
+            // แยกข้อมูลด้วย "#"
+            const rawData = idText.split("#").map(item => item.trim());
+
+            // สร้าง object โดย map ข้อมูลเข้ากับ keys
+            const data = rawData.reduce((obj, val, index) => {
+                if (keys[index]) obj[keys[index]] = val || "";
                 return obj;
             }, {});
 
-            // รวมข้อมูล name และ address ตามที่ต้องการ
-            const name = `${data.firstNameTh} ${data.lastNameTh}`;
-            const address = `${data.houseNo} ${data.villageNo} ต. ${data.subDistrict} อ. ${data.district} จ. ${data.province}`;
-            const identityNumber = data.idNumber;
+            // ดึงค่าที่อยู่โดยตรงจาก keys
+            const addressParts = [
+                data.houseNo,
+                data.roadOrVillage,
+                data.subDistrict,
+                data.district,
+                data.province
+            ].filter(Boolean); // กรองค่าที่ว่างออก
 
-            // เก็บผลลัพธ์ในรูปแบบที่ต้องการ
+            const address = addressParts.join(" ");
+
+            // รวมชื่อ
+            const name = `${data.firstNameTh} ${data.lastNameTh}`;
+
             return {
                 name,
                 address,
-                identityNumber
+                identityNumber: data.idNumber
             };
         };
 
