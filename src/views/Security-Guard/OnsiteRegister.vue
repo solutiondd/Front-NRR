@@ -182,20 +182,37 @@
                         <v-btn
                             :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
                             type="submit" color="#66BB6A" block class="mt-4">บันทึก</v-btn>
+                        <!-- @click="printForm" -->
                     </div>
                 </v-form>
             </v-card>
         </v-sheet>
     </v-container>
+
+    <div id="app">
+        <div id="form-container" style="display: none;">
+            <div class="text-center">
+                <img src="../../assets/Logo-Sunsweet-Final.svg" alt="logo"
+                    style="max-width: 50%; margin-bottom: 10px; margin-top: 20px;">
+                <h2>ผู้ติดต่อที่ไม่ได้ลงทะเบียน</h2>
+                <div>
+                    <p style="text-align: start; line-height: 50px; margin: 0;">ลายเซ็น :</p>
+                </div>
+                <div style="border: 1px solid black; height: 150px; width: 90%;"></div>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <script>
-import { ref, onMounted, toRaw } from 'vue'
+import { ref, onMounted, toRaw, nextTick } from 'vue'
 import { openDB } from 'idb'
 import { formatitemdevice, dateFormat, dateFormatValue } from '../../function/day'
 import Swal from "sweetalert2";
 import { LPService } from '../../api/licenseplate';
 import { useStore } from 'vuex';
+
 
 export default {
     setup() {
@@ -355,6 +372,71 @@ export default {
 
         }
 
+        //NOTE - Print Form
+        const printForm = async () => {
+            await nextTick(); // รอให้ Vue อัปเดต DOM
+
+            const formContainer = document.getElementById("form-container"); // ใช้ getElementById แทน ref
+
+            if (!formContainer) {
+                console.error("❌ formContainer ไม่มีค่า! ตรวจสอบ id ใน <template>");
+                return;
+            }
+
+            const images = formContainer.getElementsByTagName("img");
+
+            // ฟังก์ชันรอให้รูปโหลดเสร็จ
+            const loadImages = () => {
+                return Promise.all(
+                    Array.from(images).map(img => {
+                        return new Promise(resolve => {
+                            if (img.complete) {
+                                resolve();
+                            } else {
+                                img.onload = resolve;
+                                img.onerror = resolve;
+                            }
+                        });
+                    })
+                );
+            };
+
+            await loadImages();
+
+
+            setTimeout(() => {
+                const printWindow = window.open('', '', 'height=600,width=800');
+
+                if (!printWindow) {
+                    alert("❌ เบราว์เซอร์บล็อกหน้าต่างปริ้น! กรุณาปลดบล็อกป๊อปอัป");
+                    return;
+                }
+
+                const formContent = formContainer.innerHTML;
+
+                printWindow.document.write('<html><head><title>Visitor</title>');
+                printWindow.document.write('<style>@media print {');
+                printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; }');
+                printWindow.document.write('@page { size: 80mm 210mm; margin: 0; }');
+                printWindow.document.write('div { max-width: 80mm; margin: 0 auto; }');
+                printWindow.document.write('</style>');
+                printWindow.document.write('</head><body>');
+                printWindow.document.write(formContent);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+
+                printWindow.onload = () => {
+                    printWindow.print();
+                };
+
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                };
+            }, 10);
+        };
+
+
+
         const submit = async (event) => {
             const res = await event
             if (res.valid === true) {
@@ -384,6 +466,7 @@ export default {
                             timer: 3000,
                             timerProgressBar: true,
                         });
+                        await printForm();
                         await deleteFromIndexedDB(sendData.value.id);
                         sendData.value = {
                             msg: '',
@@ -797,6 +880,51 @@ export default {
                 second: "2-digit",
                 hour12: false
             }).replace(",", "");
+        },
+        async printForm() {
+            const formContainer = document.getElementById("form-container");
+            const images = formContainer.getElementsByTagName("img");
+
+            // ฟังก์ชันรอให้รูปภาพโหลดเสร็จทั้งหมด
+            const loadImages = () => {
+                return Promise.all(
+                    Array.from(images).map(img => {
+                        return new Promise(resolve => {
+                            if (img.complete) {
+                                resolve();
+                            } else {
+                                img.onload = () => resolve();
+                                img.onerror = () => resolve(); // ป้องกันกรณีโหลดภาพไม่สำเร็จ
+                            }
+                        });
+                    })
+                );
+            };
+
+            await loadImages(); // รอให้รูปภาพโหลดเสร็จ
+
+            // เปิดหน้าต่างใหม่สำหรับปริ้น
+            const formContent = formContainer.innerHTML;
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>Visitor</title>');
+            printWindow.document.write('<style>@media print {');
+            printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; }');
+            printWindow.document.write('@page { size: 80mm 210mm; margin: 0; }');
+            printWindow.document.write('div { max-width: 80mm; margin: 0 auto; }');
+            printWindow.document.write('footer { position: fixed; bottom: 0; width: 100%; text-align: center; }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(formContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+
+            printWindow.onload = () => {
+                printWindow.print();
+            };
+
+            printWindow.onafterprint = () => {
+                printWindow.close();
+            };
         },
     },
 }
