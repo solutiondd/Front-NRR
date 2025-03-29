@@ -178,27 +178,117 @@
                         </v-col>
                     </v-row>
                     <v-divider class="mt-2" :thickness="2"></v-divider>
-                    <div>
-                        <v-btn
+                    <v-card-actions>
+                        <CheckOut />
+                        <v-btn variant="flat"
                             :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                            type="submit" color="#66BB6A" block class="mt-4">บันทึก</v-btn>
-                        <!-- @click="printForm" -->
-                    </div>
+                            type="submit" color="#66BB6A" width="50%" class="mt-4">บันทึกขาเข้า
+                            <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
+                    </v-card-actions>
                 </v-form>
             </v-card>
         </v-sheet>
     </v-container>
 
+    <!-- //NOTE - Print Form -->
     <div id="app">
         <div id="form-container" style="display: none;">
-            <div class="text-center">
-                <img src="../../assets/Logo-Sunsweet-Final.svg" alt="logo"
-                    style="max-width: 50%; margin-bottom: 10px; margin-top: 20px;">
-                <h2>ผู้ติดต่อที่ไม่ได้ลงทะเบียน</h2>
-                <div>
-                    <p style="text-align: start; line-height: 50px; margin: 0;">ลายเซ็น :</p>
+            <div style="text-align: center;">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h4>สแกนขาออก</h4>
+                    <qrcode-vue :value="sendData._id" :size="100" level="H" render-as="canvas"
+                        :key="sendData._id"></qrcode-vue>
+                    <p style="font-size: 12px;">{{ sendData._id }}</p>
                 </div>
-                <div style="border: 1px solid black; height: 150px; width: 90%;"></div>
+                <h3 style="padding-bottom: 0px;">บันทึกการเข้า-ออก</h3>
+                <h3>บริษัท ซันสวีท จำกัด (มหาชน)</h3>
+            </div>
+            <div style="text-align: start; font-size: 12px;">
+                <p style="font-weight: bold;">วันที่ :
+                    <span style="font-weight: 400;">
+                        {{ dateFormatDayandTime(sendData.time) }}
+                    </span>
+                </p>
+                <p style="font-weight: bold;">เวลาเข้า :
+                    <span style="font-weight: 400;">
+                        {{ formatitemdevice(sendData.time) }}
+                    </span>
+                </p>
+                <p style="font-weight: bold;">ชื่อ (ผู้ติดต่อ) :
+                    <span style="font-weight: 400;">
+                        {{ sendData.name }}
+                    </span>
+                </p>
+                <p style="font-weight: bold;">บริษัท/หน่วยงาน : </p>
+                <p style="font-weight: bold;">จำนวนคน : </p>
+                <p style="font-weight: bold;">ทะเบียนรถ :
+                    <span style="font-weight: 400;">
+                        {{ sendData.licensePlate.License }}
+                    </span>
+                </p>
+                <p style="font-weight: bold;">ติดต่อแผนก/คุณ : </p>
+                <p style="font-weight: bold;">รายละเอียดกิจธุระ : </p>
+            </div>
+
+            <div>
+                <v-row>
+                    <v-col>
+                        <p style="font-size: 12px;">ลงชื่อผู้ติดต่อ</p>
+                        <div style="border: 1px solid black;padding: 30px;"></div>
+                    </v-col>
+                    <v-col>
+                        <p style="font-size: 12px;">ลงชื่อ รปภ.</p>
+                        <div style="border: 1px solid black;padding: 30px;"></div>
+                    </v-col>
+                    <v-col>
+                        <p style="font-size: 12px;">ลงชื่อผู้รับการติดต่อ</p>
+                        <div style="border: 1px solid black;padding: 30px;"></div>
+                    </v-col>
+                </v-row>
+            </div>
+
+            <div style="padding-top: 20px; text-align: start;">
+                <div style="border: 1px solid black;">
+                    <h4 style="font-size: 10px; text-align: center;">
+                        ระเบียบปฏิบัติสำหรับบุคคลภายนอกที่เข้ามาติดต่อบริษัทฯ
+                    </h4>
+                </div>
+                <p style="font-size:10px">1. กรุณาติดบัตร VISITOR ตลอดเวลาที่อยู่ในบริษัทฯ</p>
+                <p style="font-size:10px">2. กรุณาจอดรถในพื้นที่ ที่บริษัทฯกำหนด และกรุณาดับเครื่องยนต์ทุกครั้ง
+                    เพื่อลดมลภาวะทางอากาศ</p>
+                <p style="font-size:10px">3. ห้ามพกพาอาวุธ ของมึนเมา หรือสิ่งเสพติดทุกชนิดเข้ามาภายในบริษัทฯ</p>
+                <p style="font-size:10px">4. กรณีที่ต้องเข้าสายการผลิต ต้องแต่งกายตามที่บริษัทฯ กำหนด</p>
+                <p style="font-size:10px">5. ห้ามพกพา วัตถุสิ่งของประเภทแก้วทุกชนิด เข้ามาภายในบริษัทฯ</p>
+                <p style="font-size:10px">6. ห้ามนำสิ่งของอื่น ออกนอกบริษัทฯ ก่อนได้รับอนุญาตจากเจ้าหน้าที่บริษัทฯ</p>
+                <p style="font-size:10px">7. ห้ามสูบบุหรี่ในอาคารบริษัทฯ และบริเวณรอบๆ พื้นที่ (เว้นแต่บริเวณที่บริษัทฯ
+                    จัดไว้ให้เท่านั้น)</p>
+            </div>
+            <div style="padding-top: 20px; text-align: start;">
+                <div style="border: 1px solid black;">
+                    <h4 style="font-size: 10px; text-align: center;">
+                        ระเบียบปฏิบัติด้านความปลอดภัยและการจัดการด้านสิ่งแวดล้อม ISO 14001
+                    </h4>
+                </div>
+                <p style="font-size:10px">1. ปฏิบัติตามป้ายห้าม, ป้ายเตือนต่างๆ อย่างเคร่งครัด เพื่อความปลอดภัย
+                    และรักษาสภาพแวดล้อมของบริษัทฯ</p>
+                <p style="font-size:10px">2. รถยนต์/จักรยานยนต์ ต้องมีการตรวจสอบน้ำมันรั่วไหลก่อนเข้าบริษัทฯ</p>
+                <p style="font-size:10px">3. ผู้รับเหมาต้องกำจัดขยะ และนำออกอย่างเหมาะสมไม่ปล่อยน้ำเสีย/ ไม่ก่อเสียงดัง/
+                    ไม่สร้างมลพิษ</p>
+                <p style="font-size:10px">4. ผู้รับเหมาต้องสวมอุปกรณ์ PPE
+                    ที่เหมาะสมเพื่อความปลอดภัยตามลักษณะความเสี่ยงของงาน</p>
+                <p style="font-size:10px">5. ผู้ที่เข้ามาติดต่อบริษัทฯ ต้องร่วมมือในการอนุรักษ์พลังงาน
+                    และใช้ทรัพยากรอย่างมีประสิทธิภาพ</p>
+                <p style="font-size:10px">6. รถรับเปลือกต้องไม่ปล่อยน้ำล้างเปลือกลงบนพื้นถนนและรางน้ำฝน</p>
+                <p style="font-size:10px">7. ขับรถในบริษัทฯ ด้วยความเร็วไม่เกิน ๑๐ ก.ม./ช.ม. เพื่อความปลอดภัย</p>
+                <p style="font-size:10px">8. ผู้มาติดต่อที่เข้าบริษัท ต้องมีเจ้าหน้าที่ของบริษัทฯ พาเข้าพื้นที่ทุกครั้ง
+                    เพื่อความปลอดภัย</p>
+            </div>
+            <div style="padding-top: 20px;">
+                <div style="text-align: center;border: 1px solid black;">
+                    <p style="font-size: 12px; font-weight: bold;">กรุณานำบัตร VISITOR คืนให้เจ้าหน้าที่ รปภ.
+                        ก่อนออกจากบริษัทฯ
+                        และต้องมีลายเซ็นของเจ้าหน้าที่บริษัทฯ จึงจะสามารถออกนอกบริษัทฯ ได้</p>
+                </div>
             </div>
         </div>
     </div>
@@ -208,11 +298,12 @@
 <script>
 import { ref, onMounted, toRaw, nextTick } from 'vue'
 import { openDB } from 'idb'
-import { formatitemdevice, dateFormat, dateFormatValue } from '../../function/day'
+import { formatitemdevice, dateFormat, dateFormatValue, dateFormatDayandTime } from '../../function/day'
 import Swal from "sweetalert2";
 import { LPService } from '../../api/licenseplate';
 import { useStore } from 'vuex';
-
+import QrcodeVue from "qrcode.vue";
+import CheckOut from '../../components/Security-Guard/CheckOut.vue';
 
 export default {
     setup() {
@@ -375,67 +466,46 @@ export default {
         //NOTE - Print Form
         const printForm = async () => {
             await nextTick(); // รอให้ Vue อัปเดต DOM
+            const formContainer = document.getElementById("form-container");
+            const qrCanvas = formContainer.querySelector("canvas");
 
-            const formContainer = document.getElementById("form-container"); // ใช้ getElementById แทน ref
+            if (qrCanvas) {
+                const qrImageUrl = qrCanvas.toDataURL("image/png");
+                console.log("QR Code Image URL:", qrImageUrl); // เช็คว่าภาพถูกต้องไหม
 
-            if (!formContainer) {
-                console.error("❌ formContainer ไม่มีค่า! ตรวจสอบ id ใน <template>");
-                return;
+                const qrImg = document.createElement("img");
+                qrImg.src = qrImageUrl;
+                qrImg.style.width = "100px";
+                qrImg.style.height = "100px";
+
+                qrCanvas.replaceWith(qrImg);
             }
 
-            const images = formContainer.getElementsByTagName("img");
+            const formContent = formContainer.innerHTML;
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>Visitor</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('@media print {');
+            printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; }');
+            printWindow.document.write('@page { size: 72.1mm 3276mm; margin: 0; }');
+            printWindow.document.write('div { max-width: 72.1mm; margin: 0 auto; padding-right: 1mm;}');
+            printWindow.document.write('footer { position: fixed; bottom: 0; width: 100%; text-align: center; }');
+            printWindow.document.write('.v-row { display: flex; flex-wrap: wrap; justify-content: space-between; }');
+            printWindow.document.write('.v-col { flex: 0 0 45%; margin-bottom: 5px; }'); // จัดระเบียบ v-col
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(formContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
 
-            // ฟังก์ชันรอให้รูปโหลดเสร็จ
-            const loadImages = () => {
-                return Promise.all(
-                    Array.from(images).map(img => {
-                        return new Promise(resolve => {
-                            if (img.complete) {
-                                resolve();
-                            } else {
-                                img.onload = resolve;
-                                img.onerror = resolve;
-                            }
-                        });
-                    })
-                );
+            printWindow.onload = () => {
+                printWindow.print();
             };
 
-            await loadImages();
-
-
-            setTimeout(() => {
-                const printWindow = window.open('', '', 'height=600,width=800');
-
-                if (!printWindow) {
-                    alert("❌ เบราว์เซอร์บล็อกหน้าต่างปริ้น! กรุณาปลดบล็อกป๊อปอัป");
-                    return;
-                }
-
-                const formContent = formContainer.innerHTML;
-
-                printWindow.document.write('<html><head><title>Visitor</title>');
-                printWindow.document.write('<style>@media print {');
-                printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; }');
-                printWindow.document.write('@page { size: 80mm 210mm; margin: 0; }');
-                printWindow.document.write('div { max-width: 80mm; margin: 0 auto; }');
-                printWindow.document.write('</style>');
-                printWindow.document.write('</head><body>');
-                printWindow.document.write(formContent);
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-
-                printWindow.onload = () => {
-                    printWindow.print();
-                };
-
-                printWindow.onafterprint = () => {
-                    printWindow.close();
-                };
-            }, 10);
+            printWindow.onafterprint = () => {
+                printWindow.close();
+            };
         };
-
-
 
         const submit = async (event) => {
             const res = await event
@@ -845,8 +915,14 @@ export default {
             dateFormat,
             readIDCard,
             loading,
-            resetSendData
+            resetSendData,
+            dateFormatValue,
+            dateFormatDayandTime,
         }
+    },
+    components: {
+        QrcodeVue,
+        CheckOut,
     },
     computed: {
         formatTime() {
