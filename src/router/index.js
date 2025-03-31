@@ -10,7 +10,7 @@ import Account from "../views/Admin/Account.vue";
 import LicensePlate from "../views/Admin/licensePlate.vue";
 import Stranger from "../views/Security-Guard/OnsiteRegister.vue";
 import SecurityGuard from "../layouts/Security-Guard.vue";
-import ReadIdentity from "../views/Security-Guard/ReadIdentity.vue";
+// import ReadIdentity from "../views/Security-Guard/ReadIdentity.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -58,11 +58,11 @@ const router = createRouter({
           name: "LicensePlate",
           component: LicensePlate,
         },
-        {
-          path: "readidentity",
-          name: "ReadIdentity",
-          component: ReadIdentity,
-        },
+        // {
+        //   path: "readidentity",
+        //   name: "ReadIdentity",
+        //   component: ReadIdentity,
+        // },
       ],
     },
     {

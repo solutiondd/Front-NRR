@@ -14,7 +14,7 @@
                             <v-row class="py-2">
                                 <v-col cols="12" class="px-2 py-0">
                                     <p class="mb-2">รหัสการเข้าออก</p>
-                                    <v-text-field density="compact" variant="outlined"
+                                    <v-text-field ref="inputField" density="compact" variant="outlined"
                                         placeholder="ระบุรหัสบันทึกการเข้า-ออก..." v-model="sendData.TransctionId"
                                         hint="*สแกนคิวอาร์โค้ดจากใบบันทึกการเข้า-ออก" persistent-hint required
                                         :rules="[v => !!v || 'โปรดระบุรหัสบันทึกการเข้า-ออก']"></v-text-field>
@@ -40,12 +40,31 @@
 <script>
 import { VisitorService } from "../../api/Visitor";
 import moment from "moment"
+import { ref, watch } from "vue";
 export default {
     setup() {
         const visitor = new VisitorService();
+        const dialog = ref(false);
+        const inputField = ref(null);
+        const sendData = ref({
+            TransctionId: '',
+            TransactionTime: new Date(),
+        });
+
+        watch(dialog, (newVal) => {
+            if (newVal === true) {
+                setTimeout(() => {
+                    inputField.value?.focus();
+                }, 200);
+            }
+        });
+
         return {
-            visitor
-        }
+            visitor,
+            dialog,
+            inputField,
+            sendData,
+        };
     },
     computed: {
         formatDate() {
@@ -69,7 +88,7 @@ export default {
         async submit(event) {
             const res = await event
             if (res.valid === true) {
-                const isoDate = this.changeFormatDate(this.sendData.TransactionTime, 7);
+                const isoDate = this.changeFormatDate(this.sendData.TransactionTime, 0);
                 const data = {
                     transactionId: this.sendData.TransctionId,
                     timeStamp: isoDate,

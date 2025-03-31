@@ -51,8 +51,11 @@
                     <td class="text-center">
                         {{ dateFormat(row.item.start) }}
                     </td>
-                    <td class="text-center">
+                    <td v-if="row.item.cate !== 'stranger'" class="text-center">
                         {{ dateFormat(row.item.expire) }}
+                    </td>
+                    <td v-else-if="row.item.cate === 'stranger'" class="text-center">
+                        {{  }}
                     </td>
                     <td class="text-center">
                         {{ row.item.guestName }}

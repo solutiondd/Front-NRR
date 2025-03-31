@@ -247,45 +247,44 @@
                 </v-row>
             </div>
 
-            <div style="padding-top: 20px; text-align: start;">
+            <div style="text-align: start;">
                 <div style="border: 1px solid black;">
-                    <h4 style="font-size: 10px; text-align: center;">
+                    <h4 style="font-size: 8px; text-align: center;">
                         ระเบียบปฏิบัติสำหรับบุคคลภายนอกที่เข้ามาติดต่อบริษัทฯ
                     </h4>
                 </div>
-                <p style="font-size:10px">1. กรุณาติดบัตร VISITOR ตลอดเวลาที่อยู่ในบริษัทฯ</p>
-                <p style="font-size:10px">2. กรุณาจอดรถในพื้นที่ ที่บริษัทฯกำหนด และกรุณาดับเครื่องยนต์ทุกครั้ง
-                    เพื่อลดมลภาวะทางอากาศ</p>
-                <p style="font-size:10px">3. ห้ามพกพาอาวุธ ของมึนเมา หรือสิ่งเสพติดทุกชนิดเข้ามาภายในบริษัทฯ</p>
-                <p style="font-size:10px">4. กรณีที่ต้องเข้าสายการผลิต ต้องแต่งกายตามที่บริษัทฯ กำหนด</p>
-                <p style="font-size:10px">5. ห้ามพกพา วัตถุสิ่งของประเภทแก้วทุกชนิด เข้ามาภายในบริษัทฯ</p>
-                <p style="font-size:10px">6. ห้ามนำสิ่งของอื่น ออกนอกบริษัทฯ ก่อนได้รับอนุญาตจากเจ้าหน้าที่บริษัทฯ</p>
-                <p style="font-size:10px">7. ห้ามสูบบุหรี่ในอาคารบริษัทฯ และบริเวณรอบๆ พื้นที่ (เว้นแต่บริเวณที่บริษัทฯ
-                    จัดไว้ให้เท่านั้น)</p>
+                <p style="font-size:7px; padding-top:0px; padding-bottom: 0px;">
+                    1. กรุณาติดบัตร VISITOR ตลอดเวลาที่อยู่ในบริษัทฯ <br />
+                    2. กรุณาจอดรถในพื้นที่ ที่บริษัทฯกำหนด และกรุณาดับเครื่องยนต์ทุกครั้งเพื่อลดมลภาวะทางอากาศ <br />
+                    3. ห้ามพกพาอาวุธ ของมึนเมา หรือสิ่งเสพติดทุกชนิดเข้ามาภายในบริษัทฯ <br />
+                    4. กรณีที่ต้องเข้าสายการผลิตต้องแต่งกายตามที่บริษัทฯ กำหนด <br />
+                    5. ห้ามพกพาวัตถุสิ่งของประเภทแก้วทุกชนิด เข้ามาภายในบริษัทฯ <br />
+                    6. ห้ามนำสิ่งของอื่น ออกนอกบริษัทฯ ก่อนได้รับอนุญาตจากเจ้าหน้าที่บริษัทฯ <br />
+                    7. ห้ามสูบบุหรี่ในอาคารบริษัทฯ และบริเวณรอบๆ พื้นที่ (เว้นแต่บริเวณที่บริษัทฯ จัดไว้ให้เท่านั้น)
+                </p>
             </div>
-            <div style="padding-top: 20px; text-align: start;">
+            <div style="text-align: start;">
                 <div style="border: 1px solid black;">
-                    <h4 style="font-size: 10px; text-align: center;">
+                    <h4 style="font-size: 8px; text-align: center;">
                         ระเบียบปฏิบัติด้านความปลอดภัยและการจัดการด้านสิ่งแวดล้อม ISO 14001
                     </h4>
                 </div>
-                <p style="font-size:10px">1. ปฏิบัติตามป้ายห้าม, ป้ายเตือนต่างๆ อย่างเคร่งครัด เพื่อความปลอดภัย
-                    และรักษาสภาพแวดล้อมของบริษัทฯ</p>
-                <p style="font-size:10px">2. รถยนต์/จักรยานยนต์ ต้องมีการตรวจสอบน้ำมันรั่วไหลก่อนเข้าบริษัทฯ</p>
-                <p style="font-size:10px">3. ผู้รับเหมาต้องกำจัดขยะ และนำออกอย่างเหมาะสมไม่ปล่อยน้ำเสีย/ ไม่ก่อเสียงดัง/
-                    ไม่สร้างมลพิษ</p>
-                <p style="font-size:10px">4. ผู้รับเหมาต้องสวมอุปกรณ์ PPE
-                    ที่เหมาะสมเพื่อความปลอดภัยตามลักษณะความเสี่ยงของงาน</p>
-                <p style="font-size:10px">5. ผู้ที่เข้ามาติดต่อบริษัทฯ ต้องร่วมมือในการอนุรักษ์พลังงาน
-                    และใช้ทรัพยากรอย่างมีประสิทธิภาพ</p>
-                <p style="font-size:10px">6. รถรับเปลือกต้องไม่ปล่อยน้ำล้างเปลือกลงบนพื้นถนนและรางน้ำฝน</p>
-                <p style="font-size:10px">7. ขับรถในบริษัทฯ ด้วยความเร็วไม่เกิน ๑๐ ก.ม./ช.ม. เพื่อความปลอดภัย</p>
-                <p style="font-size:10px">8. ผู้มาติดต่อที่เข้าบริษัท ต้องมีเจ้าหน้าที่ของบริษัทฯ พาเข้าพื้นที่ทุกครั้ง
-                    เพื่อความปลอดภัย</p>
+                <p style="font-size:7px ; padding-top:0px; padding-bottom: 0px;">
+                    1. ปฏิบัติตามป้ายห้าม, ป้ายเตือนต่างๆ อย่างเคร่งครัดเพื่อความปลอดภัย และรักษาสภาพแวดล้อมของบริษัทฯ
+                    <br />
+                    2. รถยนต์/จักรยานยนต์ต้องมีการตรวจสอบน้ำมันรั่วไหลก่อนเข้าบริษัทฯ <br />
+                    3. ผู้รับเหมาต้องกำจัดขยะ และนำออกอย่างเหมาะสมไม่ปล่อยน้ำเสีย/ ไม่ก่อเสียงดัง/ไม่สร้างมลพิษ <br />
+                    4. ผู้รับเหมาต้องสวมอุปกรณ์ PPE ที่เหมาะสมเพื่อความปลอดภัยตามลักษณะความเสี่ยงของงาน <br />
+                    5. ผู้ที่เข้ามาติดต่อบริษัทฯ ต้องร่วมมือในการอนุรักษ์พลังงาน และใช้ทรัพยากรอย่างมีประสิทธิภาพ <br />
+                    6. รถรับเปลือกต้องไม่ปล่อยน้ำล้างเปลือกลงบนพื้นถนนและรางน้ำฝน <br />
+                    7. ขับรถในบริษัทฯ ด้วยความเร็วไม่เกิน ๑๐ ก.ม./ช.ม. เพื่อความปลอดภัย <br />
+                    8. ผู้มาติดต่อที่เข้าบริษัทต้องมีเจ้าหน้าที่ของบริษัทฯ พาเข้าพื้นที่ทุกครั้งเพื่อความปลอดภัย <br />
+                </p>
             </div>
-            <div style="padding-top: 20px;">
+            <div>
                 <div style="text-align: center;border: 1px solid black;">
-                    <p style="font-size: 12px; font-weight: bold;">กรุณานำบัตร VISITOR คืนให้เจ้าหน้าที่ รปภ.
+                    <p style="font-size: 9px; font-weight: bold; ; padding-top:0px; padding-bottom: 0px;">กรุณานำบัตร
+                        VISITOR คืนให้เจ้าหน้าที่ รปภ.
                         ก่อนออกจากบริษัทฯ
                         และต้องมีลายเซ็นของเจ้าหน้าที่บริษัทฯ จึงจะสามารถออกนอกบริษัทฯ ได้</p>
                 </div>
@@ -531,7 +530,9 @@ export default {
                             address: sendData.value.address,
                             vehicleType: sendData.value.vehicleType,
                             cate: 'stranger',
-                            personImgUrl: res.data.filePath
+                            personImgUrl: res.data.filePath,
+                            cdataId: sendData.value._id,
+                            timeStamp: sendData.value.time
                         }
                         await lp.CreateLP(park, data, token).then(async (res) => {
                             if (res.message === 'ok') {
@@ -555,7 +556,7 @@ export default {
                                     identityNumber: '',
                                     address: '',
                                 };
-                                document.getElementById('Photo').src = "../src/assets/Logo-Sunsweet-Final_White.svg";
+                                document.getElementById('Photo').src = "/Logo-Sunsweet-Final_White.svg";
                             } else if (res.data.message === 'validate error') {
                                 Swal.fire({
                                     title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
@@ -888,7 +889,7 @@ export default {
                 );
             } else {
                 // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
-                photo.src = "../../assets/Logo-Sunsweet-Final_White.svg";
+                photo.src = "/Logo-Sunsweet-Final_White.svg";
             }
 
             if (debugFlag) {
@@ -928,7 +929,7 @@ export default {
         const selectCar = (entry) => {
             selectedCar.value = { ...entry } // กดเลือกรายการ -> อัปเดตแถวกลาง
             sendData.value = JSON.parse(JSON.stringify(entry));
-            document.getElementById('Photo').src = "../src/assets/Logo-Sunsweet-Final_White.svg";
+            document.getElementById('Photo').src = "/Logo-Sunsweet-Final_White.svg";
         }
 
         const resetSendData = () => {

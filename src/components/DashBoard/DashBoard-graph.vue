@@ -1,8 +1,9 @@
 <template>
     <v-row class="pa-0">
+
         <v-col cols="12" sm="12" md="6">
             <v-card class="pa-5 " width="100%">
-                <h3 class="pb-5">ข้อมูลกราฟ วันนี้</h3>
+                <h3 class="pb-5">ข้อมูลกราฟ วันนี้ {{ dateFormatDayandTime(new Date()) }}</h3>
                 <div class="chart-container mx-auto">
                     <DoughnutChart :chart-data="chartData" :options="chartOptions" />
                 </div>
@@ -10,7 +11,7 @@
         </v-col>
         <v-col cols="12" sm="12" md="6">
             <v-card class="pa-5" width="100%">
-                <h3 class="pb-5">ข้อมูลตัวเลข วันนี้</h3>
+                <h3 class="pb-5">ข้อมูลตัวเลข วันนี้ {{ dateFormatDayandTime(new Date()) }}</h3>
                 <v-row>
                     <v-col cols="12" sm="6">
                         <v-card class="pa-3" color="#66BB6A">
@@ -35,7 +36,7 @@
                             <p style="font-size: 18px;">รวมทั้งหมด</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
                                 dataDashBoard.visitor + dataDashBoard.stranger
-                            }} คัน</p>
+                                }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -56,6 +57,20 @@
                             </p>
                         </v-card>
                     </v-col>
+
+                </v-row>
+            </v-card>
+        </v-col>
+        <v-col cols="12">
+            <v-card class="pa-5" width="100%">
+                <h3 class="pb-5">ข้อมูลรถผู้ติดต่อคงเหลือในพื้นที่</h3>
+                <v-row>
+                    <v-col cols="12" color="primary">
+                        <v-card class="pa-3" color="#757575">
+                            <p style="font-size: 18px;">รถผู้ติดต่อคงเหลือในพื้นที่ (คัน)</p>
+                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.currentVisitor }} คัน</p>
+                        </v-card>
+                    </v-col>
                 </v-row>
             </v-card>
         </v-col>
@@ -64,7 +79,7 @@
 
 <script>
 import { HistorylogSer } from '../../api/Historylog';
-import { dateFormatValue, datetimeFormat, dateFormatWithFixedTime, datetimeFormatLimit } from "../../function/day";
+import { dateFormatValue, datetimeFormat, dateFormatWithFixedTime, datetimeFormatLimit, dateFormatDayandTime } from "../../function/day";
 import { useTheme } from 'vuetify';
 import { DoughnutChart } from "vue-chart-3";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, DoughnutController } from 'chart.js';
@@ -85,7 +100,8 @@ export default {
             dateFormatWithFixedTime,
             his,
             theme,
-            datetimeFormatLimit
+            datetimeFormatLimit,
+            dateFormatDayandTime
         }
     },
     components: {

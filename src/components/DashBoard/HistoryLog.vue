@@ -67,9 +67,20 @@
                     </td>
                     <td class="text-center" v-for="lp in row.item.plates" :key="lp._id">
                         {{ lp.License }}
+                        <p v-if="row.item.confirmLicensePlate" style="font-size: 14px; color: grey;">({{
+                            row.item.confirmLicensePlate }})</p>
+                    </td>
+                    <td class="text-center">
+                        {{ row.item?.person?.name }}
                     </td>
                     <td class="text-center">
                         {{ formatDateTime(row.item.time) }}
+                    </td>
+                    <td v-if="row.item.checkoutTimeStamp" class="text-center">
+                        {{ formatDateTime(row.item.checkoutTimeStamp) }}
+                    </td>
+                    <td v-else class="text-center">
+                        {{ }}
                     </td>
                     <td class="text-center">
                         <p v-if="row.item.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'">ผู้ติดต่อที่ลงทะเบียน</p>
@@ -139,7 +150,9 @@ export default {
             { title: 'ภาพป้ายทะเบียน 1', align: 'center', sortable: false, key: 'platesPhoto' },
             { title: 'ภาพป้ายทะเบียน 2', align: 'center', sortable: false, key: 'platesPhoto2' },
             { title: 'หมายเลขทะเบียน', align: 'center', sortable: false, key: 'license' },
-            { title: 'วันที่/เวลา', align: 'center', sortable: false, key: 'entry.time' },
+            { title: 'ชื่อผู้ติดต่อ', align: 'center', sortable: false, key: 'license' },
+            { title: 'วันที่/เวลา (ขาเข้า)', align: 'center', sortable: false, key: 'entry.time' },
+            { title: 'วันที่/เวลา (ขาออก)', align: 'center', sortable: false, key: 'entry.checkoutTimeStamp' },
             { title: 'รายละเอียด', align: 'center', sortable: false, key: 'entry.msg' },
             { title: 'ประเภทการเข้า/ออก', align: 'center', sortable: false, key: 'inout' },
             // { title: 'สถานะการเชื่อมต่อ', align: 'center', sortable: false, key: 'hooked' },
