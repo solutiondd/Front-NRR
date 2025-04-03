@@ -192,6 +192,9 @@
 
     <!-- //NOTE - Print Form -->
     <div id="app">
+        <!-- <div>
+            <v-btn @click="printForm()">พิมพ์ฟอร์ม</v-btn>
+        </div> -->
         <div id="form-container" style="display: none;">
             <div style="text-align: center;">
                 <div style="text-align: center; margin-bottom: 10px;">
@@ -233,21 +236,24 @@
             <div>
                 <v-row>
                     <v-col>
-                        <p style="font-size: 12px;">ลงชื่อผู้ติดต่อ</p>
+                        <p style="font-size: 12px; text-align: start;margin-top: 2px;margin-bottom: 2px;">
+                            ลงชื่อผู้ติดต่อ</p>
                         <div style="border: 1px solid black;padding: 30px;"></div>
                     </v-col>
                     <v-col>
-                        <p style="font-size: 12px;">ลงชื่อ รปภ.</p>
+                        <p style="font-size: 12px; text-align: start;margin-top: 2px;margin-bottom: 2px;">ลงชื่อ รปภ.
+                        </p>
                         <div style="border: 1px solid black;padding: 30px;"></div>
                     </v-col>
                     <v-col>
-                        <p style="font-size: 12px;">ลงชื่อผู้รับการติดต่อ</p>
+                        <p style="font-size: 12px; text-align: start;margin-top: 2px;margin-bottom: 2px;">
+                            ลงชื่อผู้รับการติดต่อ</p>
                         <div style="border: 1px solid black;padding: 30px;"></div>
                     </v-col>
                 </v-row>
             </div>
 
-            <div style="text-align: start;">
+            <!-- <div style="text-align: start;">
                 <div style="border: 1px solid black;">
                     <h4 style="font-size: 8px; text-align: center;">
                         ระเบียบปฏิบัติสำหรับบุคคลภายนอกที่เข้ามาติดต่อบริษัทฯ
@@ -288,7 +294,7 @@
                         ก่อนออกจากบริษัทฯ
                         และต้องมีลายเซ็นของเจ้าหน้าที่บริษัทฯ จึงจะสามารถออกนอกบริษัทฯ ได้</p>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -493,7 +499,7 @@ export default {
             printWindow.document.write('div { max-width: 72.1mm; margin: 0 auto; padding-right: 1mm;}');
             printWindow.document.write('footer { position: fixed; bottom: 0; width: 100%; text-align: center; }');
             printWindow.document.write('.v-row { display: flex; flex-wrap: wrap; justify-content: space-between; }');
-            printWindow.document.write('.v-col { flex: 0 0 45%; margin-bottom: 5px; }'); // จัดระเบียบ v-col
+            printWindow.document.write('.v-col { flex: 0 0 100%; }'); // จัดระเบียบ v-col
             printWindow.document.write('</style>');
             printWindow.document.write('</head><body>');
             printWindow.document.write(formContent);
@@ -814,17 +820,9 @@ export default {
                     showConfirmButton: true,
                     confirmButtonColor: '#E53935',
                 })
-            } else if (msgObj.Status == -16) {
+            } else if (msgObj.Status === -7) {
                 Swal.fire({
-                    title: 'ไม่พบบัตรในเครื่องอ่าน !',
-                    text: 'กรุณาลองใหม่อีกครั้ง',
-                    icon: 'warning',
-                    showConfirmButton: true,
-                    confirmButtonColor: '#E53935',
-                })
-            } else if (msgObj.Status == -7) {
-                Swal.fire({
-                    title: 'บัตรที่อ่านไม่ใชบัตรประชชน !',
+                    title: 'บัตรที่อ่านไม่ใช่บัตรประชาชน !',
                     text: 'กรุณาลองใหม่อีกครั้ง',
                     icon: 'error',
                     showConfirmButton: true,
@@ -955,7 +953,8 @@ export default {
             resetSendData,
             dateFormatValue,
             dateFormatDayandTime,
-            imgService
+            imgService,
+            printForm
         }
     },
     components: {

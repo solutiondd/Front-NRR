@@ -41,7 +41,38 @@
                     </v-col>
                 </v-row>
             </v-card>
-            <v-card class="mt-5 pa-5" width="100%">
+            <v-card class="pa-5 mt-5" width="100%">
+                <h3 class="pb-5">ข้อมูลรถผู้ติดต่อที่ไม่ได้ลงทะเบียน</h3>
+                <v-row>
+                    <v-col cols="12" sm="6">
+                        <v-card class="pa-3" color="#66BB6A">
+                            <p style="font-size:18px;">ลงทะเบียนเวลาเข้า</p>
+                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.registered }} คัน</p>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-card class="pa-3" color="#E53935">
+                            <p style="font-size:18px;">ลงทะเบียนเวลาออก</p>
+                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.exited }} คัน</p>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-card class="pa-3" color="#757575">
+                            <p style="font-size:18px;">ไม่ได้ลงทะเบียนเวลาเข้า</p>
+                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.notRegistered }} คัน</p>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-card class="pa-3" color="primary">
+                            <p style="font-size: 18px;">คงเหลือในพื้นที่</p>
+                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.registered -
+                                dataDashBoard.exited }} คัน</p>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-card>
+
+            <!-- <v-card class="pa-5 mt-5" width="100%">
                 <h3 class="pb-5">ข้อมูลทั้งหมด</h3>
                 <v-row>
                     <v-col cols="12" sm="6" color="primary">
@@ -57,22 +88,40 @@
                             </p>
                         </v-card>
                     </v-col>
-
                 </v-row>
-            </v-card>
+            </v-card> -->
         </v-col>
         <v-col cols="12">
             <v-card class="pa-5" width="100%">
+                <h3 class="pb-5">ข้อมูลทั้งหมด</h3>
+                <v-row>
+                    <v-col cols="12" sm="6" color="primary">
+                        <v-card class="pa-3" color="#66BB6A">
+                            <p style="font-size: 18px;">รถพนักงานที่ลงทะเบียน (คัน)</p>
+                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.totalMember }} คัน</p>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-card class="pa-3" color="#F57F17">
+                            <p style="font-size: 18px;">รถผู้มาติดต่อที่ลงทะเบียน (คัน)</p>
+                            <p style="font-size: 22px; font-weight: bold;">{{ dataDashBoard.totalVisitor }} คัน
+                            </p>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-card>
+
+            <!-- <v-card class="pa-5" width="100%">
                 <h3 class="pb-5">ข้อมูลรถผู้ติดต่อคงเหลือในพื้นที่</h3>
                 <v-row>
-                    <v-col cols="12" color="primary">
+                    <v-col cols="12" sm="12">
                         <v-card class="pa-3" color="#757575">
                             <p style="font-size: 18px;">รถผู้ติดต่อคงเหลือในพื้นที่ (คัน)</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.currentVisitor }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>
-            </v-card>
+            </v-card> -->
         </v-col>
     </v-row>
 </template>
@@ -294,8 +343,10 @@ export default {
 
 <style>
 .chart-container {
-    width: 85%;
-    height: 385px;
+    width: 100%;
+    height: 490px;
+    justify-content: center;
+    align-content: center;
 }
 
 /* เอาสีฟอนต์ของ canvas เป็นสีขาว */
