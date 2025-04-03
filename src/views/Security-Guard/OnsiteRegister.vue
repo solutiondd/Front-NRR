@@ -1,16 +1,18 @@
 <template>
     <v-container fluid class="d-flex pa-0">
-        <v-sheet width="22%" height="93vh" class="pa-4 overflow-y-auto">
-            <h2 class="text-h5 font-weight-bold mb-4">🚗 รายการล่าสุด</h2>
-            <v-list class="pa-0">
+        <v-sheet width="22%" height="100vh" class="pa-4 overflow-y-auto" style="background-color: #EEEEEE;">
+            <h2 class="text-h5 font-weight-bold mb-4" style="color:black ;">🚗 รายการล่าสุด</h2>
+            <v-list class="pa-0" style="background-color: #EEEEEE;">
                 <v-list-item v-for="(entry, index) in recentEntries" :key="index" @click="selectCar(entry)"
                     class="pa-0 mb-3">
-                    <v-card class="pa-2 cursor-pointer" style="background-color:  #424242;">
-                        <v-row>
+                    <v-card class="pa-2 cursor-pointer" style="background-color:  #FAFAFA; color: grey;">
+                        <v-row style="color:black;">
                             <v-col cols="12" class="pa-3 pb-0">
                                 <v-img :src="baseUrl + entry.platesPhoto2" width="100%" class="rounded-lg"></v-img>
                                 <v-card-title class="px-2">
-                                    <p style="font-size: 1.1rem;">ทะเบียน : {{ entry.licensePlate.License }}</p>
+                                    <p style="font-size: 1.1rem;">ทะเบียน : {{ entry.licensePlate.License }} <span
+                                            style="color: grey;font-size: 0.9rem;">({{
+                                                entry.msg }})</span> </p>
                                 </v-card-title>
                             </v-col>
                             <v-row class="px-2" style="position: relative;">
@@ -37,35 +39,80 @@
             </v-list>
         </v-sheet>
 
-        <v-sheet width="50%" height="93vh" class="d-flex pt-5 align-start justify-center bg-grey-darken-4">
-            <v-card v-if="selectedCar" style="background-color:  #424242;" width="95%" class="pa-4">
-                <div class="pa-2 text-center mb-3" style="border-radius: 10px; background-color: #212121;">
-                    <p class="" v-if="selectedCar.msg === 'บุคคลภายนอก'"
-                        style="font-size: 3rem; color: #E53935; font-weight: bold;">
-                        {{ selectedCar.msg }}
-                        <!-- <span style="font-size: 1.5rem; color: #F57F17;">(กรุณาลงทะเบียน)</span> -->
-                    </p>
-                    <p class="" v-if="selectedCar.msg === 'บุคคลภายใน'"
-                        style="font-size: 3rem; color: #66BB6A; font-weight: bold;">
-                        {{ selectedCar.msg }}
-                    </p>
-                    <p class="" v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                        style="font-size: 3rem; color: #F57F17; font-weight: bold;">ผู้ติดต่อที่ลงทะเบียน</p>
+        <v-sheet width="50%" height="100vh" class="d-flex pt-5 align-start justify-center"
+            style="background-color: #EEEEEE;">
+            <v-card v-if="selectedCar" style="background-color:  #FAFAFA; color: grey;" width="95%">
+                <v-toolbar density="comfortable" color="primary">
+                    <v-toolbar-title style="display: flex; justify-content: start;">
+                        <p style="font-size: 27px; font-weight: bold; height: 50px;" class="d-flex align-center">
+                            <v-icon size="small" class="mr-2">mdi-car</v-icon>ข้อมูลรถ
+                        </p>
+                    </v-toolbar-title>
+                </v-toolbar>
+                <div class="pa-5">
+                    <v-row class="d-flex align-center px-3 pb-3 pt-5" style="color: black;">
+                        <!-- <v-col cols="12">
+                            <p style="font-size: 2rem; font-weight: bold;"
+                                class="d-flex align-center justify-center pb-5">
+                                <v-icon icon="mdi-car" size="small" class="mr-2" color="primary"></v-icon>ข้อมูลรถ
+                            </p>
+                        </v-col> -->
+                        <v-col cols="4" class="text-start pb-5 pt-0">
+                            <p style="font-size: 1.4rem;">ทะเบียนรถ</p>
+                        </v-col>
+                        <v-col cols="8" class="pa-0 ">
+                            <v-text-field v-model="sendData.licensePlate.License" placeholder="ระบุทะเบียนรถ"
+                                variant="outlined" density="comfortable" required
+                                :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']"></v-text-field>
+                        </v-col>
+                        <v-col cols="4" class="text-start py-2 pt-0">
+                            <p style="font-size: 1.4rem;">เวลาเข้า</p>
+                        </v-col>
+                        <v-col cols="8" class="pa-0 py-2">
+                            <v-text-field readonly v-model="formatTime" placeholder="เวลาเข้า" variant="outlined"
+                                density="comfortable"></v-text-field>
+                        </v-col>
+                        <v-col cols="4" class="pb-5 pt-0">
+                            <p style="font-size: 1.4rem;">ประเภทยานพาหนะ</p>
+                        </v-col>
+                        <v-col cols="8" class="pa-0">
+                            <v-select v-model="sendData.vehicleType" placeholder="ระบุประเภทยานพาหนะ" variant="outlined"
+                                density="comfortable" :items="vehicleList" item-title="name" item-value="value" required
+                                :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
+                        </v-col>
+                    </v-row>
+                    <v-divider :thickness="2"></v-divider>
+                    <div class="pt-5 mb-3">
+                        <p class="d-flex align-center justify-center" v-if="selectedCar.msg === 'บุคคลภายนอก'"
+                            style="font-size: 3.5rem; background-color: #E53935;color:#FAFAFA ; font-weight: bold;height: 100px;border-radius: 10px;">
+                            {{ selectedCar.msg }}
+                            <!-- <span style="font-size: 1.5rem; color: #F57F17;">(กรุณาลงทะเบียน)</span> -->
+                        </p>
+                        <p class="d-flex align-center justify-center" v-if="selectedCar.msg === 'บุคคลภายใน'"
+                            style="font-size: 3.5rem;background-color: #66BB6A; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
+                            {{ selectedCar.msg }}
+                        </p>
+                        <p class="d-flex align-center justify-center"
+                            v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                            style="font-size: 3.5rem;background-color: #F57F17; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
+                            ผู้ติดต่อที่ลงทะเบียน</p>
+                    </div>
 
-                </div>
-                <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img>
-                <v-row class="pt-1">
-                    <v-col cols="6" class="pt-5">
-                        <v-img :src="baseUrl + selectedCar.platesPhoto2" width="100%"></v-img>
-                    </v-col>
-                    <v-col cols="6" class="d-flex align-center justify-center">
-                        <v-row>
-                            <v-col cols="12" class="pa-0 text-center">
-                                <h1 style="font-size: 4rem;" class="font-weight-bold">
-                                    {{ selectedCar.licensePlate.License }}
-                                </h1>
-                            </v-col>
-                            <!-- <v-col cols="12" class="pa-0 text-center">
+                    <v-row class="pt-1">
+                        <v-col cols="6" class="">
+                            <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img>
+                        </v-col>
+                        <v-col cols="6" class="">
+                            <v-img :src="baseUrl + selectedCar.platesPhoto2" width="%"></v-img>
+                        </v-col>
+                        <v-col cols="12" class="d-flex align-center justify-center">
+                            <v-row>
+                                <v-col cols="12" class="pa-0 text-center">
+                                    <h1 style="font-size: 3.5rem; color: black;" class="font-weight-bold">
+                                        ทะเบียน : {{ selectedCar.licensePlate.License }}
+                                    </h1>
+                                </v-col>
+                                <!-- <v-col cols="12" class="pa-0 text-center">
                                 <p v-if="selectedCar.msg === 'บุคคลภายนอก'" style="font-size: 2rem; color: #E53935;">
                                     {{ selectedCar.msg }} <br />
                                     <span style="font-size: 1.5rem; color: #F57F17;">(กรุณาลงทะเบียน)</span>
@@ -76,30 +123,36 @@
                                 <p v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
                                     style="font-size: 2rem; color: #F57F17;">ผู้ติดต่อที่ลงทะเบียน</p>
                             </v-col> -->
-                        </v-row>
-                    </v-col>
-                </v-row>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                </div>
             </v-card>
         </v-sheet>
 
-        <v-sheet width="35%" height="93vh" class="pa-0 pr-3 pt-5 overflow-y-auto">
-            <v-toolbar density="compact" style="background-color: #F57F17; font-size: 20px;">
+        <v-sheet width="35%" height="100vh" class="pa-0 pr-3 pt-5 overflow-y-auto" style="background-color: #EEEEEE;">
+            <v-toolbar density="comfortable" style="background-color: #F57F17; font-size: 20px;">
                 <v-toolbar-title>
                     <p style="font-size: 22px; font-weight: bold;" class="d-flex align-center">
                         <v-icon size="small" class="mr-2">mdi-file-document-edit-outline</v-icon>ลงทะเบียน
                     </p>
                 </v-toolbar-title>
+                <template v-slot:extension>
+                    <v-tabs v-model="activeTab">
+                        <v-tab value="id" text="บัตรประชาชน"></v-tab>
+                        <v-tab value="license" text="ใบขับขี่"></v-tab>
+                    </v-tabs>
+                </template>
             </v-toolbar>
-            <v-card class="pa-4" style="background-color: #424242;">
-                <v-form fast-fail @submit.prevent="submit">
-                    <v-row class="d-flex align-center px-3 pb-7">
+            <v-card class="pa-4" style="background-color: #FAFAFA; color: black;">
+                <v-tabs-window v-model="activeTab">
+                    <!-- //NOTE - form ของ บัตรประชาชน -->
+                    <v-tabs-window-item value="id">
+                        <v-form fast-fail @submit.prevent="submit">
+                            <!-- <v-row class="d-flex align-center px-3 pb-7">
                         <v-col cols="12">
                             <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
                                 <v-icon icon="mdi-car" size="small" class="mr-2"></v-icon>ข้อมูลรถ
-                                <!-- <v-spacer>
-                                </v-spacer>
-                                <v-btn icon="mdi-refresh" size="small" color="grey-darken-4"
-                                    @click="resetSendData()"></v-btn> -->
                             </p>
                         </v-col>
                         <v-col cols="5" class="text-start pb-5 pt-0">
@@ -126,66 +179,126 @@
                                 :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
                         </v-col>
                     </v-row>
-                    <v-divider :thickness="2"></v-divider>
-                    <v-row class="d-flex align-top pt-4 pb-2 px-3">
-                        <v-col v-if="loading" class="pa-2">
-                            <div>
-                                <v-progress-linear color="cyan" indeterminate></v-progress-linear>
-                            </div>
-                        </v-col>
-                        <v-col cols="12" class="pb-4 pr-0">
-                            <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
-                                <v-icon icon="mdi-card-account-details" size="small" class="mr-2"></v-icon>ข้อมูลคนขับ
-                                <v-spacer></v-spacer>
-                                <v-btn color="primary" @click="readIDCard()"><v-icon
-                                        class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn>
-                                <v-btn :ripple="false" class="ml-2" color="white" variant="text" icon="mdi-refresh"
-                                    size="small" @click="resetSendData"></v-btn>
-                            </p>
-                        </v-col>
-                        <v-col cols="5">
-                            <p>รูปภาพ</p>
-                        </v-col>
-                        <v-col cols="7" class="d-flex align-center justify-center">
-                            <img id="Photo" src="../../assets/Logo-Sunsweet-Final_White.svg" alt="image"
-                                style="width: 130px;">
-                        </v-col>
-                        <v-col cols="5" class="text-start pt-2">
-                            <p>เลขประจำตัวประชาชน</p>
-                        </v-col>
-                        <v-col cols="7" class="pa-0 pb-2">
-                            <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined" density="compact"
-                                v-model="sendData.identityNumber"
-                                :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
-                                required maxlength="13"></v-text-field>
-                        </v-col>
-                        <v-col cols="5" class="text-start pt-2">
-                            <p>ชื่อ-นามสกุล</p>
-                        </v-col>
-                        <v-col cols="7" class="pa-0 pb-2">
-                            <v-text-field density="compact" variant="outlined" placeholder="ระบุชื่อ-นามสกุล"
-                                v-model="sendData.name"
-                                :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
-                                required></v-text-field>
-                        </v-col>
-                        <v-col cols="5" class="pt-0">
-                            <p>ที่อยู่</p>
-                        </v-col>
-                        <v-col cols="7" class="pa-0 d-flex align-top">
-                            <v-textarea variant="outlined" placeholder="ระบุที่อยู่" rows="2" v-model="sendData.address"
-                                :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']" required
-                                auto-grow></v-textarea>
-                        </v-col>
-                    </v-row>
-                    <v-divider class="mt-2" :thickness="2"></v-divider>
-                    <v-card-actions>
-                        <CheckOut />
-                        <v-btn variant="flat"
-                            :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                            type="submit" color="#66BB6A" width="50%" class="mt-4">บันทึกขาเข้า
-                            <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
-                    </v-card-actions>
-                </v-form>
+                    <v-divider :thickness="2"></v-divider> -->
+                            <v-row class="d-flex align-top pb-2 px-3">
+                                <v-col v-if="loading" class="pa-2">
+                                    <div>
+                                        <v-progress-linear color="cyan" indeterminate></v-progress-linear>
+                                    </div>
+                                </v-col>
+                                <v-col cols="12" class="pb-4 pr-0">
+                                    <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
+                                        <v-icon icon="mdi-card-account-details" size="small"
+                                            class="mr-2"></v-icon>ข้อมูลคนขับ
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="primary" @click="readIDCard()"><v-icon
+                                                class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn>
+                                        <v-btn :ripple="false" class="ml-2" color="black" variant="text"
+                                            icon="mdi-refresh" size="small" @click="resetSendData"></v-btn>
+                                    </p>
+                                </v-col>
+                                <v-col cols="5">
+                                    <p>รูปภาพ</p>
+                                </v-col>
+                                <v-col cols="7" class="d-flex align-center justify-center">
+                                    <img id="Photo" src="../../assets/Logo-Sunsweet-Final.svg" alt="image"
+                                        style="width: 130px;">
+                                </v-col>
+                                <v-col cols="5" class="text-start pt-2">
+                                    <p>เลขประจำตัวประชาชน</p>
+                                </v-col>
+                                <v-col cols="7" class="pa-0 pb-2">
+                                    <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined"
+                                        density="compact" v-model="sendData.identityNumber"
+                                        :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
+                                        required maxlength="13"></v-text-field>
+                                </v-col>
+                                <v-col cols="5" class="text-start pt-2">
+                                    <p>ชื่อ-นามสกุล</p>
+                                </v-col>
+                                <v-col cols="7" class="pa-0 pb-2">
+                                    <v-text-field density="compact" variant="outlined" placeholder="ระบุชื่อ-นามสกุล"
+                                        v-model="sendData.name"
+                                        :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
+                                        required></v-text-field>
+                                </v-col>
+                                <v-col cols="5" class="pt-0">
+                                    <p>ที่อยู่</p>
+                                </v-col>
+                                <v-col cols="7" class="pa-0 d-flex align-top">
+                                    <v-textarea variant="outlined" placeholder="ระบุที่อยู่" rows="2"
+                                        v-model="sendData.address"
+                                        :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']" required
+                                        auto-grow></v-textarea>
+                                </v-col>
+                            </v-row>
+                            <v-divider class="mt-2" :thickness="2"></v-divider>
+                            <v-card-actions class="px-0">
+                                <v-btn variant="flat"
+                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                    type="submit" color="#66BB6A" width="100%" class="mt-4" size="large">บันทึกขาเข้า
+                                    <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
+                            </v-card-actions>
+                            <CheckOut />
+                        </v-form>
+                    </v-tabs-window-item>
+
+                    <!-- //NOTE - form ของ ใบขับบี่ -->
+                    <v-tabs-window-item value="license">
+                        <v-form fast-fail @submit.prevent="submitBylicenseId">
+                            <v-row class="d-flex align-top pb-2 px-3">
+                                <v-col cols="12" class="pb-4 pr-0">
+                                    <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
+                                        <v-icon icon="mdi-card-account-details" size="small"
+                                            class="mr-2"></v-icon>ข้อมูลคนขับ
+                                        <v-spacer></v-spacer>
+                                        <v-btn :ripple="false" class="ml-2" color="black" variant="text"
+                                            icon="mdi-refresh" size="small" @click="resetSendData"></v-btn>
+                                    </p>
+                                </v-col>
+                                <v-col cols="5" class="text-start pt-2">
+                                    <p>เลขประจำตัวประชาชน</p>
+                                </v-col>
+                                <v-col cols="7" class="pa-0 pb-2">
+                                    <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined"
+                                        density="compact" v-model="sendData.identityNumber"
+                                        :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
+                                        required maxlength="13"></v-text-field>
+                                </v-col>
+                                <v-col cols="5" class="text-start pt-2">
+                                    <p>ชื่อ-นามสกุล</p>
+                                </v-col>
+                                <v-col cols="7" class="pa-0 pb-2">
+                                    <v-text-field density="compact" variant="outlined" placeholder="ระบุชื่อ-นามสกุล"
+                                        v-model="sendData.name"
+                                        :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
+                                        required></v-text-field>
+                                </v-col>
+                                <v-col cols="5" class="pt-0">
+                                    <p>เลขที่ใบขับขี่</p>
+                                </v-col>
+                                <v-col cols="7" class="pa-0 d-flex align-top">
+                                    <v-text-field density="compact" variant="outlined" placeholder="ระบุเลขที่ใบขับขี่"
+                                        v-model="sendData.licenseId"
+                                        :rules="sendData.licenseId ? [] : [v => !!v || 'โปรดระบุเลขที่ใบขับขี่']"
+                                        required></v-text-field>
+                                </v-col>
+                                <v-col class="pa-0">
+                                    <v-textarea class="hidden-textarea" auto-grow ref="inputField"
+                                        v-model="dataLicense"></v-textarea>
+                                </v-col>
+                            </v-row>
+                            <v-divider class="mt-2" :thickness="2"></v-divider>
+                            <v-card-actions class="px-0">
+                                <v-btn variant="flat"
+                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                    type="submit" color="#66BB6A" width="100%" class="mt-4" size="large">บันทึกขาเข้า
+                                    <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
+                            </v-card-actions>
+                            <CheckOut />
+                        </v-form>
+                    </v-tabs-window-item>
+                </v-tabs-window>
             </v-card>
         </v-sheet>
     </v-container>
@@ -301,7 +414,7 @@
 </template>
 
 <script>
-import { ref, onMounted, toRaw, nextTick } from 'vue'
+import { ref, onMounted, toRaw, nextTick, watch } from 'vue'
 import { openDB } from 'idb'
 import { formatitemdevice, dateFormat, dateFormatValue, dateFormatDayandTime } from '../../function/day'
 import Swal from "sweetalert2";
@@ -322,13 +435,100 @@ export default {
         const sendData = ref({
             msg: '',
             licensePlate: { License: '' },
-            vehicleType: null,
+            vehicleType: 'TRUCK',
             time: new Date(),
             name: '',
             identityNumber: '',
             address: '',
             image: null,
+            licenseId: '',
         })
+
+        const dataLicense = ref('');
+        const inputField = ref(null);
+        const activeTab = ref({
+            id: true,
+            license: false,
+        });
+
+        const sendDataLicense = ref({
+            name: '',
+            identityNumber: '',
+            licenseId: '',
+        })
+
+
+        let timer = null;
+
+        watch(activeTab, (newVal) => {
+            if (newVal === 'license') {
+                // หน่วงเวลาก่อน focus เล็กน้อย เผื่อ Vuetify render UI ยังไม่เสร็จ
+                setTimeout(() => {
+                    inputField.value?.focus();
+                }, 100);
+            }
+        });
+
+        watch(dataLicense, (newVal) => {
+
+            console.log("📌 dataLicense เปลี่ยนค่า:", newVal);
+            // ถ้ามีการเปลี่ยนค่าใหม่ ให้ยกเลิกการทำงานของฟังก์ชันก่อนหน้า
+            clearTimeout(timer);
+
+            timer = setTimeout(() => {
+                if (newVal) {
+                    parseDriverLicenseData(newVal);
+                }
+            }, 800);
+        });
+
+        // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
+        // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
+        const parseDriverLicenseData = (input) => {
+            const lines = input.split("\n");
+
+            for (const line of lines) {
+                // ตรวจสอบและแยกชื่อ-นามสกุล
+                if (line.startsWith("%")) {
+                    const match = line.match(/\^([A-Za-z]+)\$([A-Za-z]+)\$/);
+                    if (match) {
+                        sendData.value.name = `${match[2]} ${match[1]}`;
+                    }
+                }
+
+                // ตรวจสอบและแยกเลขประจำตัวประชาชน
+                else if (line.startsWith(";")) {
+                    const match = line.match(/;600764(\d{13})=/);
+                    if (match) {
+                        sendData.value.identityNumber = match[1];
+                    }
+                }
+
+                // ตรวจสอบและแยกเลขที่ใบขับขี่ (ปรับ regex ให้จับเลขที่ใบขับขี่ในกรณีนี้)
+                else if (line.startsWith("+")) {
+                    // ปรับ regex ให้ยืดหยุ่นมากขึ้นในการจับเลขที่ใบขับขี่
+                    const match = line.match(/(\d{7,8})\s*\d+/);
+                    if (match) {
+                        sendData.value.licenseId = match[1];
+                    }
+                }
+            }
+
+            console.log("✅ แยกค่าสำเร็จ:", {
+                name: sendDataLicense.value.name,
+                identityNumber: sendDataLicense.value.identityNumber,
+                licenseId: sendDataLicense.value.licenseId,
+            });
+
+            // ล้างค่าใน text-area หลังจากแยกค่าเสร็จ
+            dataLicense.value = "";
+
+            // โฟกัสกลับไปที่ช่อง input
+            setTimeout(() => {
+                inputField.value?.focus();
+            }, 100);
+        };
+
         let ScreenSocket = null
 
         // 👉 เปิดหรือสร้างฐานข้อมูล IndexedDB
@@ -358,8 +558,6 @@ export default {
 
         // 👉 ดึงข้อมูลของวันนี้จาก IndexedDB
         const loadTodayHistory = async () => {
-            // await clearOldHistory();
-
             const db = await initDB();
             const tx = db.transaction('history', 'readonly');
             const store = tx.objectStore('history');
@@ -367,12 +565,14 @@ export default {
 
             const today = new Date().toISOString().split('T')[0];
 
+            // 🔥 กรองเฉพาะรายการที่ msg เป็น "บุคคลภายนอก"
+            const filteredEntries = allEntries.filter(entry => entry.msg === "บุคคลภายนอก");
+
             // 🔥 กรองข้อมูลซ้ำก่อนแสดงผล
             const uniqueEntries = [];
             const seen = new Set();
 
-            allEntries
-                // .filter(entry => entry.date === today)
+            filteredEntries
                 .sort((a, b) => b.timeStamp - a.timeStamp) // ใหม่สุดอยู่บน
                 .forEach(entry => {
                     const key = entry.licensePlate.License + entry.timeStamp;
@@ -382,8 +582,10 @@ export default {
                     }
                 });
 
-            recentEntries.value = uniqueEntries; // ✅ แสดงเฉพาะรายการที่ไม่ซ้ำ
-        }
+            recentEntries.value = uniqueEntries; // ✅ แสดงเฉพาะรายการที่ไม่ซ้ำและตรงกับเงื่อนไข
+
+            selectedCar.value = uniqueEntries[0];
+        };
 
         // 👉 บันทึกข้อมูลใหม่ลง IndexedDB
         const saveHistory = async (newEntry) => {
@@ -397,17 +599,18 @@ export default {
             // 🔥 ดึงข้อมูลทั้งหมดในวันนี้
             const existingEntries = await store.getAll();
 
-            // 🛑 ตรวจสอบว่ามีทะเบียนรถนี้อยู่ในวันนี้หรือยัง
+            // 🛑 ตรวจสอบว่ามีทะเบียนรถนี้อยู่ในวันนี้หรือยัง + msg ต้องเป็น "บุคคลภายนอก"
             const isDuplicate = existingEntries.some(entry =>
                 entry._id === newEntry._id
             );
 
-            if (!isDuplicate) {
+            // ✅ เพิ่มเงื่อนไขให้บันทึกเฉพาะ "บุคคลภายนอก"
+            if (!isDuplicate && newEntry.msg === "บุคคลภายนอก") {
                 const dataWithExpireTime = { ...newEntry, expireTime };
-                await store.add(dataWithExpireTime); // ✅ บันทึกเฉพาะข้อมูลใหม่ที่ไม่ซ้ำ
+                await store.add(dataWithExpireTime); // ✅ บันทึกเฉพาะข้อมูลใหม่ที่ตรงเงื่อนไข
                 loadTodayHistory(); // โหลดข้อมูลใหม่หลังเพิ่มรายการ
             }
-        }
+        };
 
         const connectScreen = () => {
             const token = import.meta.env.VITE_ACCESS_TOKEN_WS
@@ -426,8 +629,8 @@ export default {
                             date: new Date().toISOString().split('T')[0]
                         };
 
-                        selectedCar.value = newEntry; // อัปเดตแถวกลาง
-
+                        // selectedCar.value = newEntry; // อัปเดตแถวกลาง
+                        console.log(newEntry)
                         await saveHistory(newEntry);
                     }
                 } catch (error) {
@@ -518,6 +721,7 @@ export default {
         const submit = async (event) => {
             const res = await event
             if (res.valid === true) {
+                console.log('ทำงานจ้า')
                 const formdata = new FormData();
                 formdata.append('image', sendData.value.image)
                 await imgService.uploadimg(formdata).then(async (res) => {
@@ -538,45 +742,42 @@ export default {
                             cate: 'stranger',
                             personImgUrl: res.data.filePath,
                             cdataId: sendData.value._id,
-                            timeStamp: sendData.value.time
+                            timeStamp: sendData.value.time,
                         }
                         await lp.CreateLP(park, data, token).then(async (res) => {
-                            if (res.message === 'ok') {
+                            if (res.message === 'ok' && res.data.message === 'This license has been added') {
                                 Swal.fire({
                                     icon: 'success',
                                     title: `บันทึกข้อมูลสำเร็จ!`,
-                                    toast: true,
-                                    position: 'top-end',
-                                    showConfirmButton: false,
-                                    timer: 3000,
-                                    timerProgressBar: true,
                                 });
                                 await printForm();
                                 await deleteFromIndexedDB(sendData.value.id);
                                 sendData.value = {
                                     msg: '',
                                     licensePlate: { License: '' },
-                                    vehicleType: null,
+                                    vehicleType: 'TRUCK',
                                     time: new Date(),
                                     name: '',
                                     identityNumber: '',
                                     address: '',
                                 };
-                                document.getElementById('Photo').src = "/Logo-Sunsweet-Final_White.svg";
+                                document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
                             } else if (res.data.message === 'validate error') {
                                 Swal.fire({
                                     title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
                                     icon: 'warning',
                                 })
-                            } else if (res.data.message === 'This license has been added') {
-                                Swal.fire({
-                                    title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
-                                    text: 'กรุณาลองใหม่อีกครั้ง',
-                                    icon: 'warning',
-                                    showConfirmButton: true,
-                                    confirmButtonColor: '#E53935',
-                                })
-                            } else {
+                            }
+                            // else if (res.data.message === 'This license has been added') {
+                            //     Swal.fire({
+                            //         title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
+                            //         text: 'กรุณาลองใหม่อีกครั้ง',
+                            //         icon: 'warning',
+                            //         showConfirmButton: true,
+                            //         confirmButtonColor: '#E53935',
+                            //     })
+                            // } 
+                            else {
                                 Swal.fire({
                                     icon: 'warning',
                                     title: `มีบางอย่างผิดพลาด !`,
@@ -593,7 +794,64 @@ export default {
                             title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
                             text: 'กรุณาลองใหม่อีกครั้ง',
                             icon: 'warning',
+                        });
+                        console.log("Error : ", res.data)
+                    }
+                })
+            }
+        }
+
+        const submitBylicenseId = async (event) => {
+            const res = await event
+            if (res.valid === true) {
+                const token = localStorage.getItem('token');
+                const park = store.state.park;
+                const data = {
+                    guestName: sendData.value.name,
+                    licensePlate: sendData.value.licensePlate.License,
+                    licensePlateProvince: '',
+                    start: dateFormatValue(sendData.value.time),
+                    listType: 'fixedlist',
+                    expire: '2025-12-31',
+
+                    identityNumber: sendData.value.identityNumber,
+                    vehicleType: sendData.value.vehicleType,
+                    cate: 'stranger',
+                    cdataId: sendData.value._id,
+                    timeStamp: sendData.value.time,
+
+                    driverLicenseId: sendData.value.licenseId
+                }
+                console.log("Data in submit by licenseId", data)
+                await lp.CreateLP(park, data, token).then(async (res) => {
+                    if (res.message === 'ok' || res.data.message === 'This license has been added') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `บันทึกข้อมูลสำเร็จ!`,
+                        });
+                        await printForm();
+                        await deleteFromIndexedDB(sendData.value.id);
+                        sendData.value = {
+                            msg: '',
+                            licensePlate: { License: '' },
+                            vehicleType: 'TRUCK',
+                            time: new Date(),
+                            name: '',
+                            identityNumber: '',
+                            address: '',
+                        };
+                        document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    } else if (res.data.message === 'validate error') {
+                        Swal.fire({
+                            title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                            icon: 'warning',
                         })
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `มีบางอย่างผิดพลาด !`,
+                            text: 'กรุณาลองใหม่อีกครั้ง',
+                        });
                         console.log("Error : ", res.data)
                     }
                 })
@@ -689,28 +947,28 @@ export default {
             wSocket.send(json_Str);
         }
 
-        const GetAutoReadOptions = () => {
-            const JS_OBJ = {
-                command: "GetAutoReadOptions",
-            };
-            const jsonStr = JSON.stringify(JS_OBJ);
-            wSocketSend(jsonStr);
-        }
+        // const GetAutoReadOptions = () => {
+        //     const JS_OBJ = {
+        //         command: "GetAutoReadOptions",
+        //     };
+        //     const jsonStr = JSON.stringify(JS_OBJ);
+        //     wSocketSend(jsonStr);
+        // }
 
-        const setAutoReadOptions = () => {
-            const JS_OBJ = {
-                Command: "SetAutoReadOptions",
-                AutoRead: true,
-                IDNumberRead: false,
-                IDTextRead: true,
-                IDATextRead: false,
-                IDPhotoRead: true,
-            };
-            const jsonStr = JSON.stringify(JS_OBJ);
-            console.log("auto setup : ", jsonStr);
-            wSocketSend(jsonStr);
-            GetAutoReadOptions();
-        }
+        // const setAutoReadOptions = () => {
+        //     const JS_OBJ = {
+        //         Command: "SetAutoReadOptions",
+        //         AutoRead: true,
+        //         IDNumberRead: false,
+        //         IDTextRead: true,
+        //         IDATextRead: false,
+        //         IDPhotoRead: true,
+        //     };
+        //     const jsonStr = JSON.stringify(JS_OBJ);
+        //     console.log("auto setup : ", jsonStr);
+        //     wSocketSend(jsonStr);
+        //     GetAutoReadOptions();
+        // }
 
         const getReaderlist = () => {
             const JS_OBJ = {
@@ -754,7 +1012,7 @@ export default {
 
             if (msgObj.Message === "AgentStatusE") {
                 if (msgObj.Status === 1) {
-                    setAutoReadOptions();
+                    // setAutoReadOptions();
                     getReaderlist();
                 } else {
                     Swal.fire({
@@ -766,14 +1024,14 @@ export default {
             }
 
             //NOTE - Response หลังจาก อ่านบัตรอัตโนมัติ
-            if (msgObj.Message == "AutoReadIDCardE") {
-                // stopTimer();
-                data.value = JSON.parse(JSON.stringify(msgObj));
-                ReaderData.value = parseIDText(data.value.ID_Text);
-                putimagtoScreen(data.value.ID_Photo);
-                putDatatoSendData(ReaderData.value);
-                console.log("ReaderData : ", ReaderData.value);
-            }
+            // if (msgObj.Message == "AutoReadIDCardE") {
+            //     // stopTimer();
+            //     data.value = JSON.parse(JSON.stringify(msgObj));
+            //     ReaderData.value = parseIDText(data.value.ID_Text);
+            //     putimagtoScreen(data.value.ID_Photo);
+            //     putDatatoSendData(ReaderData.value);
+            //     console.log("ReaderData : ", ReaderData.value);
+            // }
 
             //NOTE - Response หลังจาก กดอ่านบัตร เอง
             if (msgObj.Message == "ReadIDCardR") {
@@ -887,7 +1145,7 @@ export default {
                 );
             } else {
                 // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
-                photo.src = "/Logo-Sunsweet-Final_White.svg";
+                photo.src = "/Logo-Sunsweet-Final.svg";
             }
 
             if (debugFlag) {
@@ -927,13 +1185,15 @@ export default {
         const selectCar = (entry) => {
             selectedCar.value = { ...entry } // กดเลือกรายการ -> อัปเดตแถวกลาง
             sendData.value = JSON.parse(JSON.stringify(entry));
-            document.getElementById('Photo').src = "/Logo-Sunsweet-Final_White.svg";
+            sendData.value.vehicleType = 'TRUCK'
+            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
         }
 
         const resetSendData = () => {
             sendData.value.name = '';
             sendData.value.identityNumber = '';
             sendData.value.address = '';
+            sendData.value.licenseId = '';
         }
 
         return {
@@ -954,7 +1214,12 @@ export default {
             dateFormatValue,
             dateFormatDayandTime,
             imgService,
-            printForm
+            printForm,
+            activeTab,
+            inputField,
+            dataLicense,
+            sendDataLicense,
+            submitBylicenseId
         }
     },
     components: {
@@ -1001,5 +1266,35 @@ export default {
 <style scoped>
 .overflow-y-auto {
     overflow-y: auto;
+}
+
+/* Scrollbar สำหรับ Chrome, Edge, และ Safari */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 10px;
+    /* ปรับขนาด Scrollbar */
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: white;
+    /* เปลี่ยนสีพื้นหลังของ Scrollbar */
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: white;
+    /* เปลี่ยนสีของ Scrollbar */
+    border-radius: 4px;
+    border: 1px solid rgba(128, 128, 128, 0.521);
+    /* เพิ่มเส้นขอบเพื่อให้มองเห็น */
+}
+
+.hidden-textarea {
+    position: absolute;
+    left: -9999px;
+    /* ย้ายออกไปนอกหน้าจอ */
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
 }
 </style>

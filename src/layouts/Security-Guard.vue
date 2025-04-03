@@ -1,6 +1,6 @@
 <template>
     <v-layout :key="$route.path" class="rounded rounded-md">
-        <NavBarSG />
+        <!-- <NavBarSG /> -->
         <v-main>
             <router-view />
         </v-main>

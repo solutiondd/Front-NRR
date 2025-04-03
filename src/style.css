@@ -1,7 +1,7 @@
 /* เปลี่ยนสีพื้นหลังของ SweetAlert */
 .swal2-popup {
-    background-color: #616161 !important; /* พื้นหลังเป็นสี #424242 */
-    color: white !important; /* ข้อความเป็นสีขาว */
+    background-color: #FAFAFA !important; /* พื้นหลังเป็นสี #424242 */
+    color: rgb(97, 97, 97) !important; /* ข้อความเป็นสีขาว */
 }
 
 /* ปรับสีปุ่ม OK (ยืนยัน) */

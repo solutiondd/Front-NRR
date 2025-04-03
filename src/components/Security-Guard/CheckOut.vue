@@ -1,25 +1,25 @@
 <template>
-    <v-btn width="50%" variant="flat" color="red" class="mt-4"><v-icon
+    <v-btn width="100%" variant="flat" color="red" class="mt-2" size="large"><v-icon
             class="mr-2">mdi-tray-arrow-up</v-icon>บันทึกขาออก
         <v-dialog activator="parent" v-model="dialog" max-width="500px" max-height="500px"
             transition="dialog-bottom-transition">
             <v-card>
                 <v-toolbar title="บันทึกข้อมูลขาออก" density="compact" color="red"></v-toolbar>
-                <v-form fast-fail @submit.prevent="submit" class="pa-5 pb-0">
+                <v-form fast-fail @submit.prevent="submit" class="pa-5 pb-0" style="background-color: #F5F5F5;">
                     <v-row class="pa-3">
                         <v-col cols="12" class="pa-0 pb-2">
-                            <h4>ข้อมูลขาออก</h4>
+                            <h4 style="color: black;">ข้อมูลขาออก</h4>
                         </v-col>
-                        <v-card width="100%" class="pa-5 mb-3" color="grey-darken-3">
+                        <v-card width="100%" class="pa-5 mb-3" style="background-color: #FAFAFA;">
                             <v-row class="py-2">
-                                <v-col cols="12" class="px-2 py-0">
+                                <v-col cols="12" class="px-2 py-0" style="color: black;">
                                     <p class="mb-2">รหัสการเข้าออก</p>
                                     <v-text-field ref="inputField" density="compact" variant="outlined"
                                         placeholder="ระบุรหัสบันทึกการเข้า-ออก..." v-model="sendData.TransctionId"
                                         hint="*สแกนคิวอาร์โค้ดจากใบบันทึกการเข้า-ออก" persistent-hint required
                                         :rules="[v => !!v || 'โปรดระบุรหัสบันทึกการเข้า-ออก']"></v-text-field>
                                 </v-col>
-                                <v-col cols="12" class="px-2 pb-0">
+                                <v-col cols="12" class="px-2 pb-0" style="color: black;">
                                     <p class="mb-2">เวลาที่ออก</p>
                                     <v-text-field v-model="formatDate" density="compact" variant="outlined"
                                         placeholder="ระบุเวลาที่ออก..." readonly></v-text-field>
@@ -93,33 +93,34 @@ export default {
                     transactionId: this.sendData.TransctionId,
                     timeStamp: isoDate,
                 }
-                console.log("sendData : ", data)
-                await this.visitor.checkout(data).then(res => {
-                    if (res.message === 'ok') {
-                        this.$swal({
-                            icon: 'success',
-                            title: `บันทึกข้อมูลสำเร็จ!`,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                        this.dialog = false;
-                        this.sendData = {
-                            TransctionId: '',
-                            TransactionTime: new Date(),
-                        }
-                    } else {
-                        this.$swal({
-                            icon: 'warning',
-                            title: `มีบางอย่างผิดพลาด !`,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
+                this.$swal({
+                    title: 'บันทึกข้อมูลขาออกหรือไม่?',
+                    html: `กรุณาตรวจสอบข้อมูลอีกครั้ง !<br><br> รหัสการเข้าออก : ${data.transactionId}<br>เวลาออก : ${this.formatDate}`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'ยืนยัน',
+                    cancelButtonText: 'ยกเลิก'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        console.log("sendData : ", data)
+                        await this.visitor.checkout(data).then(res => {
+                            if (res.message === 'ok') {
+                                this.$swal({
+                                    icon: 'success',
+                                    title: `บันทึกข้อมูลสำเร็จ!`,
+                                });
+                                this.dialog = false;
+                                this.sendData = {
+                                    TransctionId: '',
+                                    TransactionTime: new Date(),
+                                }
+                            } else {
+                                this.$swal({
+                                    icon: 'warning',
+                                    title: `มีบางอย่างผิดพลาด !`,
+                                });
+                            }
+                        })
                     }
                 })
             }
