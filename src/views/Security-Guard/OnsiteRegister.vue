@@ -138,9 +138,13 @@
                     </p>
                 </v-toolbar-title>
                 <template v-slot:extension>
-                    <v-tabs v-model="activeTab">
-                        <v-tab value="id" text="บัตรประชาชน"></v-tab>
-                        <v-tab value="license" text="ใบขับขี่"></v-tab>
+                    <v-tabs v-model="activeTab" align-tabs="center">
+                        <v-tab value="id">
+                            <p style="font-size: 18px; font-weight: bold;">บัตรประชาชน</p>
+                        </v-tab>
+                        <v-tab value="license">
+                            <p style="font-size: 18px; font-weight: bold;">ใบขับขี่</p>
+                        </v-tab>
                     </v-tabs>
                 </template>
             </v-toolbar>
@@ -335,31 +339,36 @@
                         {{ sendData.name }}
                     </span>
                 </p>
-                <p style="font-weight: bold;">บริษัท/หน่วยงาน : </p>
-                <p style="font-weight: bold;">จำนวนคน : </p>
+                <p style="font-weight: bold;">บริษัท/หน่วยงาน : <span
+                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 150px;"></span> </p>
+                <p style="font-weight: bold;">จำนวนคน : <span
+                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 180px;"></span></p>
+
                 <p style="font-weight: bold;">ทะเบียนรถ :
                     <span style="font-weight: 400;">
                         {{ sendData.licensePlate.License }}
                     </span>
                 </p>
-                <p style="font-weight: bold;">ติดต่อแผนก/คุณ : </p>
-                <p style="font-weight: bold;">รายละเอียดกิจธุระ : </p>
+                <p style="font-weight: bold;">ติดต่อแผนก/คุณ : <span
+                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 150px;"></span></p>
+                <p style="font-weight: bold;">รายละเอียดกิจธุระ : <span
+                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 140px;"></span></p>
             </div>
 
             <div>
                 <v-row>
                     <v-col>
-                        <p style="font-size: 12px; text-align: start;margin-top: 2px;margin-bottom: 2px;">
+                        <p style="font-size: 12px; text-align: center;margin-top: 2px;padding-bottom: 5px;">
                             ลงชื่อผู้ติดต่อ</p>
                         <div style="border: 1px solid black;padding: 30px;"></div>
                     </v-col>
                     <v-col>
-                        <p style="font-size: 12px; text-align: start;margin-top: 2px;margin-bottom: 2px;">ลงชื่อ รปภ.
+                        <p style="font-size: 12px; text-align: center;margin-top: 2px;padding-bottom: 5px;">ลงชื่อ รปภ.
                         </p>
                         <div style="border: 1px solid black;padding: 30px;"></div>
                     </v-col>
                     <v-col>
-                        <p style="font-size: 12px; text-align: start;margin-top: 2px;margin-bottom: 2px;">
+                        <p style="font-size: 12px; text-align: center;margin-top: 2px;margin-bottom: 2px;">
                             ลงชื่อผู้รับการติดต่อ</p>
                         <div style="border: 1px solid black;padding: 30px;"></div>
                     </v-col>
@@ -487,43 +496,72 @@ export default {
         const parseDriverLicenseData = (input) => {
             const lines = input.split("\n");
 
+            let foundName = false;
+            let foundId = false;
+            let foundLicenseId = false;
+
             for (const line of lines) {
                 // ตรวจสอบและแยกชื่อ-นามสกุล
-                if (line.startsWith("%")) {
+                if (!foundName && line.startsWith("%")) {
                     const match = line.match(/\^([A-Za-z]+)\$([A-Za-z]+)\$/);
                     if (match) {
                         sendData.value.name = `${match[2]} ${match[1]}`;
+                        foundName = true;
                     }
                 }
 
                 // ตรวจสอบและแยกเลขประจำตัวประชาชน
-                else if (line.startsWith(";")) {
+                else if (!foundId && line.startsWith(";")) {
                     const match = line.match(/;600764(\d{13})=/);
                     if (match) {
                         sendData.value.identityNumber = match[1];
+                        foundId = true;
                     }
                 }
 
-                // ตรวจสอบและแยกเลขที่ใบขับขี่ (ปรับ regex ให้จับเลขที่ใบขับขี่ในกรณีนี้)
-                else if (line.startsWith("+")) {
-                    // ปรับ regex ให้ยืดหยุ่นมากขึ้นในการจับเลขที่ใบขับขี่
+                // ตรวจสอบและแยกเลขที่ใบขับขี่
+                else if (!foundLicenseId && line.startsWith("+")) {
                     const match = line.match(/(\d{7,8})\s*\d+/);
                     if (match) {
                         sendData.value.licenseId = match[1];
+                        foundLicenseId = true;
                     }
                 }
             }
 
+            // 🔍 เงื่อนไข fallback ถ้า pattern ปกติไม่ match:
+            if (!foundId) {
+                const idMatch = input.match(/(\d{13})/);
+                if (idMatch) {
+                    sendData.value.identityNumber = idMatch[1];
+                }
+            }
+
+            if (!foundLicenseId) {
+                const licenseMatch = input.match(/(?:\D|^)(\d{7,8})(?:\D|$)/);
+                if (licenseMatch) {
+                    sendData.value.licenseId = licenseMatch[1];
+                }
+            }
+
+            if (!foundName) {
+                // fallback แบบง่าย: หาชื่อจาก $NAME SURNAME?
+                const nameMatch = input.match(/\$([A-Z]+)\s+([A-Z]+)[^A-Z]?/);
+                if (nameMatch) {
+                    sendData.value.name = `${nameMatch[1]} ${nameMatch[2]}`;
+                }
+            }
+
             console.log("✅ แยกค่าสำเร็จ:", {
-                name: sendDataLicense.value.name,
-                identityNumber: sendDataLicense.value.identityNumber,
-                licenseId: sendDataLicense.value.licenseId,
+                name: sendData.value.name,
+                identityNumber: sendData.value.identityNumber,
+                licenseId: sendData.value.licenseId,
             });
 
-            // ล้างค่าใน text-area หลังจากแยกค่าเสร็จ
+            // ล้าง textarea
             dataLicense.value = "";
 
-            // โฟกัสกลับไปที่ช่อง input
+            // โฟกัสกลับไปที่ input
             setTimeout(() => {
                 inputField.value?.focus();
             }, 100);
@@ -702,7 +740,7 @@ export default {
             printWindow.document.write('div { max-width: 72.1mm; margin: 0 auto; padding-right: 1mm;}');
             printWindow.document.write('footer { position: fixed; bottom: 0; width: 100%; text-align: center; }');
             printWindow.document.write('.v-row { display: flex; flex-wrap: wrap; justify-content: space-between; }');
-            printWindow.document.write('.v-col { flex: 0 0 100%; }'); // จัดระเบียบ v-col
+            printWindow.document.write('.v-col { flex: 0 0 30%; }'); // จัดระเบียบ v-col
             printWindow.document.write('</style>');
             printWindow.document.write('</head><body>');
             printWindow.document.write(formContent);
@@ -745,7 +783,7 @@ export default {
                             timeStamp: sendData.value.time,
                         }
                         await lp.CreateLP(park, data, token).then(async (res) => {
-                            if (res.message === 'ok' && res.data.message === 'This license has been added') {
+                            if (res.message === 'ok' || res.data.message === 'This license has been added') {
                                 Swal.fire({
                                     icon: 'success',
                                     title: `บันทึกข้อมูลสำเร็จ!`,
@@ -1060,10 +1098,10 @@ export default {
                         loading.value = false;
                     }
                 }
-                if (msgObj.Status == -1 || msgObj.Status == -1001) {
+                if (msgObj.Status == -1001) {
                     Swal.fire({
                         title: 'มีบางอย่างผิดพลาด !',
-                        text: 'กรุณาลองใหม่อีกครั้ง',
+                        text: 'กรุณาลองใหม่อีกครั้ง [-1001]',
                         icon: 'error',
                         showConfirmButton: true,
                     })
