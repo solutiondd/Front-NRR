@@ -13,6 +13,7 @@
                         <h3 class="d-flex align-center pb-2"><v-icon size="small" class="mr-2">mdi-account</v-icon>
                             ข้อมูลผู้ลงทะเบียน</h3>
                         <p>ชื่อ-นานสกุล : {{ data.guestName }}</p>
+                        <p>เบอร์โทรศัพท์ : {{ data.visitorTel }}</p>
                         <p>หน่วยงาน : {{ data.agency }}</p>
                         <p>วันที่เข้า : {{ data.start }}</p>
                         <p>เลขบัตรประจำตัว : {{ data.identityNumber }}</p>
@@ -27,9 +28,11 @@
                     </v-col>
                     <v-col cols="12">
                         <h3 class="d-flex align-center pb-2"><v-icon size="small"
-                                class="mr-2">mdi-file-document</v-icon>วัตถุประสงค์
+                                class="mr-2">mdi-file-document</v-icon>ติดต่อ
                         </h3>
-                        <p>{{ data.object }}</p>
+                        <p>ชื่อผู้รับการติดต่อ : {{ data.contactPerson }}</p>
+                        <p>แผนก : {{ data.department }}</p>
+                        <p>วัตถุประสงค์ : {{ data.object }}</p>
                     </v-col>
                 </v-row>
                 <v-card-actions>

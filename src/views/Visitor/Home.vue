@@ -8,89 +8,148 @@
                                 class="pr-3"></v-icon>ลงทะเบียนเข้าพื้นที่
                         </h2>
                     </v-col>
-                    <v-col cols="12" class="pb-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">ชื่อ-นามสกุล (ไม่ต้องมีคำนำหน้า)
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-text-field prepend-inner-icon="mdi-account" density="compact" variant="outlined"
-                            placeholder="ตัวอย่าง. สมชาย ใจดี"
-                            :rules="sendData.guestName ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']" required
-                            v-model="sendData.guestName"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">หน่วยงาน
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-text-field prepend-inner-icon="mdi-domain" density="compact" variant="outlined"
-                            placeholder="ตัวอย่าง. SunSweet"
-                            :rules="sendData.agency ? [] : [v => !!v || 'โปรดระบุหน่วยงาน']" required
-                            v-model="sendData.agency"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">วันที่เข้า
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-text-field prepend-inner-icon="mdi-calendar-today" readonly density="compact"
-                            variant="outlined" placeholder="ตัวอย่าง. 01/01/2025" @click="dialog = true"
-                            :rules="[v => !!v || 'โปรดระบุวันที่เริ่ม']" required v-model="selectedDate">
-                            <v-dialog v-model="dialog" activator="parent" width="auto">
-                                <v-date-picker color="primary" v-model="sendData.date" @click:save="dialog = false"
-                                    @click:cancle="dialog = false"></v-date-picker>
-                            </v-dialog>
-                        </v-text-field>
-                    </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">เลขบัตรประจำตัว
-                            <!-- <span style="color: red;">*</span> -->
+                    <v-col cols="12">
+                        <v-card color="#424242">
+                            <v-col class="pb-0">
+                                <h3 class="d-flex align-center justify-start">
+                                    <v-icon icon="mdi-account" size="small" class="mr-2"></v-icon>
+                                    ข้อมูลผู้ติดต่อ
+                                </h3>
+                            </v-col>
+                            <v-col cols="12" class="pb-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">ชื่อ-นามสกุล (ไม่ต้องระบุคำนำหน้า)
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-account" density="compact" variant="outlined"
+                                    placeholder="ตัวอย่าง. สมชาย ใจดี"
+                                    :rules="sendData.guestName ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']" required
+                                    v-model="sendData.guestName"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">เบอร์โทรศัพท์ผู้มาติดต่อ
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-phone" density="compact" variant="outlined"
+                                    placeholder="ตัวอย่าง. 0987654321"
+                                    :rules="[v => !!v || 'โปรดระบุเบอร์โทรศัพท์ผู้มาติดต่อ']" required
+                                    v-model="sendData.tel" type="number" maxlength="10"
+                                    @input="sendData.tel = sendData.tel.slice(0, 10)"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">หน่วยงาน
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-domain" density="compact" variant="outlined"
+                                    placeholder="ตัวอย่าง. SunSweet"
+                                    :rules="sendData.agency ? [] : [v => !!v || 'โปรดระบุหน่วยงาน']" required
+                                    v-model="sendData.agency"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">วันที่เข้า
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-calendar-today" readonly density="compact"
+                                    variant="outlined" placeholder="ตัวอย่าง. 01/01/2025" @click="dialog = true"
+                                    :rules="[v => !!v || 'โปรดระบุวันที่เริ่ม']" required v-model="selectedDate">
+                                    <v-dialog v-model="dialog" activator="parent" width="auto">
+                                        <v-date-picker color="primary" v-model="sendData.date"
+                                            @click:save="dialog = false" @click:cancle="dialog = false"></v-date-picker>
+                                    </v-dialog>
+                                </v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">เลขบัตรประจำตัว
+                                    <!-- <span style="color: red;">*</span> -->
 
-                            <!-- //NOTE - ถ้ากลับมาบังคับเลขประจำตัวประชาชนให้เติม Code ข้างล่างนี้  -->
-                            <!-- :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
+                                    <!-- //NOTE - ถ้ากลับมาบังคับเลขประจำตัวประชาชนให้เติม Code ข้างล่างนี้  -->
+                                    <!-- :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
                             required -->
-                        </p>
-                        <v-text-field prepend-inner-icon="mdi-card-account-details" density="compact" variant="outlined"
-                            placeholder="ตัวอย่าง. 1234567891011" v-model="sendData.identityNumber"
-                            maxlength="13"></v-text-field>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-card-account-details" density="compact"
+                                    variant="outlined" placeholder="ตัวอย่าง. 1234567891011"
+                                    v-model="sendData.identityNumber" maxlength="13"></v-text-field>
+                            </v-col>
+                        </v-card>
                     </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">ทะเบียนรถ (ไม่ต้องระบุจังหวัด)
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-text-field prepend-inner-icon="mdi-card-text" density="compact" variant="outlined"
-                            placeholder="ตัวอย่าง. กก9999" :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']" required
-                            v-model="sendData.licensePlate"></v-text-field>
+
+                    <v-col cols="12">
+                        <v-card color="#424242">
+                            <v-col class="pb-0">
+                                <h3 class="d-flex align-center justify-start">
+                                    <v-icon icon="mdi-car" size="small" class="mr-2"></v-icon>
+                                    ข้อมูลยานพาหนะ
+                                </h3>
+                            </v-col>
+                            <v-col cols="12" class="pb-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">ทะเบียนรถ (ไม่ต้องระบุจังหวัด)
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-card-text" density="compact" variant="outlined"
+                                    placeholder="ตัวอย่าง. กก9999" :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']" required
+                                    v-model="sendData.licensePlate"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">ยี่ห้อรถ
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-car-multiple" density="compact" variant="outlined"
+                                    placeholder="ตัวอย่าง. ฮอนด้า, โตโยต้า ฯลฯ"
+                                    :rules="[v => !!v || 'โปรดระบุยี่ห้อรถ']" required
+                                    v-model="sendData.brand"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">สีรถ
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field prepend-inner-icon="mdi-palette" density="compact" variant="outlined"
+                                    placeholder="ตัวอย่าง. ขาว, ดำ, เทา ฯลฯ" :rules="[v => !!v || 'โปรดระบุสีรถ']"
+                                    required v-model="sendData.carColor"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">ประเภทยานพาหนะ
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-select prepend-inner-icon="mdi-format-list-bulleted" :items="VehicleType"
+                                    item-title="name" item-value="value" variant="outlined" density="compact"
+                                    placeholder="ระบุประเภทยานพาหนะ" v-model="sendData.vehicleType" required
+                                    :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
+                            </v-col>
+                        </v-card>
                     </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">ยี่ห้อรถ
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-text-field prepend-inner-icon="mdi-car-multiple" density="compact" variant="outlined"
-                            placeholder="ตัวอย่าง. ฮอนด้า, โตโยต้า ฯลฯ" :rules="[v => !!v || 'โปรดระบุยี่ห้อรถ']"
-                            required v-model="sendData.brand"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">สีรถ
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-text-field prepend-inner-icon="mdi-palette" density="compact" variant="outlined"
-                            placeholder="ตัวอย่าง. ขาว, ดำ, เทา ฯลฯ" :rules="[v => !!v || 'โปรดระบุสีรถ']" required
-                            v-model="sendData.carColor"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">ประเภทยานพาหนะ
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-select prepend-inner-icon="mdi-format-list-bulleted" :items="VehicleType" item-title="name"
-                            item-value="value" variant="outlined" density="compact" placeholder="ระบุประเภทยานพาหนะ"
-                            v-model="sendData.vehicleType" required
-                            :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
-                    </v-col>
-                    <v-col cols="12" class="py-0">
-                        <p class="pb-1 text-subtitle-1 text-medium-emphasis">วัตถุประสงค์
-                            <span style="color: red;">*</span>
-                        </p>
-                        <v-textarea prepend-inner-icon="mdi-clipboard-text" density="compact" variant="outlined"
-                            placeholder="ระบุวัตถุประสงค์..." :rules="[v => !!v || 'โปรดระบุวัตถุประสงค์']" required
-                            v-model="sendData.object" maxlength="200" counter></v-textarea>
+
+                    <v-col cols="12">
+                        <v-card color="#424242">
+                            <v-col class="pb-0">
+                                <h3 class="d-flex align-center justify-start">
+                                    <v-icon icon="mdi-card-account-mail" size="small" class="mr-2"></v-icon>
+                                    ติดต่อ
+                                </h3>
+                            </v-col>
+                            <v-col cols="12" class="pb-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">ชื่อผู้รับการติดต่อ
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field density="compact" variant="outlined" placeholder="ตัวอย่าง. นาย ซันซวีท"
+                                    v-model="sendData.contactPerson" :rules="[v => !!v || 'โปรดระบุผู้รับการติดต่อ']"
+                                    required></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">แผนก
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-text-field density="compact" variant="outlined"
+                                    placeholder="ตัวอย่าง. จัดซื้อจัดจ้าง บุคคล ฯลฯ" v-model="sendData.department"
+                                    :rules="[v => !!v || 'โปรดระบุแผนก']" required></v-text-field>
+                            </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">วัตถุประสงค์
+                                    <span style="color: red;">*</span>
+                                </p>
+                                <v-textarea prepend-inner-icon="mdi-clipboard-text" density="compact" variant="outlined"
+                                    placeholder="ระบุวัตถุประสงค์..." :rules="[v => !!v || 'โปรดระบุวัตถุประสงค์']"
+                                    required v-model="sendData.object" maxlength="200" counter></v-textarea>
+                            </v-col>
+                        </v-card>
                     </v-col>
                 </v-row>
                 <v-card-actions class="px-0 pt-5">
@@ -137,6 +196,10 @@ export default {
             carColor: '',
             object: '',
             vehicleType: null,
+
+            contactPerson: '',
+            department: '',
+            tel: null,
         },
         selectedDate: '',
         VehicleType: [
@@ -168,7 +231,11 @@ export default {
                     carColor: this.sendData.carColor,
                     object: this.sendData.object,
                     cate: 'visitor',
-                    vehicleType: this.sendData.vehicleType
+                    vehicleType: this.sendData.vehicleType,
+
+                    contactPerson: this.sendData.contactPerson,
+                    department: this.sendData.department,
+                    visitorTel: this.sendData.tel,
                 }
                 await this.lp.CreateLP(this.parkId, data, token).then(res => {
                     if (res.message === 'ok') {

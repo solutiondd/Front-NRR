@@ -239,7 +239,7 @@
                             <v-divider class="mt-2" :thickness="2"></v-divider>
                             <v-card-actions class="px-0">
                                 <v-btn variant="flat"
-                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
                                     type="submit" color="#66BB6A" width="100%" class="mt-4" size="large">บันทึกขาเข้า
                                     <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
                             </v-card-actions>
@@ -295,8 +295,8 @@
                             <v-divider class="mt-2" :thickness="2"></v-divider>
                             <v-card-actions class="px-0">
                                 <v-btn variant="flat"
-                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                                    type="submit" color="#66BB6A" width="100%" class="mt-4" size="large">บันทึกขาเข้า
+                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
+                                    type=" submit" color="#66BB6A" width="100%" class="mt-4" size="large">บันทึกขาเข้า
                                     <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
                             </v-card-actions>
                             <CheckOut />
@@ -759,140 +759,156 @@ export default {
         const submit = async (event) => {
             const res = await event
             if (res.valid === true) {
-                console.log('ทำงานจ้า')
-                const formdata = new FormData();
-                formdata.append('image', sendData.value.image)
-                await imgService.uploadimg(formdata).then(async (res) => {
-                    if (res.message === 'ok') {
-                        const token = localStorage.getItem('token');
-                        const park = store.state.park;
-                        const data = {
-                            guestName: sendData.value.name,
-                            licensePlate: sendData.value.licensePlate.License,
-                            licensePlateProvince: '',
-                            start: dateFormatValue(sendData.value.time),
-                            listType: 'fixedlist',
-                            expire: '2025-12-31',
+                if (!sendData.value._id || sendData.value._id === 'undefined') {
+                    Swal.fire({
+                        title: 'กรุณาเลือกทะเบียนรถ !!',
+                        html: '<h2>จากทางด้านซ้ายมือ</h2>',
+                        icon: 'warning',
+                    });
+                } else {
+                    console.log('ทำงานจ้า')
+                    const formdata = new FormData();
+                    formdata.append('image', sendData.value.image)
+                    await imgService.uploadimg(formdata).then(async (res) => {
+                        if (res.message === 'ok') {
+                            const token = localStorage.getItem('token');
+                            const park = store.state.park;
+                            const data = {
+                                guestName: sendData.value.name,
+                                licensePlate: sendData.value.licensePlate.License,
+                                licensePlateProvince: '',
+                                start: dateFormatValue(sendData.value.time),
+                                listType: 'fixedlist',
+                                expire: '2025-12-31',
 
-                            identityNumber: sendData.value.identityNumber,
-                            address: sendData.value.address,
-                            vehicleType: sendData.value.vehicleType,
-                            cate: 'stranger',
-                            personImgUrl: res.data.filePath,
-                            cdataId: sendData.value._id,
-                            timeStamp: sendData.value.time,
+                                identityNumber: sendData.value.identityNumber,
+                                address: sendData.value.address,
+                                vehicleType: sendData.value.vehicleType,
+                                cate: 'stranger',
+                                personImgUrl: res.data.filePath,
+                                cdataId: sendData.value._id,
+                                timeStamp: sendData.value.time,
+                            }
+                            await lp.CreateLP(park, data, token).then(async (res) => {
+                                if (res.message === 'ok' || res.data.message === 'This license has been added') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: `บันทึกข้อมูลสำเร็จ!`,
+                                    });
+                                    await printForm();
+                                    await deleteFromIndexedDB(sendData.value.id);
+                                    sendData.value = {
+                                        msg: '',
+                                        licensePlate: { License: '' },
+                                        vehicleType: 'TRUCK',
+                                        time: new Date(),
+                                        name: '',
+                                        identityNumber: '',
+                                        address: '',
+                                    };
+                                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                                } else if (res.data.message === 'validate error') {
+                                    Swal.fire({
+                                        title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                                        icon: 'warning',
+                                    })
+                                }
+                                // else if (res.data.message === 'This license has been added') {
+                                //     Swal.fire({
+                                //         title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
+                                //         text: 'กรุณาลองใหม่อีกครั้ง',
+                                //         icon: 'warning',
+                                //         showConfirmButton: true,
+                                //         confirmButtonColor: '#E53935',
+                                //     })
+                                // } 
+                                else {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: `มีบางอย่างผิดพลาด !`,
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                    });
+                                }
+                            })
+                        } else {
+                            Swal.fire({
+                                title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
+                                text: 'กรุณาลองใหม่อีกครั้ง',
+                                icon: 'warning',
+                            });
+                            console.log("Error : ", res.data)
                         }
-                        await lp.CreateLP(park, data, token).then(async (res) => {
-                            if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: `บันทึกข้อมูลสำเร็จ!`,
-                                });
-                                await printForm();
-                                await deleteFromIndexedDB(sendData.value.id);
-                                sendData.value = {
-                                    msg: '',
-                                    licensePlate: { License: '' },
-                                    vehicleType: 'TRUCK',
-                                    time: new Date(),
-                                    name: '',
-                                    identityNumber: '',
-                                    address: '',
-                                };
-                                document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                            } else if (res.data.message === 'validate error') {
-                                Swal.fire({
-                                    title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                                    icon: 'warning',
-                                })
-                            }
-                            // else if (res.data.message === 'This license has been added') {
-                            //     Swal.fire({
-                            //         title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
-                            //         text: 'กรุณาลองใหม่อีกครั้ง',
-                            //         icon: 'warning',
-                            //         showConfirmButton: true,
-                            //         confirmButtonColor: '#E53935',
-                            //     })
-                            // } 
-                            else {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: `มีบางอย่างผิดพลาด !`,
-                                    toast: true,
-                                    position: 'top-end',
-                                    showConfirmButton: false,
-                                    timer: 3000,
-                                    timerProgressBar: true,
-                                });
-                            }
-                        })
-                    } else {
-                        Swal.fire({
-                            title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
-                            text: 'กรุณาลองใหม่อีกครั้ง',
-                            icon: 'warning',
-                        });
-                        console.log("Error : ", res.data)
-                    }
-                })
+                    })
+                }
             }
         }
 
         const submitBylicenseId = async (event) => {
             const res = await event
             if (res.valid === true) {
-                const token = localStorage.getItem('token');
-                const park = store.state.park;
-                const data = {
-                    guestName: sendData.value.name,
-                    licensePlate: sendData.value.licensePlate.License,
-                    licensePlateProvince: '',
-                    start: dateFormatValue(sendData.value.time),
-                    listType: 'fixedlist',
-                    expire: '2025-12-31',
+                if (!sendData.value._id || sendData.value._id === 'undefined') {
+                    Swal.fire({
+                        title: 'กรุณาเลือกทะเบียนรถ !!',
+                        html: '<h2>จากทางด้านซ้ายมือ</h2>',
+                        icon: 'warning',
+                    });
+                } else {
+                    const token = localStorage.getItem('token');
+                    const park = store.state.park;
+                    const data = {
+                        guestName: sendData.value.name,
+                        licensePlate: sendData.value.licensePlate.License,
+                        licensePlateProvince: '',
+                        start: dateFormatValue(sendData.value.time),
+                        listType: 'fixedlist',
+                        expire: '2025-12-31',
 
-                    identityNumber: sendData.value.identityNumber,
-                    vehicleType: sendData.value.vehicleType,
-                    cate: 'stranger',
-                    cdataId: sendData.value._id,
-                    timeStamp: sendData.value.time,
+                        identityNumber: sendData.value.identityNumber,
+                        vehicleType: sendData.value.vehicleType,
+                        cate: 'stranger',
+                        cdataId: sendData.value._id,
+                        timeStamp: sendData.value.time,
 
-                    driverLicenseId: sendData.value.licenseId
-                }
-                console.log("Data in submit by licenseId", data)
-                await lp.CreateLP(park, data, token).then(async (res) => {
-                    if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: `บันทึกข้อมูลสำเร็จ!`,
-                        });
-                        await printForm();
-                        await deleteFromIndexedDB(sendData.value.id);
-                        sendData.value = {
-                            msg: '',
-                            licensePlate: { License: '' },
-                            vehicleType: 'TRUCK',
-                            time: new Date(),
-                            name: '',
-                            identityNumber: '',
-                            address: '',
-                        };
-                        document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                    } else if (res.data.message === 'validate error') {
-                        Swal.fire({
-                            title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                            icon: 'warning',
-                        })
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: `มีบางอย่างผิดพลาด !`,
-                            text: 'กรุณาลองใหม่อีกครั้ง',
-                        });
-                        console.log("Error : ", res.data)
+                        driverLicenseId: sendData.value.licenseId
                     }
-                })
+                    console.log("Data in submit by licenseId", data)
+                    // await lp.CreateLP(park, data, token).then(async (res) => {
+                    //     if (res.message === 'ok' || res.data.message === 'This license has been added') {
+                    //         Swal.fire({
+                    //             icon: 'success',
+                    //             title: `บันทึกข้อมูลสำเร็จ!`,
+                    //         });
+                    //         await printForm();
+                    //         await deleteFromIndexedDB(sendData.value.id);
+                    //         sendData.value = {
+                    //             msg: '',
+                    //             licensePlate: { License: '' },
+                    //             vehicleType: 'TRUCK',
+                    //             time: new Date(),
+                    //             name: '',
+                    //             identityNumber: '',
+                    //             address: '',
+                    //         };
+                    //         document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    //     } else if (res.data.message === 'validate error') {
+                    //         Swal.fire({
+                    //             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                    //             icon: 'warning',
+                    //         })
+                    //     } else {
+                    //         Swal.fire({
+                    //             icon: 'warning',
+                    //             title: `มีบางอย่างผิดพลาด !`,
+                    //             text: 'กรุณาลองใหม่อีกครั้ง',
+                    //         });
+                    //         console.log("Error : ", res.data)
+                    //     }
+                    // })
+                }
             }
         }
 
