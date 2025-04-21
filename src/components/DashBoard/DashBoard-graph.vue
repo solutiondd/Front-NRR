@@ -45,31 +45,61 @@
                 <h3 class="pb-5">ข้อมูลรถผู้ติดต่อที่ไม่ได้ลงทะเบียน</h3>
                 <v-row>
                     <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#66BB6A">
-                            <p style="font-size:18px;">ลงทะเบียนเวลาเข้า</p>
-                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.registered }} คัน</p>
+                        <v-card color="#66BB6A">
+                            <v-row class="pa-3">
+                                <v-col cols="8">
+                                    <p style="font-size:18px;">ลงทะเบียนเวลาเข้า</p>
+                                    <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.registered }} คัน</p>
+                                </v-col>
+                                <v-col cols="4" class="d-flex align-end justify-end">
+                                    <v-btn variant="text" @click="openDialog('Registered')">คลิก</v-btn>
+                                </v-col>
+                            </v-row>
                         </v-card>
                     </v-col>
                     <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#E53935">
-                            <p style="font-size:18px;">ลงทะเบียนเวลาออก</p>
-                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.exited }} คัน</p>
+                        <v-card color="#E53935">
+                            <v-row class="pa-3">
+                                <v-col cols="9">
+                                    <p style="font-size:18px;">ลงทะเบียนเวลาออก</p>
+                                    <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.exited }} คัน</p>
+                                </v-col>
+                                <v-col cols="3" class="d-flex align-end justify-end">
+                                    <v-btn variant="text" @click="openDialog('CheckOut')">คลิก</v-btn>
+                                </v-col>
+                            </v-row>
                         </v-card>
                     </v-col>
                     <v-col cols="12" sm="6">
                         <v-card class="pa-3" color="#757575">
-                            <p style="font-size:18px;">ไม่ได้ลงทะเบียนเวลาเข้า</p>
-                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.notRegistered }} คัน</p>
+                            <v-row>
+                                <v-col cols="9">
+                                    <p style="font-size:18px;">ไม่ได้ลงทะเบียนเวลาเข้า</p>
+                                    <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.notRegistered }} คัน
+                                    </p>
+                                </v-col>
+                                <v-col cols="3" class="d-flex align-end justify-end">
+                                    <v-btn variant="text" @click="openDialog('NotRegister')">คลิก</v-btn>
+                                </v-col>
+                            </v-row>
                         </v-card>
                     </v-col>
                     <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="primary">
-                            <p style="font-size: 18px;">คงเหลือในพื้นที่</p>
-                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.registered -
-                                dataDashBoard.exited }} คัน</p>
+                        <v-card color="primary">
+                            <v-row class="pa-3">
+                                <v-col cols="9">
+                                    <p style="font-size: 18px;">คงเหลือในพื้นที่</p>
+                                    <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.registered -
+                                        dataDashBoard.exited }} คัน</p>
+                                </v-col>
+                                <v-col cols="3" class="d-flex align-end justify-end">
+                                    <v-btn variant="text" @click="openDialog('Remaining')">คลิก</v-btn>
+                                </v-col>
+                            </v-row>
                         </v-card>
                     </v-col>
                 </v-row>
+                <ReportVisitor v-model="dialog" :type="selectedType" />
             </v-card>
 
             <!-- <v-card class="pa-5 mt-5" width="100%">
@@ -133,6 +163,7 @@ import { useTheme } from 'vuetify';
 import { DoughnutChart } from "vue-chart-3";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, DoughnutController } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ReportVisitor from './ReportVisitor.vue';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, DoughnutController, ChartDataLabels);
 
@@ -155,6 +186,7 @@ export default {
     },
     components: {
         DoughnutChart,
+        ReportVisitor
     },
     data() {
         return {
@@ -227,6 +259,8 @@ export default {
             dataDashBoard: [],
             startDate: new Date(),
             endDate: new Date(),
+            dialog: false,
+            selectedType: '',
         };
     },
     // computed: {
@@ -336,7 +370,11 @@ export default {
             } else {
                 return 18;  // สำหรับหน้าจอใหญ่
             }
-        }
+        },
+        openDialog(type) {
+            this.selectedType = type;
+            this.dialog = true;
+        },
     },
 };
 </script>
