@@ -15,6 +15,8 @@
                 value="home" @click="$router.push({ name: 'AdminHome' })"></v-list-item>
             <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-car" title="จัดการทะเบียนรถ" value="licenseplate"
                 @click="$router.push({ name: 'LicensePlate' })"></v-list-item>
+            <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-account-edit" title="จัดการผู้ลงทะเบียน"
+                value="listVisitor" @click="$router.push({ name: 'listVisitor' })"></v-list-item>
             <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-account" title="ผู้ใช้งาน" value="account"
                 @click="$router.push({ name: 'AdminAccount' })"></v-list-item>
             <!-- <v-list-item v-if="role != 'visitor'" prepend-icon="mdi-camera-iris" title="อ่านบัตรประชาชน"

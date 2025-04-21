@@ -55,7 +55,7 @@
                         {{ dateFormat(row.item.expire) }}
                     </td>
                     <td v-else-if="row.item.cate === 'stranger'" class="text-center">
-                        {{  }}
+                        {{ }}
                     </td>
                     <td class="text-center">
                         {{ row.item.guestName }}
@@ -119,7 +119,7 @@ export default {
     },
     computed: {
         pageCount() {
-            return Math.ceil(this.totalItems / this.itemsPerPage);;
+            return Math.ceil(this.totalItems / this.itemsPerPage);
         },
     },
     data: () => ({

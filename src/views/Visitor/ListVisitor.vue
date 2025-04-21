@@ -3,12 +3,12 @@
         <v-breadcrumbs color="white" :items="items"></v-breadcrumbs>
         <v-card>
             <v-tabs v-model="tab" bg-color="primary">
-                <v-tab value="LicensePlate" style="font-weight: bold;">ทะเบียนรถ</v-tab>
+                <v-tab value="listVisitor" style="font-weight: bold;">ผู้ลงทะเบียน</v-tab>
             </v-tabs>
 
             <v-card-text>
                 <v-tabs-window v-model="tab">
-                    <v-tabs-window-item value="LicensePlate">
+                    <v-tabs-window-item value="listVisitor">
                         <Table />
                     </v-tabs-window-item>
                 </v-tabs-window>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import Table from "../../components/LicensePlate/Table.vue";
+import Table from '../../components/ListVisitor/Table.vue';
 export default {
     components: {
         Table
@@ -26,11 +26,11 @@ export default {
     data: () => ({
         items: [
             'หน้าหลัก',
-            'จัดการทะเบียนรถ',
+            'จัดการผู้ลงทะเบียน',
         ],
-        tab: 'LicensePlate',
-    })
+        tab: 'listVisitor',
+    }),
 }
 </script>
 
-<style></style>
+<style scoped></style>

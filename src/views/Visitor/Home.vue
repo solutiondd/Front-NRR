@@ -163,10 +163,10 @@
 <script>
 import { dateFormat, dateFormatValue } from '../../function/day';
 import { UserService } from '../../api/user';
-import { LPService } from "../../api/licenseplate";
+import { VisitorService } from '../../api/Visitor';
 export default {
     setup() {
-        const lp = new LPService();
+        const lp = new VisitorService();
         const user = new UserService();
         return {
             dateFormat,
@@ -216,7 +216,7 @@ export default {
         async submit(event) {
             const res = await event
             if (res.valid === true) {
-                const token = import.meta.env.VITE_REFRESH_TOKEN;
+                // const token = import.meta.env.VITE_REFRESH_TOKEN;
                 const data = {
                     guestName: this.sendData.guestName,
                     licensePlate: this.sendData.licensePlate.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
@@ -237,7 +237,7 @@ export default {
                     department: this.sendData.department,
                     visitorTel: this.sendData.tel,
                 }
-                await this.lp.CreateLP(this.parkId, data, token).then(res => {
+                await this.lp.Create(this.parkId, data).then(res => {
                     if (res.message === 'ok') {
                         this.$swal({
                             icon: 'success',
