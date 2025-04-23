@@ -875,39 +875,39 @@ export default {
 
                         driverLicenseId: sendData.value.licenseId
                     }
-                    console.log("Data in submit by licenseId", data)
-                    // await lp.CreateLP(park, data, token).then(async (res) => {
-                    //     if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                    //         Swal.fire({
-                    //             icon: 'success',
-                    //             title: `บันทึกข้อมูลสำเร็จ!`,
-                    //         });
-                    //         await printForm();
-                    //         await deleteFromIndexedDB(sendData.value.id);
-                    //         sendData.value = {
-                    //             msg: '',
-                    //             licensePlate: { License: '' },
-                    //             vehicleType: 'TRUCK',
-                    //             time: new Date(),
-                    //             name: '',
-                    //             identityNumber: '',
-                    //             address: '',
-                    //         };
-                    //         document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                    //     } else if (res.data.message === 'validate error') {
-                    //         Swal.fire({
-                    //             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                    //             icon: 'warning',
-                    //         })
-                    //     } else {
-                    //         Swal.fire({
-                    //             icon: 'warning',
-                    //             title: `มีบางอย่างผิดพลาด !`,
-                    //             text: 'กรุณาลองใหม่อีกครั้ง',
-                    //         });
-                    //         console.log("Error : ", res.data)
-                    //     }
-                    // })
+                    // console.log("Data in submit by licenseId", data)
+                    await lp.CreateLP(park, data, token).then(async (res) => {
+                        if (res.message === 'ok' || res.data.message === 'This license has been added') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: `บันทึกข้อมูลสำเร็จ!`,
+                            });
+                            await printForm();
+                            await deleteFromIndexedDB(sendData.value.id);
+                            sendData.value = {
+                                msg: '',
+                                licensePlate: { License: '' },
+                                vehicleType: 'TRUCK',
+                                time: new Date(),
+                                name: '',
+                                identityNumber: '',
+                                address: '',
+                            };
+                            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                        } else if (res.data.message === 'validate error') {
+                            Swal.fire({
+                                title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                                icon: 'warning',
+                            })
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: `มีบางอย่างผิดพลาด !`,
+                                text: 'กรุณาลองใหม่อีกครั้ง',
+                            });
+                            console.log("Error : ", res.data)
+                        }
+                    })
                 }
             }
         }
