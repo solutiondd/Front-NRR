@@ -36,7 +36,31 @@
                         {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
                     </td>
                     <td class="text-center">
-                        {{ row.item }}
+                        {{ row.item.licensePlate }}
+                    </td>
+                    <td class="text-center">
+                        {{ row.item.vehicleType }}
+                    </td>
+                    <td class="text-center">
+                        {{ row.item.guestName }}
+                    </td>
+                    <td class="text-center">
+                        {{ row.item.start }}
+                    </td>
+                    <td class="text-center">
+                        {{ row.item.expire }}
+                    </td>
+                    <td class="text-center">
+                        <Approve :Id="row.item._id" :lpdata="row.item" @success="getData()" />
+                    </td>
+                    <td class="text-center">
+                        <v-chip v-if="!row.item.cate" color="#689F38">พนักงาน</v-chip>
+                        <v-chip v-if="row.item.cate === 'visitor'" color="#F57F17">ผู้ติดต่อที่ลงทะเบียน</v-chip>
+                        <v-chip v-if="row.item.cate === 'stranger'" color="#E53935">ผู้ติดต่อที่ไม่ได้ลงทะเบียน</v-chip>
+                    </td>
+                    <td>
+                        <Detail :data="row.item" />
+                        <Delete :id="row.item._id" @success="getData()" />
                     </td>
                 </tr>
             </template>
@@ -57,6 +81,9 @@
 <script>
 import { VisitorService } from '../../api/Visitor';
 import { LPService } from '../../api/licenseplate';
+import Detail from '../LicensePlate/Detail.vue';
+import Approve from './Approve.vue';
+import Delete from './Delete.vue';
 export default {
     setup() {
         const visitor = new VisitorService();
@@ -65,6 +92,11 @@ export default {
             visitor,
             lp
         }
+    },
+    components: {
+        Approve,
+        Detail,
+        Delete
     },
     computed: {
         pageCount() {
@@ -79,19 +111,17 @@ export default {
         headers: [
             { title: 'ลำดับ', align: 'center', sortable: false, key: 'index' },
             { title: 'เลขทะเบียน', align: 'center', sortable: false, key: 'licensePlate' },
-            { title: 'จังหวัด', align: 'center', sortable: false, key: 'licensePlateProvince' },
             { title: 'ประเภทรถ', align: 'center', sortable: false, key: 'vehicleType' },
+            { title: 'ชื่อ-นามสกุล', align: 'center', sortable: false, key: 'guestName' },
             { title: 'วันที่เริ่ม', align: 'center', sortable: false, key: 'start' },
             { title: 'วันที่หมดอายุ', align: 'center', sortable: false, key: 'expire' },
-            { title: 'เจ้าของ', align: 'center', sortable: false, key: 'guestName' },
-            { title: 'อุปกรณ์', align: 'center', sortable: false, key: 'devices' },
             { title: 'การอนุมัติ', align: 'center', sortable: false, key: 'devices' },
             { title: 'สถานะ', align: 'center', sortable: false, key: 'status' },
             { title: 'จัดการ', align: 'center', sortable: false, key: 'manage' },
         ],
     }),
     mounted() {
-
+        this.getData();
     },
     methods: {
         async getData() {
@@ -99,6 +129,7 @@ export default {
             await this.visitor.getAll(park).then(res => {
                 if (res.message === 'ok') {
                     this.data = res.data;
+                    this.data.reverse();
                     console.log(this.data);
                 }
             })

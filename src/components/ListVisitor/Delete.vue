@@ -1,5 +1,5 @@
 <template>
-    <v-btn class="ml-2" color="red" icon="" size="small" @click="openDialog()"><v-icon>mdi-delete</v-icon>
+    <v-btn class="ml-2" color="red" size="small" icon="" @click="openDialog()"><v-icon>mdi-delete</v-icon>
         <v-dialog v-model="dialog" activator="parent" max-width="440px" max-height="530px"
             transition="dialog-bottom-transition">
             <v-card>
@@ -24,24 +24,24 @@
 </template>
 
 <script>
-import { LPService } from '../../api/licenseplate';
+import { VisitorService } from '../../api/Visitor';
 export default {
+    emits: ['success'],
     props: {
         id: String,
     },
     setup() {
-        const lp = new LPService();
+        const visitor = new VisitorService();
         return {
-            lp
+            visitor,
         }
     },
     data: () => ({
         dialog: false,
     }),
-    emits: ['success'],
     methods: {
         async Delete() {
-            await this.lp.Delete(this.id).then(res => {
+            await this.visitor.Delete(this.id).then(res => {
                 if (res.message === 'ok') {
                     this.$swal({
                         icon: 'success',

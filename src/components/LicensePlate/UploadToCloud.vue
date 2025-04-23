@@ -71,7 +71,6 @@ export default {
                     this.submit();
                 }
             })
-
         },
         async submit() {
             const data = {
