@@ -7,21 +7,16 @@
             </v-col>
             <v-col cols="12" class="pt-0">
                 <v-row class="d-flex align-center">
-                    <v-col cols="12" sm="8" md="9" lg="10">
+                    <v-col cols="12">
                         <v-text-field hide-details prepend-inner-icon="mdi-magnify" density="comfortable"
-                            variant="outlined" label="ค้นหา" v-model="search"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="4" md="3" lg="2">
-                        <v-btn prepend-icon="mdi-magnify" color="primary" @click="getData()">ค้นหา</v-btn>
-                        <v-btn icon="mdi-refresh" color="grey-darken-2" size="small" class="ml-3"
-                            @click="clearSearch()"></v-btn>
+                            variant="outlined" label="ค้นหา (ทะเบียนรถ, ชื่อ-นามสกุล)" v-model="search"></v-text-field>
                     </v-col>
                 </v-row>
             </v-col>
         </v-row>
     </div>
     <v-card variant="flat">
-        <v-data-table fixed-header :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="data"
+        <v-data-table fixed-header :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="filteredData"
             class="elevation-1" item-value="_id">
             <template v-slot:headers="column">
                 <tr>
@@ -38,16 +33,18 @@
                     <td class="text-center">
                         {{ row.item.licensePlate }}
                     </td>
-                    <td class="text-center">
-                        {{ row.item.vehicleType }}
+                    <td class="text-center" style="min-width: 120px;">
+                        <p v-if="row.item.vehicleType === 'CAR'">รถยนต์ (CAR)</p>
+                        <p v-else-if="row.item.vehicleType === 'TRUCK'">รถบรรทุก (TRUCK)</p>
+                        <p v-else>รถมอเตอร์ไซค์ (MOTORCYCLE)</p>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" style="min-width: 180px;">
                         {{ row.item.guestName }}
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" style="min-width: 120px;">
                         {{ row.item.start }}
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" style="min-width: 120px;">
                         {{ row.item.expire }}
                     </td>
                     <td class="text-center">
@@ -58,7 +55,7 @@
                         <v-chip v-if="row.item.cate === 'visitor'" color="#F57F17">ผู้ติดต่อที่ลงทะเบียน</v-chip>
                         <v-chip v-if="row.item.cate === 'stranger'" color="#E53935">ผู้ติดต่อที่ไม่ได้ลงทะเบียน</v-chip>
                     </td>
-                    <td>
+                    <td style="min-width: 120px;">
                         <Detail :data="row.item" />
                         <Delete :id="row.item._id" @success="getData()" />
                     </td>
@@ -102,6 +99,18 @@ export default {
         pageCount() {
             return Math.ceil(this.data.length / this.itemsPerPage);
         },
+        filteredData() {
+            if (!this.search) return this.data;
+
+            const keyword = this.search.toLowerCase();
+            return this.data.filter(item =>
+                (item.licensePlate || '').toLowerCase().includes(keyword) ||
+                (item.vehicleType || '').toLowerCase().includes(keyword) ||
+                (item.guestName || '').toLowerCase().includes(keyword) ||
+                (item.start || '').toLowerCase().includes(keyword) ||
+                (item.expire || '').toLowerCase().includes(keyword)
+            );
+        }
     },
     data: () => ({
         page: 1,

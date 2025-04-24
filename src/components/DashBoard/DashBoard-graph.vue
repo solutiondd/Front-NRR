@@ -1,6 +1,5 @@
 <template>
     <v-row class="pa-0">
-
         <v-col cols="12" sm="12" md="6">
             <v-card class="pa-5 " width="100%">
                 <h3 class="pb-5">ข้อมูลกราฟ วันนี้ {{ dateFormatDayandTime(new Date()) }}</h3>
@@ -36,7 +35,7 @@
                             <p style="font-size: 18px;">รวมทั้งหมด</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
                                 dataDashBoard.visitor + dataDashBoard.stranger
-                                }} คัน</p>
+                            }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -99,7 +98,8 @@
                         </v-card>
                     </v-col>
                 </v-row>
-                <ReportVisitor v-model="dialog" :type="selectedType" />
+                <!-- <ReportVisitor v-model="dialog" :type="selectedType" /> -->
+                <ReportVisitorGroupByLP v-model="dialog" :type="selectedType" />
             </v-card>
 
             <!-- <v-card class="pa-5 mt-5" width="100%">
@@ -164,6 +164,7 @@ import { DoughnutChart } from "vue-chart-3";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, DoughnutController } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import ReportVisitor from './ReportVisitor.vue';
+import ReportVisitorGroupByLP from './ReportVisitorGroupByLP.vue';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, DoughnutController, ChartDataLabels);
 
@@ -186,7 +187,8 @@ export default {
     },
     components: {
         DoughnutChart,
-        ReportVisitor
+        ReportVisitor,
+        ReportVisitorGroupByLP
     },
     data() {
         return {
@@ -310,7 +312,7 @@ export default {
             const start = datetimeFormatLimit(this.startDate);
             const end = datetimeFormatLimit(this.endDate);
             const parkId = this.$store.state.park
-            await this.his.getDashBoard(start, end, parkId).then(res => {
+            await this.his.getDashBoardGroup(start, end, parkId).then(res => {
                 if (res.message === 'ok') {
                     this.dataDashBoard = res.data
                     this.chartData = {

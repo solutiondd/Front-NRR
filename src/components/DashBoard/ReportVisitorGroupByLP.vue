@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="Reportdialog" @input="$emit('update:modelValue', $event)" width="80%">
+    <v-dialog :value="Reportdialog" @input="$emit('update:modelValue', $event)" width="85%">
         <v-card>
             <div>
                 <v-toolbar :color="typeMap[type]?.color" density="comfortable">
@@ -11,9 +11,12 @@
                 </v-toolbar>
             </div>
             <div class="pa-3">
+                <!-- <v-text-field class="pt-5 px-5" density="comfortable" variant="outlined"
+                    label="ค้นหา (ทะเบียนรถ, เจ้าของ)" prepend-inner-icon="mdi-magnify"
+                    v-model="searchQuery"></v-text-field> -->
                 <v-card variant="flat">
-                    <v-data-table fixed-header :headers="headers" :page="page" :items-per-page="itemsPerPage"
-                        :items="data" class="elevation-1 no-border-table" hide-default-footer>
+                    <v-data-table :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="data"
+                        class="elevation-1" hide-default-footer>
                         <template v-slot:headers="column">
                             <tr>
                                 <th style="font-size: 13px;" class="text-center" v-for="hd in column.headers[0]"
@@ -27,36 +30,25 @@
                                 <td class="text-center">
                                     {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
                                 </td>
-                                <td class="text-center py-2">
-                                    <img class="zoom" :src="baseUrl + row.item.platesPhoto" alt="image"
-                                        style="width: 150px; height: auto;">
+                                <td class="text-center">
+                                    {{ row.item.license }}
                                 </td>
-                                <td class="text-center py-2">
-                                    <img class="zoom" :src="baseUrl + row.item.platesPhoto2" alt="image"
-                                        style="width: 150px; height: auto;">
-                                </td>
-                                <td class="text-center" v-for="lp in row.item.plates" :key="lp._id">
-                                    {{ lp.License }}
-                                    <p v-if="row.item.confirmLicensePlate" style="font-size: 14px; color: grey;">({{
-                                        row.item.confirmLicensePlate }})</p>
+                                <td class="text-center" style="min-width: 180px;">
+                                    <div v-for="lp in row.item.person" :key="lp.identityNumber">
+                                        {{ lp.name }}
+                                    </div>
                                 </td>
                                 <td class="text-center">
-                                    {{ row.item?.person?.name }}
+                                    {{ formatDateTime(row.item.timeStamp[0]) }}
                                 </td>
                                 <td class="text-center">
-                                    {{ formatDateTime(row.item.time) }}
+                                    {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
                                 </td>
-                                <td v-if="row.item.checkoutTimeStamp" class="text-center">
-                                    {{ formatDateTime(row.item.checkoutTimeStamp) }}
-                                </td>
-                                <td v-else class="text-center">
-                                    {{ }}
+                                <td class="tex-center">
+                                    <v-chip color="red">{{ row.item.msg }}</v-chip>
                                 </td>
                                 <td class="text-center">
-                                    <p>{{ row.item.msg }}</p>
-                                </td>
-                                <td class="text-center">
-                                    <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>
+                                    <Detail :data="row.item.data" />
                                 </td>
                             </tr>
                         </template>
@@ -67,10 +59,6 @@
                         </template>
                     </v-data-table>
                 </v-card>
-                <!-- <v-card-actions class="d-flex align-end justify-end pa-0">
-                    <v-btn variant="flat" color="red" @click="$emit('update:modelValue', false)"
-                        :ripple="false">ปิด</v-btn>
-                </v-card-actions> -->
             </div>
         </v-card>
     </v-dialog>
@@ -79,18 +67,22 @@
 <script>
 import { datetimeFormatLimit } from '../../function/day';
 import { StrangerService } from '../../api/ReportStranger';
+import Detail from '../ReportVisitorGroup/Detail.vue';
 export default {
     props: {
         Reportdialog: Boolean,
         type: String,
     },
+    components: {
+        Detail,
+    },
     setup() {
         const stranger = new StrangerService();
-        const baseUrl = import.meta.env.VITE_APP_BASE_URL;
+        const baseUrl = import.meta.env.VITE_BASE_URL;
         return {
             stranger,
             baseUrl,
-            datetimeFormatLimit
+            datetimeFormatLimit,
         }
     },
     computed: {
@@ -131,20 +123,19 @@ export default {
         },
         headers: [
             { title: 'ลำดับ', align: 'center', sortable: false, key: 'index' },
-            { title: 'ภาพป้ายทะเบียน 1', align: 'center', sortable: false, key: 'platesPhoto' },
-            { title: 'ภาพป้ายทะเบียน 2', align: 'center', sortable: false, key: 'platesPhoto2' },
             { title: 'หมายเลขทะเบียน', align: 'center', sortable: false, key: 'license' },
-            { title: 'ชื่อผู้ติดต่อ', align: 'center', sortable: false, key: 'license' },
+            { title: 'เจ้าของ', align: 'center', sortable: false, key: 'license' },
             { title: 'วันที่/เวลา (ขาเข้า)', align: 'center', sortable: false, key: 'entry.time' },
             { title: 'วันที่/เวลา (ขาออก)', align: 'center', sortable: false, key: 'entry.checkoutTimeStamp' },
-            { title: 'รายละเอียด', align: 'center', sortable: false, key: 'entry.msg' },
-            { title: 'ประเภทการเข้า/ออก', align: 'center', sortable: false, key: 'inout' },
+            { title: 'สถานะ', align: 'center', sortable: false, key: 'entry.msg' },
+            { title: 'รายละเอียดเพิ่มเติม', align: 'center', sortable: false, key: 'inout' },
         ],
         data: [],
         page: 1,
         itemsPerPage: 5,
         startDate: new Date(),
         endDate: new Date(),
+        searchQuery: '',
     }),
     mounted() {
         this.endDate = this.addDays(this.startDate, +1)
@@ -158,33 +149,32 @@ export default {
                 let res;
 
                 //NOTE - Not Group
-                if (type === 'Registered') {
-                    res = await this.stranger.Registered(start, end, park);
-                } else if (type === 'CheckOut') {
-                    res = await this.stranger.CheckOut(start, end, park);
-                } else if (type === 'NotRegister') {
-                    res = await this.stranger.NotRegister(start, end, park);
-                } else if (type === 'Remaining') {
-                    res = await this.stranger.Remaining(start, end, park);
-                }
+                // if (type === 'Registered') {
+                //     res = await this.stranger.Registered(start, end, park);
+                // } else if (type === 'CheckOut') {
+                //     res = await this.stranger.CheckOut(start, end, park);
+                // } else if (type === 'NotRegister') {
+                //     res = await this.stranger.NotRegister(start, end, park);
+                // } else if (type === 'Remaining') {
+                //     res = await this.stranger.Remaining(start, end, park);
+                // }
 
 
                 //NOTE - Group by LicensePlate
-                // if (type === 'Registered') {
-                //     res = await this.stranger.RegisteredGroup(start, end, park);
-                // } else if (type === 'CheckOut') {
-                //     res = await this.stranger.CheckOutGroup(start, end, park);
-                // } else if (type === 'NotRegister') {
-                //     res = await this.stranger.NotRegisterGroup(start, end, park);
-                // } else if (type === 'Remaining') {
-                //     res = await this.stranger.RemainingGroup(start, end, park);
-                // }
+                if (type === 'Registered') {
+                    res = await this.stranger.RegisteredGroup(start, end, park);
+                } else if (type === 'CheckOut') {
+                    res = await this.stranger.CheckOutGroup(start, end, park);
+                } else if (type === 'NotRegister') {
+                    res = await this.stranger.NotRegisterGroup(start, end, park);
+                } else if (type === 'Remaining') {
+                    res = await this.stranger.RemainingGroup(start, end, park);
+                }
 
                 if (res?.message === 'ok') {
                     this.data = res.data;
-                    this.data.reverse();
+                    // this.data.reverse();
                     this.page = 1;
-                    console.log(`${type} : `, this.data);
                 }
             } catch (error) {
                 console.log(`Error for type: ${type}`, error)
@@ -196,18 +186,22 @@ export default {
             return newDate;
         },
         formatDateTime(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleString("th-TH", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
-            }).replace(",", "");
+            if (dateString === null || dateString === undefined || !dateString) {
+                return '-';
+            } else {
+                const date = new Date(dateString);
+                return date.toLocaleString("th-TH", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false
+                }).replace(",", "");
+            }
         },
-    },
+    }
 }
 </script>
 
