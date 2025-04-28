@@ -132,7 +132,7 @@ export default {
         ],
         data: [],
         page: 1,
-        itemsPerPage: 5,
+        itemsPerPage: 10,
         startDate: new Date(),
         endDate: new Date(),
         searchQuery: '',

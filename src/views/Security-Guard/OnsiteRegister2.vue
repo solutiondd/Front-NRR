@@ -175,10 +175,10 @@
                                 </div>
 
                                 <v-row class="pt-1">
-                                    <v-col cols="12" lg="6" class="">
+                                    <v-col cols="6" class="">
                                         <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img>
                                     </v-col>
-                                    <v-col cols="12" lg="6" class="">
+                                    <v-col cols="6" class="">
                                         <v-img :src="baseUrl + selectedCar.platesPhoto2" width="100%"></v-img>
                                     </v-col>
                                     <v-col cols="12" class="d-flex align-center justify-center">
@@ -249,8 +249,8 @@
                                                         </p>
                                                     </v-col>
                                                     <v-col cols="7" class="pa-0 text-end">
-                                                        <v-btn color="primary" @click="readIDCard()"><v-icon
-                                                                class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn>
+                                                        <!-- <v-btn color="primary" @click="readIDCard()"><v-icon
+                                                                class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn> -->
                                                         <v-btn :ripple="false" class="ml-2" color="black" variant="text"
                                                             icon="mdi-refresh" size="small"
                                                             @click="resetSendData"></v-btn>
@@ -300,7 +300,7 @@
                                                 size="large">บันทึกขาเข้า
                                                 <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
                                         </v-card-actions>
-                                        <CheckOut />
+                                        <CheckOut @update="getData()" />
                                     </v-form>
                                 </v-tabs-window-item>
 
@@ -358,12 +358,75 @@
                                                 size="large">บันทึกขาเข้า
                                                 <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
                                         </v-card-actions>
-                                        <CheckOut />
+                                        <CheckOut @update="getData()" />
                                     </v-form>
                                 </v-tabs-window-item>
                             </v-tabs-window>
                         </v-card>
                     </v-sheet>
+                </v-col>
+                <v-col v-if="!isHorizontal" cols="12">
+                    <!-- <RemainTable ref="remainTable" /> -->
+                    <v-card class="ma-2" style="background-color: #FAFAFA;">
+                        <div>
+                            <v-toolbar color="primary" density="comfortable">
+                                <v-toolbar-title class="d-flex align-center">
+                                    <p>
+                                        <v-icon icon="mdi-parking" size="small" class="mr-2"></v-icon>
+                                        คงเหลือในพื้นที่ทั้งหมด {{ this.data.length }} คัน
+                                    </p>
+                                </v-toolbar-title>
+                            </v-toolbar>
+                        </div>
+                        <div>
+                            <v-card variant="flat" style="background-color: #FAFAFA;">
+                                <v-data-table :headers="headers" :items="data" :page="page"
+                                    :items-per-page="itemsPerPage" class="elevation-1" hide-default-footer
+                                    style="background-color: #FAFAFA; color: black;">
+                                    <template v-slot:headers="column">
+                                        <tr>
+                                            <th style="font-size: 13px;" class="text-center"
+                                                v-for="hd in column.headers[0]" :key="hd.title">
+                                                {{ hd.title }}
+                                            </th>
+                                        </tr>
+                                    </template>
+                                    <template v-slot:item="row">
+                                        <tr>
+                                            <td class="text-center">
+                                                {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ row.item.license }}
+                                            </td>
+                                            <td class="text-center" style="min-width: 180px;">
+                                                <div v-for="lp in row.item.person" :key="lp.identityNumber">
+                                                    {{ lp.name }}
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                {{ formatDateTime(row.item.timeStamp[0]) }}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
+                                            </td>
+                                            <td class="text-center">
+                                                <v-chip color="red">{{ row.item.msg }}</v-chip>
+                                            </td>
+                                            <td class="text-center">
+                                                <DetailRemain :data="row.item.data" />
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template v-slot:bottom>
+                                        <div class="text-center pt-2">
+                                            <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                                        </div>
+                                    </template>
+                                </v-data-table>
+                            </v-card>
+                        </div>
+                    </v-card>
                 </v-col>
             </v-row>
         </div>
@@ -589,7 +652,6 @@
                 </v-tabs-window>
             </v-card>
         </v-sheet> -->
-
     </v-container>
 
     <!-- //NOTE - Print Form -->
@@ -708,22 +770,25 @@
 </template>
 
 <script>
-import { useDisplay } from 'vuetify'
-import { ref, onMounted, toRaw, nextTick, watch, computed } from 'vue'
+import { ref, onMounted, toRaw, nextTick, watch, computed, defineComponent, getCurrentInstance } from 'vue'
 import { openDB } from 'idb'
-import { formatitemdevice, dateFormat, dateFormatValue, dateFormatDayandTime } from '../../function/day'
+import { formatitemdevice, dateFormat, dateFormatValue, dateFormatDayandTime, datetimeFormatLimit } from '../../function/day'
 import Swal from "sweetalert2";
 import { LPService } from '../../api/licenseplate';
 import { useStore } from 'vuex';
 import QrcodeVue from "qrcode.vue";
 import CheckOut from '../../components/Security-Guard/CheckOut.vue';
 import { ImageService } from "../../api/UploadImage";
+// import RemainTable from '../../components/Security-Guard/RemainTable.vue';
+import { StrangerService } from '../../api/ReportStranger';
+import DetailRemain from '../../components/Security-Guard/DetailRemain.vue';
 
-export default {
+export default defineComponent({
     setup() {
         const store = useStore();
         const lp = new LPService();
         const imgService = new ImageService();
+        const stranger = new StrangerService();
         const baseUrl = import.meta.env.VITE_APP_BASE_URL
         const recentEntries = ref([]) // 🔥 เก็บรายการรถของวันนี้
         const selectedCar = ref(null) // รถที่เลือก (หรือรถล่าสุด)
@@ -751,7 +816,7 @@ export default {
             identityNumber: '',
             licenseId: '',
         })
-
+        const { proxy } = getCurrentInstance()
 
         let timer = null;
 
@@ -777,7 +842,6 @@ export default {
             }, 800);
         });
 
-        // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
         // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
         const parseDriverLicenseData = (input) => {
             const lines = input.split("\n");
@@ -1099,6 +1163,7 @@ export default {
                                         address: '',
                                     };
                                     document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                                    proxy.getData();
                                 } else if (res.data.message === 'validate error') {
                                     Swal.fire({
                                         title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
@@ -1166,7 +1231,8 @@ export default {
 
                         driverLicenseId: sendData.value.licenseId
                     }
-                    // console.log("Data in submit by licenseId", data)
+                    console.log("Data in submit by licenseId", data)
+                    proxy.getData();
                     await lp.CreateLP(park, data, token).then(async (res) => {
                         if (res.message === 'ok' || res.data.message === 'This license has been added') {
                             Swal.fire({
@@ -1185,6 +1251,7 @@ export default {
                                 address: '',
                             };
                             document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                            this.getData();
                         } else if (res.data.message === 'validate error') {
                             Swal.fire({
                                 title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
@@ -1266,13 +1333,14 @@ export default {
         let loading = ref(false);
 
         const initWebsocket = () => {
-            wSocket = new WebSocket("ws://localhost:14820/TDKWAgent");
+            wSocket = new WebSocket("ws://localhost:4000");
             wSocket.onopen = function () {
                 if (debugFlag) {
                     console.log("Card Reader is connected.");
                 }
             }
-            wSocket.onmessage = (evt) => onGetMessage(evt.data);
+            wSocket.onmessage = (evt) => OnGetMessageE(evt.data);
+
             wSocket.onclose = (evt) => {
                 if (debugFlag) {
                     console.log("WebSocket: onclose() event called." + evt);
@@ -1284,6 +1352,72 @@ export default {
                 }
             };
         }
+
+        const OnGetMessageE = (message) => {
+            const messages = splitMessages(message);
+
+            messages.forEach((msg) => {
+                // เช็คว่าข้อความมี 'citizenId' ไหม
+                if (msg.includes('citizenId')) {
+
+                    const parsed = JSON.parse(msg);
+
+                    console.log('[Got JSON]', parsed);
+                    handleJsonData(parsed);
+
+                } else {
+                    console.log('Another Text : ', msg);
+                }
+            });
+        };
+        const handleJsonData = (msgObj) => {
+            // เซฟข้อมูลเข้า data.value แบบ deep clone
+            data.value = JSON.parse(JSON.stringify(msgObj));
+            console.log(data.value);
+
+            // ทำงานตามที่บอก
+            ReaderData.value = data.value;
+            putimagtoScreen(data.value.photo);
+            putDatatoSendData(ReaderData.value);
+
+            console.log("ReaderData:", ReaderData.value);
+        };
+        const splitMessages = (rawData) => {
+            const messages = [];
+
+            let buffer = '';
+            let insideJson = false;
+            let braceCount = 0;
+
+            for (let i = 0; i < rawData.length; i++) {
+                const char = rawData[i];
+
+                buffer += char;
+
+                if (char === '{') {
+                    insideJson = true;
+                    braceCount++;
+                } else if (char === '}') {
+                    braceCount--;
+                    if (braceCount === 0) {
+                        insideJson = false;
+                        messages.push(buffer.trim());
+                        buffer = '';
+                    }
+                } else if (!insideJson && (char === '\n' || char === '\r')) {
+                    if (buffer.trim() !== '') {
+                        messages.push(buffer.trim());
+                    }
+                    buffer = '';
+                }
+            }
+
+            if (buffer.trim() !== '') {
+                messages.push(buffer.trim());
+            }
+
+            return messages;
+        };
 
         const wSocketSend = (json_Str) => {
             if (debugFlag) {
@@ -1479,14 +1613,14 @@ export default {
             var base64str = IDPhoto;
             const fileName = "image.jpg"
             sendData.value.image = base64Tofile(base64str, fileName);
-            console.log(sendData.value)
+            console.log("ข้อมูลหลังจากมี file : ", sendData.value)
             var photo = document.getElementById("Photo");  // เลือก element img ที่มี id = "Photo"
 
             if (base64str != null && base64str !== "") {
                 // กรณีที่ Base64 string ถูกต้อง
                 photo.setAttribute(
                     "src",
-                    "data:image/png;base64," + base64str
+                    base64str
                 );
             } else {
                 // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
@@ -1499,23 +1633,38 @@ export default {
         }
 
         const putDatatoSendData = (data) => {
-            sendData.value.name = data.name;
-            sendData.value.identityNumber = data.identityNumber;
+            sendData.value.name = `${data.firstNameTH} ${data.lastNameTH}`;
+            sendData.value.identityNumber = data.citizenId;
             sendData.value.address = data.address;
         }
 
         const base64Tofile = (base64String, fileName) => {
-            const base64Data = `data:image/png;base64, ${base64String}`
-            const byteStr = atob(base64Data.split(',')[1]); // แปลง Base64 เป็น binary
-            const mimeType = base64Data.split(',')[0].split(':')[1].split(';')[0]; // ดึง MIME type
-            const arrayBuffer = new ArrayBuffer(byteStr.length);
-            const uintArray = new Uint8Array(arrayBuffer);
+            // แยก Base64 String ออกเป็นส่วนที่ไม่ใช่ header
+            const base64Data = base64String.split(';base64,')[1];
 
-            for (let i = 0; i < byteStr.length; i++) {
-                uintArray[i] = byteStr.charCodeAt(i);
+            // แปลง Base64 เป็น Binary Data
+            const byteCharacters = atob(base64Data);
+
+            // สร้าง Array สำหรับเก็บข้อมูลที่แปลงจาก Base64
+            const byteArrays = [];
+            for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+                const slice = byteCharacters.slice(offset, offset + 1024);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
             }
 
-            return new File([arrayBuffer], fileName, { type: mimeType });
+            // สร้าง Blob จากข้อมูล
+            const fileBlob = new Blob(byteArrays, { type: 'image/jpeg' });
+
+            // สร้างไฟล์จาก Blob
+            const file = new File([fileBlob], fileName, { type: 'image/jpeg' });
+
+            // Return เป็น File object
+            return file;
         }
 
         onMounted(() => {
@@ -1565,16 +1714,23 @@ export default {
             dataLicense,
             sendDataLicense,
             submitBylicenseId,
+            datetimeFormatLimit,
+            stranger
         }
     },
     components: {
         QrcodeVue,
         CheckOut,
+        // RemainTable,
+        DetailRemain
     },
     computed: {
         formatTime() {
             return this.formatDateTime(this.sendData.time)
-        }
+        },
+        pageCount() {
+            return Math.ceil(this.data.length / this.itemsPerPage);
+        },
     },
     data: () => ({
         vehicleList: [
@@ -1591,10 +1747,26 @@ export default {
             address: '',
         },
         isHorizontal: false,
+        headers: [
+            { title: 'ลำดับ', align: 'center', sortable: false, key: 'index' },
+            { title: 'หมายเลขทะเบียน', align: 'center', sortable: false, key: 'license' },
+            { title: 'เจ้าของ', align: 'center', sortable: false, key: 'license' },
+            { title: 'วันที่/เวลา (ขาเข้า)', align: 'center', sortable: false, key: 'entry.time' },
+            { title: 'วันที่/เวลา (ขาออก)', align: 'center', sortable: false, key: 'entry.checkoutTimeStamp' },
+            { title: 'สถานะ', align: 'center', sortable: false, key: 'entry.msg' },
+            { title: 'รายละเอียดเพิ่มเติม', align: 'center', sortable: false, key: 'inout' },
+        ],
+        data: [],
+        page: 1,
+        itemsPerPage: 10,
+        startDate: new Date(),
+        endDate: new Date(),
     }),
     mounted() {
         this.checkOrientation();
         window.addEventListener('resize', this.checkOrientation);
+        this.endDate = this.addDays(this.startDate, +1)
+        this.getData();
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.checkOrientation);
@@ -1615,8 +1787,46 @@ export default {
         checkOrientation() {
             this.isHorizontal = window.innerWidth > window.innerHeight;
         },
+        async getData() {
+            const start = datetimeFormatLimit(this.startDate);
+            const end = datetimeFormatLimit(this.endDate);
+            const park = this.$store.state.park;
+            await this.stranger.SRgetreport(start, end, park).then((res) => {
+                if (res.message === 'ok') {
+                    this.data = res.data;
+                    this.page = 1;
+                } else {
+                    this.$swal({
+                        icon: 'error',
+                        title: 'มีบางอย่างผิดพลาด',
+                        text: 'กรุณาลองใหม่อีกครั้ง !',
+                    });
+                }
+            });
+        },
+        addDays(date, days) {
+            const newDate = new Date(date);
+            newDate.setDate(newDate.getDate() + days);
+            return newDate;
+        },
+        formatDateTime(dateString) {
+            if (dateString === null || dateString === undefined || !dateString) {
+                return '-';
+            } else {
+                const date = new Date(dateString);
+                return date.toLocaleString("th-TH", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false
+                }).replace(",", "");
+            }
+        },
     },
-}
+})
 </script>
 
 <style scoped>

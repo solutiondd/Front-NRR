@@ -73,6 +73,7 @@ export default {
                 await this.user.SignIn(userdata).then(result => {
                     if (result.message === 'ok') {
                         localStorage.setItem('token', result.access_token);
+                        localStorage.setItem('retoken', result.refresh_token);
                         this.$router.push('/home');
                     } else if (result.error) {
                         this.$swal({

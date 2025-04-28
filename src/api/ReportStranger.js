@@ -120,4 +120,28 @@ export class StrangerService {
 
     return responseData;
   }
+
+  async SRgetreport(start, end, parkId) {
+    let responseData = null;
+
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${this.baseUrl}api/v1/stranger/remaining/security?dateStart=${start}&dateEnd=${end}&parkId=${parkId}`,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    };
+
+    await axios
+      .request(config)
+      .then((response) => {
+        responseData = response.data;
+      })
+      .catch((error) => {
+        responseData = { error: error.message, data: error?.response?.data };
+      });
+
+    return responseData;
+  }
 }

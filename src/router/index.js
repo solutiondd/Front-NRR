@@ -12,6 +12,7 @@ import Stranger from "../views/Security-Guard/OnsiteRegister.vue";
 import SecurityGuard from "../layouts/Security-Guard.vue";
 // import ReadIdentity from "../views/Security-Guard/ReadIdentity.vue";
 import ListVisitor from "../views/Visitor/ListVisitor.vue";
+import OnsiteRegister2 from "../views/Security-Guard/OnsiteRegister2.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -83,6 +84,11 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/stranger2",
+      name: "OnsiteRegister2",
+      component: OnsiteRegister2,
+    },
   ],
 });
 
@@ -132,7 +138,11 @@ router.beforeEach(async (to, from, next) => {
 
     if (userRole === "visitor" && to.name !== "LicensePlate") {
       next({ name: "LicensePlate" }); // Redirect ไปหน้า LicensePlate
-    } else if (userRole === "security" && to.name !== "Stranger") {
+    } else if (
+      userRole === "security" &&
+      to.name !== "Stranger" &&
+      to.name !== "OnsiteRegister2"
+    ) {
       next({ name: "Stranger" });
     } else {
       next();

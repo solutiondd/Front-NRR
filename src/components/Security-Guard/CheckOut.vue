@@ -42,6 +42,7 @@ import { VisitorService } from "../../api/Visitor";
 import moment from "moment"
 import { ref, watch } from "vue";
 export default {
+    emits: ['update'],
     setup() {
         const visitor = new VisitorService();
         const dialog = ref(false);
@@ -114,6 +115,7 @@ export default {
                                     TransctionId: '',
                                     TransactionTime: new Date(),
                                 }
+                                this.$emit('update');
                             } else {
                                 this.$swal({
                                     icon: 'warning',
