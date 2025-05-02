@@ -283,6 +283,17 @@
                                                     required hide-details="auto"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" lg="5" class="pt-2">
+                                                <p>เบอร์โทรศัพท์</p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field type="tel" density="compact" variant="outlined"
+                                                    placeholder="ระบุเบอร์โทรศัพท์" v-model="sendData.tel"
+                                                    hide-details="auto" :rules="[
+                                                        v => !!v || 'กรุณาระบุเบอร์โทรศัพท์',
+                                                        v => /^[0-9]*$/.test(v) || 'กรุณาใส่เฉพาะตัวเลขเท่านั้น',
+                                                    ]" maxlength="10"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
                                                 <p>ที่อยู่</p>
                                             </v-col>
                                             <v-col cols="12" lg="7" class="pa-0 d-flex align-top">
@@ -291,6 +302,7 @@
                                                     :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']"
                                                     required auto-grow></v-textarea>
                                             </v-col>
+
                                         </v-row>
                                         <v-divider class="mt-2" :thickness="2"></v-divider>
                                         <v-card-actions class="px-0">
@@ -335,6 +347,17 @@
                                                     placeholder="ระบุชื่อ-นามสกุล" v-model="sendData.name"
                                                     :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
                                                     required hide-details="auto"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
+                                                <p>เบอร์โทรศัพท์</p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field type="tel" density="compact" variant="outlined"
+                                                    placeholder="ระบุเบอร์โทรศัพท์" v-model="sendData.tel"
+                                                    hide-details="auto" :rules="[
+                                                        v => !!v || 'กรุณาระบุเบอร์โทรศัพท์',
+                                                        v => /^[0-9]*$/.test(v) || 'กรุณาใส่เฉพาะตัวเลขเท่านั้น',
+                                                    ]" maxlength="10"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" lg="5" class="pt-0">
                                                 <p>เลขที่ใบขับขี่</p>
@@ -737,6 +760,7 @@ export default {
             address: '',
             image: null,
             licenseId: '',
+            tel: '',
         })
 
         const dataLicense = ref('');
@@ -1055,7 +1079,6 @@ export default {
                     const formdata = new FormData();
                     formdata.append('image', sendData.value.image)
                     await imgService.uploadimg(formdata).then(async (res) => {
-
                         if (res.message === 'ok') {
                             let CheckToken = '';
                             if (store.state.role === 'security') {
@@ -1080,6 +1103,7 @@ export default {
                                 personImgUrl: res.data.filePath,
                                 cdataId: sendData.value._id,
                                 timeStamp: sendData.value.time,
+                                visitorTel: sendData.value.tel,
                             }
                             await lp.CreateLP(park, data, token).then(async (res) => {
                                 if (res.message === 'ok' || res.data.message === 'This license has been added') {
@@ -1097,6 +1121,7 @@ export default {
                                         name: '',
                                         identityNumber: '',
                                         address: '',
+                                        tel: '',
                                     };
                                     document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
                                 } else if (res.data.message === 'validate error') {
@@ -1164,9 +1189,10 @@ export default {
                         cdataId: sendData.value._id,
                         timeStamp: sendData.value.time,
 
-                        driverLicenseId: sendData.value.licenseId
+                        driverLicenseId: sendData.value.licenseId,
+
+                        visitorTel: sendData.value.tel,
                     }
-                    // console.log("Data in submit by licenseId", data)
                     await lp.CreateLP(park, data, token).then(async (res) => {
                         if (res.message === 'ok' || res.data.message === 'This license has been added') {
                             Swal.fire({
@@ -1183,6 +1209,7 @@ export default {
                                 name: '',
                                 identityNumber: '',
                                 address: '',
+                                tel: '',
                             };
                             document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
                         } else if (res.data.message === 'validate error') {
@@ -1539,6 +1566,7 @@ export default {
             sendData.value.identityNumber = '';
             sendData.value.address = '';
             sendData.value.licenseId = '';
+            sendData.value.tel = '';
         }
 
         return {

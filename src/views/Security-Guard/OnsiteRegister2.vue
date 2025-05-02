@@ -115,255 +115,336 @@
                     </v-sheet>
                 </v-col>
 
+                <!-- //NOTE - Tab for Switch Car and Person -->
+                <v-col cols="12">
+                    <v-toolbar density="comfortable" style="background-color: #F57F17; font-size: 20px;">
+                        <v-toolbar-title>
+                            <p style="font-size: 22px; font-weight: bold;" class="d-flex align-center">
+                                <v-icon size="small"
+                                    class="mr-2">mdi-file-document-edit-outline</v-icon>ข้อมูลผู้มาติดต่อ
+                            </p>
+                        </v-toolbar-title>
+                        <template v-slot:extension>
+                            <v-tabs v-model="tabs" bg-color="" align-tabs="center">
+                                <v-tab value="car">
+                                    <p style="font-size: 18px;font-weight: bold;">มียานหาหนะ</p>
+                                </v-tab>
+                                <v-tab value="person">
+                                    <p style="font-size: 18px;font-weight: bold;">ไม่มียานหาหนะ</p>
+                                </v-tab>
+                            </v-tabs>
+                        </template>
+                    </v-toolbar>
+                    <v-card variant="flat" style="background-color: #FAFAFA; color: black;height: 43vh;" class="pt-5">
+                        <v-tabs-window v-model="tabs">
 
-                <v-col :cols="isHorizontal ? 5 : 7" class="px-0 pb-0">
-                    <v-sheet width="100%" height="100%" class="d-flex align-start justify-center"
-                        :class="isHorizontal ? 'pt-5' : 'pt-0'" style="background-color: #EEEEEE;">
-                        <v-card v-if="selectedCar" style="background-color:  #FAFAFA; color: grey;" width="95%">
-                            <v-toolbar density="comfortable" color="primary">
-                                <v-toolbar-title style="display: flex; justify-content: start;">
-                                    <p style="font-size: 27px; font-weight: bold; height: 50px;"
-                                        class="d-flex align-center">
-                                        <v-icon size="small" class="mr-2">mdi-car</v-icon>ข้อมูลรถ
-                                    </p>
-                                </v-toolbar-title>
-                            </v-toolbar>
-                            <div class="pa-5">
-                                <v-row class="d-flex align-center px-3 pb-3 pt-5" style="color: black;">
-                                    <v-col cols="4" class="text-start pb-5 pt-0">
-                                        <p style="font-size: 1.2rem;">ทะเบียนรถ</p>
-                                    </v-col>
-                                    <v-col cols="8" class="pa-0 ">
-                                        <v-text-field v-model="sendData.licensePlate.License"
-                                            placeholder="ระบุทะเบียนรถ" variant="outlined" density="comfortable"
-                                            required :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="4" class="text-start py-2 pt-0">
-                                        <p style="font-size: 1.2rem;">เวลาเข้า</p>
-                                    </v-col>
-                                    <v-col cols="8" class="pa-0 py-2">
-                                        <v-text-field readonly v-model="formatTime" placeholder="เวลาเข้า"
-                                            variant="outlined" density="comfortable"></v-text-field>
-                                    </v-col>
-                                    <v-col cols="4" class="pb-5 pt-0">
-                                        <p style="font-size: 1.2rem;">ประเภทยานพาหนะ</p>
-                                    </v-col>
-                                    <v-col cols="8" class="pa-0">
-                                        <v-select v-model="sendData.vehicleType" placeholder="ระบุประเภทยานพาหนะ"
-                                            variant="outlined" density="comfortable" :items="vehicleList"
-                                            item-title="name" item-value="value" required
-                                            :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
-                                    </v-col>
-                                </v-row>
-                                <v-divider :thickness="2"></v-divider>
-                                <div class="pt-5 mb-3">
-                                    <p class="d-flex align-center justify-center"
-                                        v-if="selectedCar.msg === 'บุคคลภายนอก'"
-                                        style="font-size: 3.5rem; background-color: #E53935;color:#FAFAFA ; font-weight: bold;height: 100px;border-radius: 10px;">
-                                        {{ selectedCar.msg }}
-                                        <!-- <span style="font-size: 1.5rem; color: #F57F17;">(กรุณาลงทะเบียน)</span> -->
-                                    </p>
-                                    <p class="d-flex align-center justify-center"
-                                        v-if="selectedCar.msg === 'บุคคลภายใน'"
-                                        style="font-size: 3.5rem;background-color: #66BB6A; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
-                                        {{ selectedCar.msg }}
-                                    </p>
-                                    <p class="d-flex align-center justify-center"
-                                        v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                                        style="font-size: 3.5rem;background-color: #F57F17; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
-                                        ผู้ติดต่อที่ลงทะเบียน</p>
-                                </div>
-
-                                <v-row class="pt-1">
-                                    <v-col cols="6" class="">
-                                        <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img>
-                                    </v-col>
-                                    <v-col cols="6" class="">
-                                        <v-img :src="baseUrl + selectedCar.platesPhoto2" width="100%"></v-img>
-                                    </v-col>
-                                    <v-col cols="12" class="d-flex align-center justify-center">
-                                        <v-row>
-                                            <v-col cols="12" class="pa-0 text-center">
-                                                <h1 style="font-size: 3.5rem; color: black;" class="font-weight-bold">
-                                                    ทะเบียน : {{ selectedCar.licensePlate.License }}
-                                                </h1>
-                                            </v-col>
-                                            <!-- <v-col cols="12" class="pa-0 text-center">
-                                <p v-if="selectedCar.msg === 'บุคคลภายนอก'" style="font-size: 2rem; color: #E53935;">
-                                    {{ selectedCar.msg }} <br />
-                                    <span style="font-size: 1.5rem; color: #F57F17;">(กรุณาลงทะเบียน)</span>
-                                </p>
-                                <p v-if="selectedCar.msg === 'บุคคลภายใน'" style="font-size: 2rem; color: #66BB6A;">
-                                    {{ selectedCar.msg }}
-                                </p>
-                                <p v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                                    style="font-size: 2rem; color: #F57F17;">ผู้ติดต่อที่ลงทะเบียน</p>
-                            </v-col> -->
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </div>
-                        </v-card>
-                    </v-sheet>
-                </v-col>
-
-                <v-col :cols="isHorizontal ? 4 : 5" class="pl-0 pb-0">
-                    <v-sheet width="100%" height="100%" class="pa-0 pr-3" :class="isHorizontal ? 'pt-5' : 'pt-0'"
-                        style="background-color: #EEEEEE;">
-                        <v-toolbar density="comfortable" style="background-color: #F57F17; font-size: 20px;">
-                            <v-toolbar-title>
-                                <p style="font-size: 22px; font-weight: bold;" class="d-flex align-center">
-                                    <v-icon size="small" class="mr-2">mdi-file-document-edit-outline</v-icon>ลงทะเบียน
-                                </p>
-                            </v-toolbar-title>
-                            <template v-slot:extension>
-                                <v-tabs v-model="activeTab" align-tabs="center">
-                                    <v-tab value="id">
-                                        <p style="font-size: 18px; font-weight: bold;">บัตรประชาชน</p>
-                                    </v-tab>
-                                    <v-tab value="license">
-                                        <p style="font-size: 18px; font-weight: bold;">ใบขับขี่</p>
-                                    </v-tab>
-                                </v-tabs>
-                            </template>
-                        </v-toolbar>
-                        <v-card class="pa-4" style="background-color: #FAFAFA; color: black;">
-                            <v-tabs-window v-model="activeTab">
-
-                                <!-- //NOTE - form ของ บัตรประชาชน -->
-                                <v-tabs-window-item value="id">
-                                    <v-form fast-fail @submit.prevent="submit">
-                                        <v-row class="d-flex align-top pb-2 px-3">
-                                            <v-col v-if="loading" class="pa-2">
-                                                <div>
-                                                    <v-progress-linear color="cyan" indeterminate></v-progress-linear>
-                                                </div>
-                                            </v-col>
-                                            <v-col cols="12" class="pb-0 pr-0">
-                                                <v-row class="pa-3">
-                                                    <v-col cols="5" lg="5" class="pa-0">
-                                                        <p style="font-size: 20px; font-weight: bold;"
+                            <!-- //NOTE - Form for Car -->
+                            <v-tabs-window-item value="car">
+                                <v-row>
+                                    <v-col :cols="isHorizontal ? 5 : 7" class="px-0 pb-0">
+                                        <v-sheet width="100%" height="100%" class="d-flex align-start justify-center"
+                                            :class="isHorizontal ? 'pt-5' : 'pt-0'" style="background-color: #FAFAFA;">
+                                            <v-card v-if="selectedCar" style="background-color:  #FAFAFA; color: grey;"
+                                                width="95%">
+                                                <v-toolbar density="comfortable" color="primary">
+                                                    <v-toolbar-title style="display: flex; justify-content: start;">
+                                                        <p style="font-size: 27px; font-weight: bold; height: 50px;"
                                                             class="d-flex align-center">
-                                                            <v-icon icon="mdi-card-account-details" size="small"
-                                                                class="mr-2"></v-icon>ข้อมูลคนขับ
+                                                            <v-icon size="small" class="mr-2">mdi-car</v-icon>ข้อมูลรถ
                                                         </p>
-                                                    </v-col>
-                                                    <v-col cols="7" class="pa-0 text-end">
-                                                        <!-- <v-btn color="primary" @click="readIDCard()"><v-icon
-                                                                class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn> -->
-                                                        <v-btn :ripple="false" class="ml-2" color="black" variant="text"
-                                                            icon="mdi-refresh" size="small"
-                                                            @click="resetSendData"></v-btn>
-                                                    </v-col>
-                                                </v-row>
-                                            </v-col>
-                                            <v-col cols="12" lg="5">
-                                                <p>รูปภาพ</p>
-                                            </v-col>
-                                            <v-col cols="12" lg="7" class="d-flex align-center justify-center">
-                                                <img id="Photo" src="../../assets/Logo-Sunsweet-Final.svg" alt="image"
-                                                    style="width: 130px;">
-                                            </v-col>
-                                            <v-col cols="12" lg="5" class="text-start pt-2">
-                                                <p>เลขประจำตัวประชาชน</p>
-                                            </v-col>
-                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                                <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined"
-                                                    density="compact" v-model="sendData.identityNumber"
-                                                    :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
-                                                    required maxlength="13" hide-details="auto"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" lg="5" class="text-start pt-2">
-                                                <p>ชื่อ-นามสกุล</p>
-                                            </v-col>
-                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                                <v-text-field density="compact" variant="outlined"
-                                                    placeholder="ระบุชื่อ-นามสกุล" v-model="sendData.name"
-                                                    :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
-                                                    required hide-details="auto"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" lg="5" class="pt-2">
-                                                <p>ที่อยู่</p>
-                                            </v-col>
-                                            <v-col cols="12" lg="7" class="pa-0 d-flex align-top">
-                                                <v-textarea variant="outlined" placeholder="ระบุที่อยู่" rows="2"
-                                                    v-model="sendData.address"
-                                                    :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']"
-                                                    required auto-grow></v-textarea>
-                                            </v-col>
-                                        </v-row>
-                                        <v-divider class="mt-2" :thickness="2"></v-divider>
-                                        <v-card-actions class="px-0">
-                                            <v-btn variant="flat"
-                                                :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
-                                                type="submit" color="#66BB6A" width="100%" class="mt-4"
-                                                size="large">บันทึกขาเข้า
-                                                <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
-                                        </v-card-actions>
-                                        <CheckOut @update="getData()" />
-                                    </v-form>
-                                </v-tabs-window-item>
+                                                    </v-toolbar-title>
+                                                </v-toolbar>
+                                                <div class="pa-5">
+                                                    <v-row class="d-flex align-center px-3 pb-3 pt-5"
+                                                        style="color: black;">
+                                                        <v-col cols="4" class="text-start pb-5 pt-0">
+                                                            <p style="font-size: 1.2rem;">ทะเบียนรถ</p>
+                                                        </v-col>
+                                                        <v-col cols="8" class="pa-0 ">
+                                                            <v-text-field v-model="sendData.licensePlate.License"
+                                                                placeholder="ระบุทะเบียนรถ" variant="outlined"
+                                                                density="comfortable" required
+                                                                :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="4" class="text-start py-2 pt-0">
+                                                            <p style="font-size: 1.2rem;">เวลาเข้า</p>
+                                                        </v-col>
+                                                        <v-col cols="8" class="pa-0 py-2">
+                                                            <v-text-field readonly v-model="formatTime"
+                                                                placeholder="เวลาเข้า" variant="outlined"
+                                                                density="comfortable"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="4" class="pb-5 pt-0">
+                                                            <p style="font-size: 1.2rem;">ประเภทยานพาหนะ</p>
+                                                        </v-col>
+                                                        <v-col cols="8" class="pa-0">
+                                                            <v-select v-model="sendData.vehicleType"
+                                                                placeholder="ระบุประเภทยานพาหนะ" variant="outlined"
+                                                                density="comfortable" :items="vehicleList"
+                                                                item-title="name" item-value="value" required
+                                                                :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
+                                                        </v-col>
+                                                    </v-row>
+                                                    <v-divider :thickness="2"></v-divider>
+                                                    <div class="pt-5 mb-3">
+                                                        <p class="d-flex align-center justify-center"
+                                                            v-if="selectedCar.msg === 'บุคคลภายนอก'"
+                                                            style="font-size: 3.5rem; background-color: #E53935;color:#FAFAFA ; font-weight: bold;height: 100px;border-radius: 10px;">
+                                                            {{ selectedCar.msg }}
+                                                            <!-- <span style="font-size: 1.5rem; color: #F57F17;">(กรุณาลงทะเบียน)</span> -->
+                                                        </p>
+                                                        <p class="d-flex align-center justify-center"
+                                                            v-if="selectedCar.msg === 'บุคคลภายใน'"
+                                                            style="font-size: 3.5rem;background-color: #66BB6A; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
+                                                            {{ selectedCar.msg }}
+                                                        </p>
+                                                        <p class="d-flex align-center justify-center"
+                                                            v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                                            style="font-size: 3.5rem;background-color: #F57F17; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
+                                                            ผู้ติดต่อที่ลงทะเบียน</p>
+                                                    </div>
 
-                                <!-- //NOTE - form ของ ใบขับบี่ -->
-                                <v-tabs-window-item value="license">
-                                    <v-form fast-fail @submit.prevent="submitBylicenseId">
-                                        <v-row class="d-flex align-top pb-2 px-3">
-                                            <v-col cols="12" class="pb-0 pr-0">
-                                                <p style="font-size: 20px; font-weight: bold;"
-                                                    class="d-flex align-center">
-                                                    <v-icon icon="mdi-card-account-details" size="small"
-                                                        class="mr-2"></v-icon>ข้อมูลคนขับ
-                                                    <v-spacer></v-spacer>
-                                                    <v-btn :ripple="false" class="ml-2" color="black" variant="text"
-                                                        icon="mdi-refresh" size="small" @click="resetSendData"></v-btn>
-                                                </p>
-                                            </v-col>
-                                            <v-col cols="12" lg="5" class="text-start pt-2">
-                                                <p>เลขประจำตัวประชาชน</p>
-                                            </v-col>
-                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                                <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined"
-                                                    density="compact" v-model="sendData.identityNumber"
-                                                    :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
-                                                    required maxlength="13" hide-details="auto"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" lg="5" class="text-start pt-2">
-                                                <p>ชื่อ-นามสกุล</p>
-                                            </v-col>
-                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                                <v-text-field density="compact" variant="outlined"
-                                                    placeholder="ระบุชื่อ-นามสกุล" v-model="sendData.name"
-                                                    :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
-                                                    required hide-details="auto"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" lg="5" class="pt-0">
-                                                <p>เลขที่ใบขับขี่</p>
-                                            </v-col>
-                                            <v-col cols="12" lg="7" class="pa-0 d-flex align-top">
-                                                <v-text-field density="compact" variant="outlined"
-                                                    placeholder="ระบุเลขที่ใบขับขี่" v-model="sendData.licenseId"
-                                                    :rules="sendData.licenseId ? [] : [v => !!v || 'โปรดระบุเลขที่ใบขับขี่']"
-                                                    required hide-details="auto"></v-text-field>
-                                            </v-col>
-                                            <v-col class="pa-0">
-                                                <v-textarea class="hidden-textarea" auto-grow ref="inputField"
-                                                    v-model="dataLicense"></v-textarea>
-                                            </v-col>
-                                        </v-row>
-                                        <v-divider class="mt-8" :thickness="2"></v-divider>
-                                        <v-card-actions class="px-0">
-                                            <v-btn variant="flat"
-                                                :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
-                                                type=" submit" color="#66BB6A" width="100%" class="mt-4"
-                                                size="large">บันทึกขาเข้า
-                                                <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
-                                        </v-card-actions>
-                                        <CheckOut @update="getData()" />
-                                    </v-form>
-                                </v-tabs-window-item>
-                            </v-tabs-window>
-                        </v-card>
-                    </v-sheet>
+                                                    <v-row class="pt-1">
+                                                        <v-col cols="6" class="">
+                                                            <v-img :src="baseUrl + selectedCar.platesPhoto"
+                                                                width="100%"></v-img>
+                                                        </v-col>
+                                                        <v-col cols="6" class="">
+                                                            <v-img :src="baseUrl + selectedCar.platesPhoto2"
+                                                                width="100%"></v-img>
+                                                        </v-col>
+                                                        <v-col cols="12" class="d-flex align-center justify-center">
+                                                            <v-row>
+                                                                <v-col cols="12" class="pa-0 text-center">
+                                                                    <h1 style="font-size: 3.5rem; color: black;"
+                                                                        class="font-weight-bold">
+                                                                        ทะเบียน : {{ selectedCar.licensePlate.License }}
+                                                                    </h1>
+                                                                </v-col>
+                                                            </v-row>
+                                                        </v-col>
+                                                    </v-row>
+                                                </div>
+                                            </v-card>
+                                        </v-sheet>
+                                    </v-col>
+
+                                    <v-col :cols="isHorizontal ? 4 : 5" class="pl-0 pb-0">
+                                        <v-sheet width="100%" height="100%" class="pa-0 pr-3"
+                                            :class="isHorizontal ? 'pt-5' : 'pt-0'" style="background-color: #FAFAFA;">
+                                            <v-toolbar density="comfortable"
+                                                style="background-color: #F57F17; font-size: 20px;">
+                                                <v-toolbar-title>
+                                                    <p style="font-size: 22px; font-weight: bold;"
+                                                        class="d-flex align-center">
+                                                        <v-icon size="small"
+                                                            class="mr-2">mdi-file-document-edit-outline</v-icon>ลงทะเบียน
+                                                    </p>
+                                                </v-toolbar-title>
+                                                <template v-slot:extension>
+                                                    <v-tabs v-model="activeTab" align-tabs="center">
+                                                        <v-tab value="id">
+                                                            <p style="font-size: 18px; font-weight: bold;">บัตรประชาชน
+                                                            </p>
+                                                        </v-tab>
+                                                        <v-tab value="license">
+                                                            <p style="font-size: 18px; font-weight: bold;">ใบขับขี่</p>
+                                                        </v-tab>
+                                                    </v-tabs>
+                                                </template>
+                                            </v-toolbar>
+                                            <v-card class="pa-4" style="background-color: #FAFAFA; color: black;">
+                                                <v-tabs-window v-model="activeTab">
+
+                                                    <!-- //NOTE - form ของ บัตรประชาชน -->
+                                                    <v-tabs-window-item value="id">
+                                                        <v-form fast-fail @submit.prevent="submit">
+                                                            <v-row class="d-flex align-top pb-2 px-3">
+                                                                <v-col v-if="loading" class="pa-2">
+                                                                    <div>
+                                                                        <v-progress-linear color="cyan"
+                                                                            indeterminate></v-progress-linear>
+                                                                    </div>
+                                                                </v-col>
+                                                                <v-col cols="12" class="pb-0 pr-0">
+                                                                    <v-row class="pa-3">
+                                                                        <v-col cols="5" lg="5" class="pa-0">
+                                                                            <p style="font-size: 20px; font-weight: bold;"
+                                                                                class="d-flex align-center">
+                                                                                <v-icon icon="mdi-card-account-details"
+                                                                                    size="small"
+                                                                                    class="mr-2"></v-icon>ข้อมูลคนขับ
+                                                                            </p>
+                                                                        </v-col>
+                                                                        <v-col cols="7" class="pa-0 text-end">
+                                                                            <!-- <v-btn color="primary" @click="readIDCard()"><v-icon
+                                                                class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn> -->
+                                                                            <v-btn :ripple="false" class="ml-2"
+                                                                                color="black" variant="text"
+                                                                                icon="mdi-refresh" size="small"
+                                                                                @click="resetSendData"></v-btn>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5">
+                                                                    <p>รูปภาพ</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7"
+                                                                    class="d-flex align-center justify-center">
+                                                                    <img id="Photo"
+                                                                        src="../../assets/Logo-Sunsweet-Final.svg"
+                                                                        alt="image" style="width: 130px;">
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="text-start pt-2">
+                                                                    <p>เลขประจำตัวประชาชน</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field placeholder="ระบุเลขประจำตัวประชาชน"
+                                                                        variant="outlined" density="compact"
+                                                                        v-model="sendData.identityNumber"
+                                                                        :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
+                                                                        required maxlength="13"
+                                                                        hide-details="auto"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="text-start pt-2">
+                                                                    <p>ชื่อ-นามสกุล</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field density="compact" variant="outlined"
+                                                                        placeholder="ระบุชื่อ-นามสกุล"
+                                                                        v-model="sendData.name"
+                                                                        :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
+                                                                        required hide-details="auto"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>เบอร์โทรศัพท์</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field type="tel" density="compact"
+                                                                        variant="outlined"
+                                                                        placeholder="ระบุเบอร์โทรศัพท์"
+                                                                        v-model="sendData.tel" hide-details="auto"
+                                                                        :rules="[
+                                                                            v => !!v || 'กรุณาระบุเบอร์โทรศัพท์',
+                                                                            v => /^[0-9]*$/.test(v) || 'กรุณาใส่เฉพาะตัวเลขเท่านั้น',
+                                                                        ]" maxlength="10"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>ที่อยู่</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 d-flex align-top">
+                                                                    <v-textarea variant="outlined"
+                                                                        placeholder="ระบุที่อยู่" rows="2"
+                                                                        v-model="sendData.address"
+                                                                        :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']"
+                                                                        required auto-grow></v-textarea>
+                                                                </v-col>
+                                                            </v-row>
+                                                            <v-divider class="mt-2" :thickness="2"></v-divider>
+                                                            <v-card-actions class="px-0">
+                                                                <v-btn variant="flat"
+                                                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
+                                                                    type="submit" color="#66BB6A" width="100%"
+                                                                    class="mt-4" size="large">บันทึกขาเข้า
+                                                                    <v-icon
+                                                                        class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
+                                                            </v-card-actions>
+                                                            <CheckOut @update="getData()" />
+                                                        </v-form>
+                                                    </v-tabs-window-item>
+
+                                                    <!-- //NOTE - form ของ ใบขับบี่ -->
+                                                    <v-tabs-window-item value="license">
+                                                        <v-form fast-fail @submit.prevent="submitBylicenseId">
+                                                            <v-row class="d-flex align-top pb-2 px-3">
+                                                                <v-col cols="12" class="pb-0 pr-0">
+                                                                    <p style="font-size: 20px; font-weight: bold;"
+                                                                        class="d-flex align-center">
+                                                                        <v-icon icon="mdi-card-account-details"
+                                                                            size="small"
+                                                                            class="mr-2"></v-icon>ข้อมูลคนขับ
+                                                                        <v-spacer></v-spacer>
+                                                                        <v-btn :ripple="false" class="ml-2"
+                                                                            color="black" variant="text"
+                                                                            icon="mdi-refresh" size="small"
+                                                                            @click="resetSendData"></v-btn>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="text-start pt-2">
+                                                                    <p>เลขประจำตัวประชาชน</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field placeholder="ระบุเลขประจำตัวประชาชน"
+                                                                        variant="outlined" density="compact"
+                                                                        v-model="sendData.identityNumber"
+                                                                        :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
+                                                                        required maxlength="13"
+                                                                        hide-details="auto"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="text-start pt-2">
+                                                                    <p>ชื่อ-นามสกุล</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field density="compact" variant="outlined"
+                                                                        placeholder="ระบุชื่อ-นามสกุล"
+                                                                        v-model="sendData.name"
+                                                                        :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
+                                                                        required hide-details="auto"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>เบอร์โทรศัพท์</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field type="tel" density="compact"
+                                                                        variant="outlined"
+                                                                        placeholder="ระบุเบอร์โทรศัพท์"
+                                                                        v-model="sendData.tel" hide-details="auto"
+                                                                        :rules="[
+                                                                            v => !!v || 'กรุณาระบุเบอร์โทรศัพท์',
+                                                                            v => /^[0-9]*$/.test(v) || 'กรุณาใส่เฉพาะตัวเลขเท่านั้น',
+                                                                        ]" maxlength="10"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-0">
+                                                                    <p>เลขที่ใบขับขี่</p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 d-flex align-top">
+                                                                    <v-text-field density="compact" variant="outlined"
+                                                                        placeholder="ระบุเลขที่ใบขับขี่"
+                                                                        v-model="sendData.licenseId"
+                                                                        :rules="sendData.licenseId ? [] : [v => !!v || 'โปรดระบุเลขที่ใบขับขี่']"
+                                                                        required hide-details="auto"></v-text-field>
+                                                                </v-col>
+                                                                <v-col class="pa-0">
+                                                                    <v-textarea class="hidden-textarea" auto-grow
+                                                                        ref="inputField"
+                                                                        v-model="dataLicense"></v-textarea>
+                                                                </v-col>
+                                                            </v-row>
+                                                            <v-divider class="mt-8" :thickness="2"></v-divider>
+                                                            <v-card-actions class="px-0">
+                                                                <v-btn variant="flat"
+                                                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
+                                                                    type=" submit" color="#66BB6A" width="100%"
+                                                                    class="mt-4" size="large">บันทึกขาเข้า
+                                                                    <v-icon
+                                                                        class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
+                                                            </v-card-actions>
+                                                            <CheckOut @update="getData()" />
+                                                        </v-form>
+                                                    </v-tabs-window-item>
+                                                </v-tabs-window>
+                                            </v-card>
+                                        </v-sheet>
+                                    </v-col>
+                                </v-row>
+                            </v-tabs-window-item>
+
+                            <!-- //NOTE - Form for Person -->
+                            <v-tabs-window-item value="person">
+
+                            </v-tabs-window-item>
+                        </v-tabs-window>
+                    </v-card>
                 </v-col>
                 <v-col v-if="!isHorizontal" cols="12">
                     <!-- <RemainTable ref="remainTable" /> -->
@@ -430,228 +511,6 @@
                 </v-col>
             </v-row>
         </div>
-
-
-        <!-- <v-sheet width="60%" height="100vh" class="d-flex pt-5 align-start justify-center"
-            style="background-color: #EEEEEE;">
-            <v-card v-if="selectedCar" style="background-color:  #FAFAFA; color: grey;" width="95%">
-                <v-toolbar density="comfortable" color="primary">
-                    <v-toolbar-title style="display: flex; justify-content: start;">
-                        <p style="font-size: 27px; font-weight: bold; height: 50px;" class="d-flex align-center">
-                            <v-icon size="small" class="mr-2">mdi-car</v-icon>ข้อมูลรถ
-                        </p>
-                    </v-toolbar-title>
-                </v-toolbar>
-                <div class="pa-5">
-                    <v-row class="d-flex align-center px-3 pb-3 pt-5" style="color: black;">
-                        <v-col cols="4" class="text-start pb-5 pt-0">
-                            <p style="font-size: 1.4rem;">ทะเบียนรถ</p>
-                        </v-col>
-                        <v-col cols="8" class="pa-0 ">
-                            <v-text-field v-model="sendData.licensePlate.License" placeholder="ระบุทะเบียนรถ"
-                                variant="outlined" density="comfortable" required
-                                :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']"></v-text-field>
-                        </v-col>
-                        <v-col cols="4" class="text-start py-2 pt-0">
-                            <p style="font-size: 1.4rem;">เวลาเข้า</p>
-                        </v-col>
-                        <v-col cols="8" class="pa-0 py-2">
-                            <v-text-field readonly v-model="formatTime" placeholder="เวลาเข้า" variant="outlined"
-                                density="comfortable"></v-text-field>
-                        </v-col>
-                        <v-col cols="4" class="pb-5 pt-0">
-                            <p style="font-size: 1.4rem;">ประเภทยานพาหนะ</p>
-                        </v-col>
-                        <v-col cols="8" class="pa-0">
-                            <v-select v-model="sendData.vehicleType" placeholder="ระบุประเภทยานพาหนะ" variant="outlined"
-                                density="comfortable" :items="vehicleList" item-title="name" item-value="value" required
-                                :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
-                        </v-col>
-                    </v-row>
-                    <v-divider :thickness="2"></v-divider>
-                    <div class="pt-5 mb-3">
-                        <p class="d-flex align-center justify-center" v-if="selectedCar.msg === 'บุคคลภายนอก'"
-                            style="font-size: 3.5rem; background-color: #E53935;color:#FAFAFA ; font-weight: bold;height: 100px;border-radius: 10px;">
-                            {{ selectedCar.msg }}
-                        </p>
-                        <p class="d-flex align-center justify-center" v-if="selectedCar.msg === 'บุคคลภายใน'"
-                            style="font-size: 3.5rem;background-color: #66BB6A; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
-                            {{ selectedCar.msg }}
-                        </p>
-                        <p class="d-flex align-center justify-center"
-                            v-if="selectedCar.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                            style="font-size: 3.5rem;background-color: #F57F17; color: #FAFAFA; font-weight: bold;height: 100px;border-radius: 10px;">
-                            ผู้ติดต่อที่ลงทะเบียน</p>
-                    </div>
-
-                    <v-row class="pt-1">
-                        <v-col cols="12" lg="6" class="">
-                            <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img>
-                        </v-col>
-                        <v-col cols="12" lg="6" class="">
-                            <v-img :src="baseUrl + selectedCar.platesPhoto2" width="100%"></v-img>
-                        </v-col>
-                        <v-col cols="12" class="d-flex align-center justify-center">
-                            <v-row>
-                                <v-col cols="12" class="pa-0 text-center">
-                                    <h1 style="font-size: 3.5rem; color: black;" class="font-weight-bold">
-                                        ทะเบียน : {{ selectedCar.licensePlate.License }}
-                                    </h1>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                </div>
-            </v-card>
-        </v-sheet> -->
-
-        <!-- <v-sheet width="40%" height="100vh" class="pa-0 pr-3 pt-5 overflow-y-auto" style="background-color: #EEEEEE;">
-            <v-toolbar density="comfortable" style="background-color: #F57F17; font-size: 20px;">
-                <v-toolbar-title>
-                    <p style="font-size: 22px; font-weight: bold;" class="d-flex align-center">
-                        <v-icon size="small" class="mr-2">mdi-file-document-edit-outline</v-icon>ลงทะเบียน
-                    </p>
-                </v-toolbar-title>
-                <template v-slot:extension>
-                    <v-tabs v-model="activeTab" align-tabs="center">
-                        <v-tab value="id">
-                            <p style="font-size: 18px; font-weight: bold;">บัตรประชาชน</p>
-                        </v-tab>
-                        <v-tab value="license">
-                            <p style="font-size: 18px; font-weight: bold;">ใบขับขี่</p>
-                        </v-tab>
-                    </v-tabs>
-                </template>
-            </v-toolbar>
-            <v-card class="pa-4" style="background-color: #FAFAFA; color: black;">
-                <v-tabs-window v-model="activeTab">
-                    <v-tabs-window-item value="id">
-                        <v-form fast-fail @submit.prevent="submit">
-                            <v-row class="d-flex align-top pb-2 px-3">
-                                <v-col v-if="loading" class="pa-2">
-                                    <div>
-                                        <v-progress-linear color="cyan" indeterminate></v-progress-linear>
-                                    </div>
-                                </v-col>
-                                <v-col cols="12" class="pb-0 pr-0">
-                                    <v-row class="pa-3">
-                                        <v-col cols="12" lg="5" class="pa-0">
-                                            <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
-                                                <v-icon icon="mdi-card-account-details" size="small"
-                                                    class="mr-2"></v-icon>ข้อมูลคนขับ
-                                            </p>
-                                        </v-col>
-                                        <v-col cols="12" lg="7" class="pa-0 text-lg-end">
-                                            <v-btn color="primary" @click="readIDCard()"><v-icon
-                                                    class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn>
-                                            <v-btn :ripple="false" class="ml-2" color="black" variant="text"
-                                                icon="mdi-refresh" size="small" @click="resetSendData"></v-btn>
-                                        </v-col>
-                                    </v-row>
-                                </v-col>
-                                <v-col cols="12" lg="5">
-                                    <p>รูปภาพ</p>
-                                </v-col>
-                                <v-col cols="12" lg="7" class="d-flex align-center justify-center">
-                                    <img id="Photo" src="../../assets/Logo-Sunsweet-Final.svg" alt="image"
-                                        style="width: 130px;">
-                                </v-col>
-                                <v-col cols="12" lg="5" class="text-start pt-2">
-                                    <p>เลขประจำตัวประชาชน</p>
-                                </v-col>
-                                <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                    <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined"
-                                        density="compact" v-model="sendData.identityNumber"
-                                        :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
-                                        required maxlength="13" hide-details="auto"></v-text-field>
-                                </v-col>
-                                <v-col cols="12" lg="5" class="text-start pt-2">
-                                    <p>ชื่อ-นามสกุล</p>
-                                </v-col>
-                                <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                    <v-text-field density="compact" variant="outlined" placeholder="ระบุชื่อ-นามสกุล"
-                                        v-model="sendData.name"
-                                        :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']" required
-                                        hide-details="auto"></v-text-field>
-                                </v-col>
-                                <v-col cols="12" lg="5" class="pt-0">
-                                    <p>ที่อยู่</p>
-                                </v-col>
-                                <v-col cols="12" lg="7" class="pa-0 d-flex align-top">
-                                    <v-textarea variant="outlined" placeholder="ระบุที่อยู่" rows="2"
-                                        v-model="sendData.address"
-                                        :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']" required
-                                        auto-grow></v-textarea>
-                                </v-col>
-                            </v-row>
-                            <v-divider class="mt-2" :thickness="2"></v-divider>
-                            <v-card-actions class="px-0">
-                                <v-btn variant="flat"
-                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
-                                    type="submit" color="#66BB6A" width="100%" class="mt-4" size="large">บันทึกขาเข้า
-                                    <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
-                            </v-card-actions>
-                            <CheckOut />
-                        </v-form>
-                    </v-tabs-window-item>
-
-                    <v-tabs-window-item value="license">
-                        <v-form fast-fail @submit.prevent="submitBylicenseId">
-                            <v-row class="d-flex align-top pb-2 px-3">
-                                <v-col cols="12" class="pb-0 pr-0">
-                                    <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
-                                        <v-icon icon="mdi-card-account-details" size="small"
-                                            class="mr-2"></v-icon>ข้อมูลคนขับ
-                                        <v-spacer></v-spacer>
-                                        <v-btn :ripple="false" class="ml-2" color="black" variant="text"
-                                            icon="mdi-refresh" size="small" @click="resetSendData"></v-btn>
-                                    </p>
-                                </v-col>
-                                <v-col cols="12" lg="5" class="text-start pt-2">
-                                    <p>เลขประจำตัวประชาชน</p>
-                                </v-col>
-                                <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                    <v-text-field placeholder="ระบุเลขประจำตัวประชาชน" variant="outlined"
-                                        density="compact" v-model="sendData.identityNumber"
-                                        :rules="[v => !!v || 'โปรดระบุเลขบัตรประจำตัว', v => /^[0-9]{1,13}$/.test(v) || 'กรุณาระบุเลขบัตร 13 หลัก']"
-                                        required maxlength="13" hide-details="auto"></v-text-field>
-                                </v-col>
-                                <v-col cols="12" lg="5" class="text-start pt-2">
-                                    <p>ชื่อ-นามสกุล</p>
-                                </v-col>
-                                <v-col cols="12" lg="7" class="pa-0 pb-2">
-                                    <v-text-field density="compact" variant="outlined" placeholder="ระบุชื่อ-นามสกุล"
-                                        v-model="sendData.name"
-                                        :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']" required
-                                        hide-details="auto"></v-text-field>
-                                </v-col>
-                                <v-col cols="12" lg="5" class="pt-0">
-                                    <p>เลขที่ใบขับขี่</p>
-                                </v-col>
-                                <v-col cols="12" lg="7" class="pa-0 d-flex align-top">
-                                    <v-text-field density="compact" variant="outlined" placeholder="ระบุเลขที่ใบขับขี่"
-                                        v-model="sendData.licenseId"
-                                        :rules="sendData.licenseId ? [] : [v => !!v || 'โปรดระบุเลขที่ใบขับขี่']"
-                                        required hide-details="auto"></v-text-field>
-                                </v-col>
-                                <v-col class="pa-0">
-                                    <v-textarea class="hidden-textarea" auto-grow ref="inputField"
-                                        v-model="dataLicense"></v-textarea>
-                                </v-col>
-                            </v-row>
-                            <v-divider class="mt-8" :thickness="2"></v-divider>
-                            <v-card-actions class="px-0">
-                                <v-btn variant="flat"
-                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
-                                    type=" submit" color="#66BB6A" width="100%" class="mt-4" size="large">บันทึกขาเข้า
-                                    <v-icon class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
-                            </v-card-actions>
-                            <CheckOut />
-                        </v-form>
-                    </v-tabs-window-item>
-                </v-tabs-window>
-            </v-card>
-        </v-sheet> -->
     </v-container>
 
     <!-- //NOTE - Print Form -->
@@ -721,49 +580,6 @@
                     </v-col>
                 </v-row>
             </div>
-
-            <!-- <div style="text-align: start;">
-                <div style="border: 1px solid black;">
-                    <h4 style="font-size: 8px; text-align: center;">
-                        ระเบียบปฏิบัติสำหรับบุคคลภายนอกที่เข้ามาติดต่อบริษัทฯ
-                    </h4>
-                </div>
-                <p style="font-size:7px; padding-top:0px; padding-bottom: 0px;">
-                    1. กรุณาติดบัตร VISITOR ตลอดเวลาที่อยู่ในบริษัทฯ <br />
-                    2. กรุณาจอดรถในพื้นที่ ที่บริษัทฯกำหนด และกรุณาดับเครื่องยนต์ทุกครั้งเพื่อลดมลภาวะทางอากาศ <br />
-                    3. ห้ามพกพาอาวุธ ของมึนเมา หรือสิ่งเสพติดทุกชนิดเข้ามาภายในบริษัทฯ <br />
-                    4. กรณีที่ต้องเข้าสายการผลิตต้องแต่งกายตามที่บริษัทฯ กำหนด <br />
-                    5. ห้ามพกพาวัตถุสิ่งของประเภทแก้วทุกชนิด เข้ามาภายในบริษัทฯ <br />
-                    6. ห้ามนำสิ่งของอื่น ออกนอกบริษัทฯ ก่อนได้รับอนุญาตจากเจ้าหน้าที่บริษัทฯ <br />
-                    7. ห้ามสูบบุหรี่ในอาคารบริษัทฯ และบริเวณรอบๆ พื้นที่ (เว้นแต่บริเวณที่บริษัทฯ จัดไว้ให้เท่านั้น)
-                </p>
-            </div>
-            <div style="text-align: start;">
-                <div style="border: 1px solid black;">
-                    <h4 style="font-size: 8px; text-align: center;">
-                        ระเบียบปฏิบัติด้านความปลอดภัยและการจัดการด้านสิ่งแวดล้อม ISO 14001
-                    </h4>
-                </div>
-                <p style="font-size:7px ; padding-top:0px; padding-bottom: 0px;">
-                    1. ปฏิบัติตามป้ายห้าม, ป้ายเตือนต่างๆ อย่างเคร่งครัดเพื่อความปลอดภัย และรักษาสภาพแวดล้อมของบริษัทฯ
-                    <br />
-                    2. รถยนต์/จักรยานยนต์ต้องมีการตรวจสอบน้ำมันรั่วไหลก่อนเข้าบริษัทฯ <br />
-                    3. ผู้รับเหมาต้องกำจัดขยะ และนำออกอย่างเหมาะสมไม่ปล่อยน้ำเสีย/ ไม่ก่อเสียงดัง/ไม่สร้างมลพิษ <br />
-                    4. ผู้รับเหมาต้องสวมอุปกรณ์ PPE ที่เหมาะสมเพื่อความปลอดภัยตามลักษณะความเสี่ยงของงาน <br />
-                    5. ผู้ที่เข้ามาติดต่อบริษัทฯ ต้องร่วมมือในการอนุรักษ์พลังงาน และใช้ทรัพยากรอย่างมีประสิทธิภาพ <br />
-                    6. รถรับเปลือกต้องไม่ปล่อยน้ำล้างเปลือกลงบนพื้นถนนและรางน้ำฝน <br />
-                    7. ขับรถในบริษัทฯ ด้วยความเร็วไม่เกิน ๑๐ ก.ม./ช.ม. เพื่อความปลอดภัย <br />
-                    8. ผู้มาติดต่อที่เข้าบริษัทต้องมีเจ้าหน้าที่ของบริษัทฯ พาเข้าพื้นที่ทุกครั้งเพื่อความปลอดภัย <br />
-                </p>
-            </div>
-            <div>
-                <div style="text-align: center;border: 1px solid black;">
-                    <p style="font-size: 9px; font-weight: bold; ; padding-top:0px; padding-bottom: 0px;">กรุณานำบัตร
-                        VISITOR คืนให้เจ้าหน้าที่ รปภ.
-                        ก่อนออกจากบริษัทฯ
-                        และต้องมีลายเซ็นของเจ้าหน้าที่บริษัทฯ จึงจะสามารถออกนอกบริษัทฯ ได้</p>
-                </div>
-            </div> -->
         </div>
     </div>
 
@@ -802,6 +618,7 @@ export default defineComponent({
             address: '',
             image: null,
             licenseId: '',
+            tel: '',
         })
 
         const dataLicense = ref('');
@@ -1119,7 +936,6 @@ export default defineComponent({
                     const formdata = new FormData();
                     formdata.append('image', sendData.value.image)
                     await imgService.uploadimg(formdata).then(async (res) => {
-
                         if (res.message === 'ok') {
                             let CheckToken = '';
                             if (store.state.role === 'security') {
@@ -1144,6 +960,7 @@ export default defineComponent({
                                 personImgUrl: res.data.filePath,
                                 cdataId: sendData.value._id,
                                 timeStamp: sendData.value.time,
+                                visitorTel: sendData.value.tel,
                             }
                             await lp.CreateLP(park, data, token).then(async (res) => {
                                 if (res.message === 'ok' || res.data.message === 'This license has been added') {
@@ -1161,6 +978,7 @@ export default defineComponent({
                                         name: '',
                                         identityNumber: '',
                                         address: '',
+                                        tel: '',
                                     };
                                     document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
                                     proxy.getData();
@@ -1229,7 +1047,8 @@ export default defineComponent({
                         cdataId: sendData.value._id,
                         timeStamp: sendData.value.time,
 
-                        driverLicenseId: sendData.value.licenseId
+                        driverLicenseId: sendData.value.licenseId,
+                        visitorTel: sendData.value.tel,
                     }
                     console.log("Data in submit by licenseId", data)
                     proxy.getData();
@@ -1249,6 +1068,7 @@ export default defineComponent({
                                 name: '',
                                 identityNumber: '',
                                 address: '',
+                                tel: '',
                             };
                             document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
                             this.getData();
@@ -1688,6 +1508,7 @@ export default defineComponent({
             sendData.value.identityNumber = '';
             sendData.value.address = '';
             sendData.value.licenseId = '';
+            sendData.value.tel = '';
         }
 
         return {
@@ -1761,6 +1582,10 @@ export default defineComponent({
         itemsPerPage: 10,
         startDate: new Date(),
         endDate: new Date(),
+        tabs: {
+            car: true,
+            person: false,
+        },
     }),
     mounted() {
         this.checkOrientation();
