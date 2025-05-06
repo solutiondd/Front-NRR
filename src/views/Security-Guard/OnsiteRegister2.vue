@@ -135,14 +135,15 @@
                             </v-tabs>
                         </template>
                     </v-toolbar>
-                    <v-card variant="flat" style="background-color: #FAFAFA; color: black;height: 43vh;" class="pt-5">
+                    <v-card style="background-color: #FAFAFA; color: black;height: 90%;" class="pt-5 pb-5">
                         <v-tabs-window v-model="tabs">
 
                             <!-- //NOTE - Form for Car -->
                             <v-tabs-window-item value="car">
                                 <v-row>
                                     <v-col :cols="isHorizontal ? 5 : 7" class="px-0 pb-0">
-                                        <v-sheet width="100%" height="100%" class="d-flex align-start justify-center"
+                                        <v-sheet width="100%" height="100%"
+                                            class="d-flex align-start justify-center pb-5"
                                             :class="isHorizontal ? 'pt-5' : 'pt-0'" style="background-color: #FAFAFA;">
                                             <v-card v-if="selectedCar" style="background-color:  #FAFAFA; color: grey;"
                                                 width="95%">
@@ -230,10 +231,10 @@
                                     </v-col>
 
                                     <v-col :cols="isHorizontal ? 4 : 5" class="pl-0 pb-0">
-                                        <v-sheet width="100%" height="100%" class="pa-0 pr-3"
+                                        <v-sheet width="100%" height="100%" class="pa-0 pr-3 pb-5"
                                             :class="isHorizontal ? 'pt-5' : 'pt-0'" style="background-color: #FAFAFA;">
                                             <v-toolbar density="comfortable"
-                                                style="background-color: #F57F17; font-size: 20px;">
+                                                style="background-color: #3949AB; font-size: 20px;">
                                                 <v-toolbar-title>
                                                     <p style="font-size: 22px; font-weight: bold;"
                                                         class="d-flex align-center">
@@ -249,6 +250,10 @@
                                                         </v-tab>
                                                         <v-tab value="license">
                                                             <p style="font-size: 18px; font-weight: bold;">ใบขับขี่</p>
+                                                        </v-tab>
+                                                        <v-tab value="person">
+                                                            <p style="font-size: 18px; font-weight: bold;">เอกสารอื่น ๆ
+                                                            </p>
                                                         </v-tab>
                                                     </v-tabs>
                                                 </template>
@@ -432,6 +437,55 @@
                                                             <CheckOut @update="getData()" />
                                                         </v-form>
                                                     </v-tabs-window-item>
+
+                                                    <!-- //NOTE - form ของ เอกสารอื่น ๆ -->
+                                                    <v-tabs-window-item value="person">
+                                                        <v-form fast-fail @submit.prevent="submitWOther">
+                                                            <v-row>
+                                                                <v-col>
+                                                                    <p style="font-size: 20px; font-weight: bold;"
+                                                                        class="d-flex align-center pb-4">
+                                                                        <v-icon icon="mdi-camera-plus" color="#3949AB"
+                                                                            size="small"
+                                                                            class="mr-2"></v-icon>กรุณาถ่ายรูปบัตร
+                                                                        หรือเอกสารอื่น ๆ
+                                                                    </p>
+                                                                    <video
+                                                                        style="border: 2px solid grey;border-radius: 10px;"
+                                                                        ref="videoRef" autoplay playsinline
+                                                                        width="100%"></video>
+                                                                    <v-btn class="mt-3" block @click="capture"
+                                                                        color="primary">
+                                                                        <v-icon icon="mdi-camera" size="small"
+                                                                            class="mr-2"></v-icon>
+                                                                        ถ่ายรูป
+                                                                    </v-btn>
+                                                                    <canvas ref="canvasRef" width="640" height="480"
+                                                                        style="display: none;"></canvas>
+
+                                                                    <br />
+
+                                                                    <p style="font-size: 20px; font-weight: bold;"
+                                                                        class="d-flex align-center pb-4">
+                                                                        <v-icon icon="mdi-camera-image" size="small"
+                                                                            class="mr-2"
+                                                                            color="#00897B"></v-icon>ตัวอย่างรูปภาพ
+                                                                    </p>
+                                                                    <img :src="capturedImage" alt="Captured image"
+                                                                        height="300" width="100%"
+                                                                        style="border: 1px solid grey; border-radius: 10px;"
+                                                                        v-if="capturedImage" />
+                                                                    <v-btn variant="flat"
+                                                                        :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
+                                                                        type="submit" color="#66BB6A" width="100%"
+                                                                        class="mt-4" size="large">บันทึกขาเข้า
+                                                                        <v-icon
+                                                                            class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
+                                                                    <CheckOut @update="getData()" />
+                                                                </v-col>
+                                                            </v-row>
+                                                        </v-form>
+                                                    </v-tabs-window-item>
                                                 </v-tabs-window>
                                             </v-card>
                                         </v-sheet>
@@ -441,7 +495,7 @@
 
                             <!-- //NOTE - Form for Person -->
                             <v-tabs-window-item value="person">
-
+                                <PersonRegister />
                             </v-tabs-window-item>
                         </v-tabs-window>
                     </v-card>
@@ -586,7 +640,7 @@
 </template>
 
 <script>
-import { ref, onMounted, toRaw, nextTick, watch, computed, defineComponent, getCurrentInstance } from 'vue'
+import { ref, onMounted, toRaw, nextTick, watch, computed, defineComponent, getCurrentInstance, onBeforeUnmount } from 'vue'
 import { openDB } from 'idb'
 import { formatitemdevice, dateFormat, dateFormatValue, dateFormatDayandTime, datetimeFormatLimit } from '../../function/day'
 import Swal from "sweetalert2";
@@ -598,6 +652,7 @@ import { ImageService } from "../../api/UploadImage";
 // import RemainTable from '../../components/Security-Guard/RemainTable.vue';
 import { StrangerService } from '../../api/ReportStranger';
 import DetailRemain from '../../components/Security-Guard/DetailRemain.vue';
+import PersonRegister from '../../components/Security-Guard/PersonRegister.vue';
 
 export default defineComponent({
     setup() {
@@ -626,6 +681,7 @@ export default defineComponent({
         const activeTab = ref({
             id: true,
             license: false,
+            person: false,
         });
 
         const sendDataLicense = ref({
@@ -1511,6 +1567,149 @@ export default defineComponent({
             sendData.value.tel = '';
         }
 
+        // ################################################## //
+        //NOTE - Function to Capture img from Web Cam
+        const videoRef = ref(null)
+        const canvasRef = ref(null)
+        const capturedImage = ref(null)
+
+        let stream = null
+
+        watch(activeTab, async (newTab) => {
+            if (newTab === 'person') {
+                await nextTick()
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true })
+                    if (videoRef.value) {
+                        videoRef.value.srcObject = stream
+                    } else {
+                        console.warn('videoRef ยังไม่พร้อมหลัง nextTick()')
+                    }
+                } catch (err) {
+                    console.error('ไม่สามารถเปิดกล้องได้:', err)
+                }
+            } else {
+                // ปิดกล้องเมื่อเปลี่ยนแท็บ
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop())
+                    stream = null
+                }
+            }
+        })
+
+        onBeforeUnmount(() => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop())
+            }
+        })
+
+        const capture = () => {
+            const video = videoRef.value
+            const canvas = canvasRef.value
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            capturedImage.value = canvas.toDataURL('image/png')
+        }
+
+        const submitWOther = async (event) => {
+            const res = await event
+            if (res.valid === true) {
+                if (!sendData.value._id || sendData.value._id === 'undefined') {
+                    Swal.fire({
+                        title: 'กรุณาเลือกทะเบียนรถ !!',
+                        html: '<h2>จากทางด้านซ้ายมือ</h2>',
+                        icon: 'warning',
+                    });
+                } else {
+                    const formdata = new FormData();
+                    formdata.append('image', sendData.value.image)
+                    await imgService.uploadimg(formdata).then(async (res) => {
+                        if (res.message === 'ok') {
+                            let CheckToken = '';
+                            if (store.state.role === 'security') {
+                                CheckToken = localStorage.getItem('retoken');
+                            } else {
+                                CheckToken = localStorage.getItem('token');
+                            }
+                            const token = CheckToken;
+                            const park = store.state.park;
+                            const data = {
+                                guestName: sendData.value.name,
+                                licensePlate: sendData.value.licensePlate.License,
+                                licensePlateProvince: '',
+                                start: dateFormatValue(sendData.value.time),
+                                listType: 'fixedlist',
+                                expire: '2025-12-31',
+
+                                identityNumber: sendData.value.identityNumber,
+                                address: sendData.value.address,
+                                vehicleType: sendData.value.vehicleType,
+                                cate: 'stranger',
+                                personImgUrl: res.data.filePath,
+                                cdataId: sendData.value._id,
+                                timeStamp: sendData.value.time,
+                                visitorTel: sendData.value.tel,
+                            }
+                            await lp.CreateLP(park, data, token).then(async (res) => {
+                                if (res.message === 'ok' || res.data.message === 'This license has been added') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: `บันทึกข้อมูลสำเร็จ!`,
+                                    });
+                                    await printForm();
+                                    await deleteFromIndexedDB(sendData.value.id);
+                                    sendData.value = {
+                                        msg: '',
+                                        licensePlate: { License: '' },
+                                        vehicleType: 'TRUCK',
+                                        time: new Date(),
+                                        name: '',
+                                        identityNumber: '',
+                                        address: '',
+                                        tel: '',
+                                    };
+                                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                                    proxy.getData();
+                                } else if (res.data.message === 'validate error') {
+                                    Swal.fire({
+                                        title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                                        icon: 'warning',
+                                    })
+                                }
+                                // else if (res.data.message === 'This license has been added') {
+                                //     Swal.fire({
+                                //         title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
+                                //         text: 'กรุณาลองใหม่อีกครั้ง',
+                                //         icon: 'warning',
+                                //         showConfirmButton: true,
+                                //         confirmButtonColor: '#E53935',
+                                //     })
+                                // } 
+                                else {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: `มีบางอย่างผิดพลาด !`,
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                    });
+                                }
+                            })
+                        } else {
+                            Swal.fire({
+                                title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
+                                html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
+                                icon: 'warning',
+                            });
+                        }
+                    })
+                }
+            }
+        }
+        // ################################################## //
+
         return {
             baseUrl,
             recentEntries,
@@ -1536,14 +1735,22 @@ export default defineComponent({
             sendDataLicense,
             submitBylicenseId,
             datetimeFormatLimit,
-            stranger
+            stranger,
+
+            //NOTE - Function to Capture img from Web Cam
+            videoRef,
+            canvasRef,
+            capturedImage,
+            capture,
+            submitWOther
         }
     },
     components: {
         QrcodeVue,
         CheckOut,
         // RemainTable,
-        DetailRemain
+        DetailRemain,
+        PersonRegister
     },
     computed: {
         formatTime() {

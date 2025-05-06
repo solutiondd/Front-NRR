@@ -115,7 +115,6 @@
                     </v-sheet>
                 </v-col>
 
-
                 <v-col :cols="isHorizontal ? 5 : 7" class="px-0 pb-0">
                     <v-sheet width="100%" height="100%" class="d-flex align-start justify-center"
                         :class="isHorizontal ? 'pt-5' : 'pt-0'" style="background-color: #EEEEEE;">

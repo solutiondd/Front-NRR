@@ -25,6 +25,7 @@
                         <p>วันที่เข้า : {{ data.start }}</p>
                         <p>เลขบัตรประจำตัว : {{ data.identityNumber }}</p>
                         <p>ที่อยู่ : {{ data.address }}</p>
+                        <p>เบอร์โทรศัพท์ : {{ data.visitorTel }}</p>
                     </v-col>
                     <v-col cols="12">
                         <h3 class="d-flex align-center pb-2"><v-icon size="small"
