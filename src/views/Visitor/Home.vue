@@ -114,6 +114,14 @@
                                     placeholder="ระบุประเภทยานพาหนะ" v-model="sendData.vehicleType" required
                                     :rules="[v => !!v || 'โปรดระบุประเภทยานพาหนะ']"></v-select>
                             </v-col>
+                            <v-col cols="12" class="py-0">
+                                <p class="pb-1 text-subtitle-1 text-medium-emphasis">ประเภทสิทธิ์ของยานพาหนะ
+                                    <span style="color: grey;" class="text-subtitle-1">(ไม่บังคับ)</span>
+                                </p>
+                                <v-select clearable prepend-inner-icon="mdi-car-cog" :items="PermissionCate"
+                                    item-title="name" item-value="value" variant="outlined" density="compact"
+                                    placeholder="ระบุสิทธิ์ของยานพาหนะ" v-model="sendData.PermissionVehicle"></v-select>
+                            </v-col>
                         </v-card>
                     </v-col>
 
@@ -196,6 +204,7 @@ export default {
             carColor: '',
             object: '',
             vehicleType: null,
+            PermissionVehicle: null,
 
             contactPerson: '',
             department: '',
@@ -206,6 +215,17 @@ export default {
             { name: 'รถยนต์', value: 'CAR' },
             { name: 'รถจักรยานยนต์', value: 'MOTORCYCLE' },
             { name: 'รถบรรทุก', value: 'TRUCK' },
+        ],
+        PermissionCate: [
+            { name: 'รถพนักงาน' },
+            { name: 'รถบริษัทฯ' },
+            { name: 'รถทอยกระป๋อง' },
+            { name: 'รถขนขยะ' },
+            { name: 'รถขนเศษข้าวโพด' },
+            { name: 'รถพ่อครัวแม่ครัว' },
+            { name: 'รถส่งข้าวโพดหัวตัด' },
+            { name: 'รถส่งมันหวาน' },
+            { name: 'รถส่งถั่วลายเสือ' },
         ],
         parkId: '67ca794c6330c7d2ca7f5585',
     }),
@@ -232,6 +252,7 @@ export default {
                     object: this.sendData.object,
                     cate: 'visitor',
                     vehicleType: this.sendData.vehicleType,
+                    category: this.sendData.PermissionVehicle,
 
                     contactPerson: this.sendData.contactPerson,
                     department: this.sendData.department,

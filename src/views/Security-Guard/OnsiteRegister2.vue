@@ -135,7 +135,7 @@
                             </v-tabs>
                         </template>
                     </v-toolbar>
-                    <v-card style="background-color: #FAFAFA; color: black;height: 90%;" class="pt-5 pb-5">
+                    <v-card style="background-color: #FAFAFA; color: black;height: 90%;" class="pt-1 pb-5">
                         <v-tabs-window v-model="tabs">
 
                             <!-- //NOTE - Form for Car -->
@@ -438,6 +438,7 @@
                                                         </v-form>
                                                     </v-tabs-window-item>
 
+                                                    <!-- ######################################################################################################### -->
                                                     <!-- //NOTE - form ของ เอกสารอื่น ๆ -->
                                                     <v-tabs-window-item value="person">
                                                         <v-form fast-fail @submit.prevent="submitWOther">
@@ -446,46 +447,69 @@
                                                                     <p style="font-size: 20px; font-weight: bold;"
                                                                         class="d-flex align-center pb-4">
                                                                         <v-icon icon="mdi-camera-plus" color="#3949AB"
-                                                                            size="small"
-                                                                            class="mr-2"></v-icon>กรุณาถ่ายรูปบัตร
-                                                                        หรือเอกสารอื่น ๆ
+                                                                            size="small" class="mr-2" />
+                                                                        กรุณาถ่ายรูปบัตร หรือเอกสารอื่น ๆ
                                                                     </p>
-                                                                    <video
-                                                                        style="border: 2px solid grey;border-radius: 10px;"
-                                                                        ref="videoRef" autoplay playsinline
-                                                                        width="100%"></video>
-                                                                    <v-btn class="mt-3" block @click="capture"
-                                                                        color="primary">
-                                                                        <v-icon icon="mdi-camera" size="small"
-                                                                            class="mr-2"></v-icon>
-                                                                        ถ่ายรูป
-                                                                    </v-btn>
-                                                                    <canvas ref="canvasRef" width="640" height="480"
-                                                                        style="display: none;"></canvas>
 
-                                                                    <br />
+                                                                    <v-row>
+                                                                        <v-col cols="12" class="py-2">
+                                                                            <!-- ✅ แสดง video เฉพาะตอนยังไม่ถ่าย -->
+                                                                            <video v-show="!isCapturedDoc"
+                                                                                ref="videoRef" autoplay playsinline
+                                                                                width="100%"
+                                                                                style="border: 2px solid grey; border-radius: 10px;" />
+                                                                            <canvas ref="canvasRef"
+                                                                                style="display: none;" />
+                                                                        </v-col>
+                                                                    </v-row>
 
-                                                                    <p style="font-size: 20px; font-weight: bold;"
-                                                                        class="d-flex align-center pb-4">
-                                                                        <v-icon icon="mdi-camera-image" size="small"
-                                                                            class="mr-2"
-                                                                            color="#00897B"></v-icon>ตัวอย่างรูปภาพ
-                                                                    </p>
-                                                                    <img :src="capturedImage" alt="Captured image"
-                                                                        height="300" width="100%"
-                                                                        style="border: 1px solid grey; border-radius: 10px;"
-                                                                        v-if="capturedImage" />
+
+
+                                                                    <div class="pt-5 d-flex justify-center">
+                                                                        <v-btn size="large" block @click="capture()"
+                                                                            color="primary" v-if="!isCapturedDoc">
+                                                                            <v-icon icon="mdi-camera-iris"
+                                                                                class="mr-2"></v-icon>
+                                                                            ถ่ายรูป
+                                                                        </v-btn>
+
+                                                                        <v-btn size="large" block
+                                                                            @click="retakeDocImage()" color="secondary"
+                                                                            v-else>
+                                                                            <v-icon icon="mdi-restart" size="small"
+                                                                                class="mr-2"></v-icon>
+                                                                            ลองใหม่อีกครั้ง
+                                                                        </v-btn>
+                                                                    </div>
+
+                                                                    <div class="pt-5" v-if="capturedImage">
+                                                                        <p style="font-size: 20px; font-weight: bold;"
+                                                                            class="d-flex align-center pb-4">
+                                                                            <v-icon icon="mdi-camera-image" size="small"
+                                                                                class="mr-2" color="#00897B" />
+                                                                            ตัวอย่างรูปภาพ
+                                                                        </p>
+                                                                        <!-- ✅ แสดงรูปภาพที่ถ่าย -->
+                                                                        <img v-if="capturedImage" :src="capturedImage"
+                                                                            alt="Captured image" width="100%"
+                                                                            style="border: 1px solid grey; border-radius: 10px;" />
+                                                                    </div>
+
                                                                     <v-btn variant="flat"
-                                                                        :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' || !sendData._id || sendData._id === 'undefined'"
+                                                                        :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
                                                                         type="submit" color="#66BB6A" width="100%"
-                                                                        class="mt-4" size="large">บันทึกขาเข้า
+                                                                        class="mt-4" size="large">
+                                                                        บันทึกขาเข้า
                                                                         <v-icon
-                                                                            class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
+                                                                            class="ml-2">mdi-tray-arrow-down</v-icon>
+                                                                    </v-btn>
+
                                                                     <CheckOut @update="getData()" />
                                                                 </v-col>
                                                             </v-row>
                                                         </v-form>
                                                     </v-tabs-window-item>
+                                                    <!-- ######################################################################################################### -->
                                                 </v-tabs-window>
                                             </v-card>
                                         </v-sheet>
@@ -636,7 +660,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -1572,6 +1595,10 @@ export default defineComponent({
         const videoRef = ref(null)
         const canvasRef = ref(null)
         const capturedImage = ref(null)
+        const UPimage = ref(null)
+        const MAX_SIZE = 24 * 1024
+
+        const isCapturedDoc = ref(false) // ✅ ตัวแปรควบคุมสถานะ
 
         let stream = null
 
@@ -1589,7 +1616,6 @@ export default defineComponent({
                     console.error('ไม่สามารถเปิดกล้องได้:', err)
                 }
             } else {
-                // ปิดกล้องเมื่อเปลี่ยนแท็บ
                 if (stream) {
                     stream.getTracks().forEach(track => track.stop())
                     stream = null
@@ -1603,12 +1629,51 @@ export default defineComponent({
             }
         })
 
-        const capture = () => {
+        const compressAndConvertToFile = async (canvas) => {
+            return new Promise((resolve) => {
+                const tryCompress = (quality = 0.9) => {
+                    canvas.toBlob((blob) => {
+                        if (blob && blob.size <= MAX_SIZE) {
+                            const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' })
+                            resolve(file)
+                        } else if (quality > 0.1) {
+                            tryCompress(quality - 0.1)
+                        } else {
+                            const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' })
+                            resolve(file)
+                        }
+                    }, 'image/jpeg', quality)
+                }
+                tryCompress()
+            })
+        }
+
+        const capture = async () => {
             const video = videoRef.value
             const canvas = canvasRef.value
             const ctx = canvas.getContext('2d')
+
+            // ปรับขนาด canvas เพื่อให้ย่อภาพ
+            canvas.width = 320
+            canvas.height = 240
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-            capturedImage.value = canvas.toDataURL('image/png')
+
+            // preview base64
+            capturedImage.value = canvas.toDataURL('image/jpeg', 0.8)
+
+            // แปลงเป็นไฟล์โดยบีบอัดให้ไม่เกิน 24 KB
+            const file = await compressAndConvertToFile(canvas)
+            UPimage.value = file
+            console.log('✅ ได้ไฟล์ขนาด', file.size, 'bytes')
+            console.log('📸 ไฟล์ที่ได้:', UPimage.value)
+
+            isCapturedDoc.value = true // ✅ แสดงรูปแทนวิดีโอ
+        }
+
+        const retakeDocImage = () => {
+            capturedImage.value = null
+            UPimage.value = null
+            isCapturedDoc.value = false
         }
 
         const submitWOther = async (event) => {
@@ -1622,7 +1687,7 @@ export default defineComponent({
                     });
                 } else {
                     const formdata = new FormData();
-                    formdata.append('image', sendData.value.image)
+                    formdata.append('image', UPimage.value)
                     await imgService.uploadimg(formdata).then(async (res) => {
                         if (res.message === 'ok') {
                             let CheckToken = '';
@@ -1634,18 +1699,18 @@ export default defineComponent({
                             const token = CheckToken;
                             const park = store.state.park;
                             const data = {
-                                guestName: sendData.value.name,
+                                guestName: '',
                                 licensePlate: sendData.value.licensePlate.License,
                                 licensePlateProvince: '',
                                 start: dateFormatValue(sendData.value.time),
                                 listType: 'fixedlist',
                                 expire: '2025-12-31',
 
-                                identityNumber: sendData.value.identityNumber,
-                                address: sendData.value.address,
+                                // identityNumber: sendData.value.identityNumber,
+                                // address: sendData.value.address,
                                 vehicleType: sendData.value.vehicleType,
                                 cate: 'stranger',
-                                personImgUrl: res.data.filePath,
+                                personCardImgUrl: res.data.filePath,
                                 cdataId: sendData.value._id,
                                 timeStamp: sendData.value.time,
                                 visitorTel: sendData.value.tel,
@@ -1668,6 +1733,9 @@ export default defineComponent({
                                         address: '',
                                         tel: '',
                                     };
+                                    UPimage.value = null;
+                                    isCapturedDoc.value = false
+                                    capturedImage.value = null;
                                     document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
                                     proxy.getData();
                                 } else if (res.data.message === 'validate error') {
@@ -1676,15 +1744,6 @@ export default defineComponent({
                                         icon: 'warning',
                                     })
                                 }
-                                // else if (res.data.message === 'This license has been added') {
-                                //     Swal.fire({
-                                //         title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
-                                //         text: 'กรุณาลองใหม่อีกครั้ง',
-                                //         icon: 'warning',
-                                //         showConfirmButton: true,
-                                //         confirmButtonColor: '#E53935',
-                                //     })
-                                // } 
                                 else {
                                     Swal.fire({
                                         icon: 'warning',
@@ -1742,7 +1801,9 @@ export default defineComponent({
             canvasRef,
             capturedImage,
             capture,
-            submitWOther
+            submitWOther,
+            retakeDocImage,
+            isCapturedDoc,
         }
     },
     components: {
@@ -1793,15 +1854,20 @@ export default defineComponent({
             car: true,
             person: false,
         },
+        interval: null,
     }),
     mounted() {
         this.checkOrientation();
         window.addEventListener('resize', this.checkOrientation);
         this.endDate = this.addDays(this.startDate, +1)
         this.getData();
+        this.interval = setInterval(() => {
+            this.getData();
+        }, 60000);
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.checkOrientation);
+        clearInterval(this.interval);
     },
     methods: {
         formatDateTime(dateString) {

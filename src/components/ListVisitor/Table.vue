@@ -38,6 +38,9 @@
                         <p v-else-if="row.item.vehicleType === 'TRUCK'">รถบรรทุก (TRUCK)</p>
                         <p v-else>รถมอเตอร์ไซค์ (MOTORCYCLE)</p>
                     </td>
+                    <td class="text-center" style="min-width: 120px;">
+                        {{ row.item.category }}
+                    </td>
                     <td class="text-center" style="min-width: 180px;">
                         {{ row.item.guestName }}
                     </td>
@@ -121,6 +124,7 @@ export default {
             { title: 'ลำดับ', align: 'center', sortable: false, key: 'index' },
             { title: 'เลขทะเบียน', align: 'center', sortable: false, key: 'licensePlate' },
             { title: 'ประเภทรถ', align: 'center', sortable: false, key: 'vehicleType' },
+            { title: 'ประเภทสิทธิ์', align: 'center', sortable: false, key: 'category' },
             { title: 'ชื่อ-นามสกุล', align: 'center', sortable: false, key: 'guestName' },
             { title: 'วันที่เริ่ม', align: 'center', sortable: false, key: 'start' },
             { title: 'วันที่หมดอายุ', align: 'center', sortable: false, key: 'expire' },
