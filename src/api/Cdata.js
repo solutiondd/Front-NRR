@@ -7,7 +7,7 @@ export class CdataService {
     this.token = localStorage.getItem("token");
   }
 
-  async Create(parkId, sendData) {
+  async Create(parkId, sendData, token) {
     let data = null;
 
     let config = {
@@ -15,7 +15,7 @@ export class CdataService {
       maxBodyLength: Infinity,
       url: `${this.baseUrl}api/v1/cdata/${parkId}`,
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${token}`,
       },
       data: sendData,
     };

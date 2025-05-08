@@ -94,8 +94,7 @@
 
                             <!-- //NOTE - form ของ บัตรประชาชน -->
                             <v-tabs-window-item value="id">
-                                <!-- @submit.prevent="submit" -->
-                                <v-form fast-fail>
+                                <v-form fast-fail @submit.prevent="submit">
                                     <v-col cols="12" class="pb-0 pr-0">
                                         <v-row class="pa-3">
                                             <v-col cols="5" lg="5" class="pa-0">
@@ -116,7 +115,7 @@
                                             <p>รูปภาพ</p>
                                         </v-col>
                                         <v-col cols="12" lg="7" class="d-flex align-center justify-center">
-                                            <img id="Photo" src="../../assets/Logo-Sunsweet-Final.svg" alt="image"
+                                            <img id="PhotoPerson" src="../../assets/Logo-Sunsweet-Final.svg" alt="image"
                                                 style="width: 130px;">
                                         </v-col>
                                         <v-col cols="12" lg="5" class="text-start pt-2">
@@ -179,7 +178,7 @@
                                         </v-col>
                                         <v-col cols="12" lg="5" class="pt-2">
                                             <p>
-                                                ติดต่อแผนก/คุณ
+                                                ผู้รับการติดต่อ
                                                 <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
                                             </p>
                                         </v-col>
@@ -187,6 +186,17 @@
                                             <v-text-field variant="outlined" density="compact"
                                                 v-model="sendData.contactPerson" hide-details="auto"
                                                 placeholder="ระบุชื่อผู้รับการติดต่อ"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" lg="5" class="pt-2">
+                                            <p>
+                                                แผนกที่ต้องการติดต่อ
+                                                <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                            </p>
+                                        </v-col>
+                                        <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                            <v-text-field variant="outlined" density="compact"
+                                                v-model="sendData.department" hide-details="auto"
+                                                placeholder="ระบุชื่อแผนก"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" lg="5" class="pt-2">
                                             <p>
@@ -212,19 +222,18 @@
 
                             <!-- //NOTE - form ของ ใบขับบี่ -->
                             <v-tabs-window-item value="license">
-                                <!-- @submit.prevent="submitBylicenseId" -->
-                                <v-form fast-fail>
-                                    <v-row class=" pb-2 px-3">
-                                        <v-col cols="12" class="pb-0 pr-0">
-                                            <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
-                                                <v-icon icon="mdi-card-account-details" size="small"
-                                                    class="mr-2"></v-icon>ข้อมูลผู้ติดต่อ
-                                                <v-spacer></v-spacer>
-                                                <v-btn :ripple="false" class="ml-2" color="black" variant="text"
-                                                    icon="mdi-refresh" size="small" @click="resetSendData"></v-btn>
-                                            </p>
-                                        </v-col>
-                                        <v-col cols="12" lg="5" class="text-start pt-2">
+                                <v-form fast-fail @submit.prevent="submitBylicenseId">
+                                    <v-col cols="12" class="pb-0 pr-0 pb-5">
+                                        <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center">
+                                            <v-icon icon="mdi-card-account-details" size="small"
+                                                class="mr-2"></v-icon>ข้อมูลผู้ติดต่อ
+                                            <v-spacer></v-spacer>
+                                            <v-btn :ripple="false" class="ml-2" color="black" variant="text"
+                                                icon="mdi-refresh" size="small" @click="resetSendData"></v-btn>
+                                        </p>
+                                    </v-col>
+                                    <v-row class="overflow-y-auto pb-2 px-3" style="max-height: 600px;">
+                                        <v-col cols="12" lg="5" class="text-start">
                                             <p>เลขประจำตัวประชาชน</p>
                                         </v-col>
                                         <v-col cols="12" lg="7" class="pa-0 pb-2">
@@ -262,6 +271,60 @@
                                                 :rules="sendData.licenseId ? [] : [v => !!v || 'โปรดระบุเลขที่ใบขับขี่']"
                                                 required hide-details="auto"></v-text-field>
                                         </v-col>
+                                        <v-col cols="12" lg="5" class="pt-2">
+                                            <p>จากบริษัท
+                                                <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                            </p>
+                                        </v-col>
+                                        <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                            <v-text-field variant="outlined" density="compact" v-model="sendData.agency"
+                                                hide-details="auto" placeholder="ระบุหน่วยงาน"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" lg="5" class="pt-2">
+                                            <p>
+                                                จำนวนผู้มาติดต่อ
+                                                <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                            </p>
+                                        </v-col>
+                                        <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                            <v-text-field variant="outlined" density="compact"
+                                                v-model="sendData.totalVisitor" hide-details="auto"
+                                                placeholder="ระบุจำนวนผู้มาติดต่อ"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" lg="5" class="pt-2">
+                                            <p>
+                                                ผู้รับการติดต่อ
+                                                <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                            </p>
+                                        </v-col>
+                                        <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                            <v-text-field variant="outlined" density="compact"
+                                                v-model="sendData.contactPerson" hide-details="auto"
+                                                placeholder="ระบุชื่อผู้รับการติดต่อ"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" lg="5" class="pt-2">
+                                            <p>
+                                                แผนกที่ต้องการติดต่อ
+                                                <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                            </p>
+                                        </v-col>
+                                        <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                            <v-text-field variant="outlined" density="compact"
+                                                v-model="sendData.department" hide-details="auto"
+                                                placeholder="ระบุชื่อแผนก"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" lg="5" class="pt-2">
+                                            <p>
+                                                วัตถุประสงค์
+                                                <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                            </p>
+                                        </v-col>
+                                        <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                            <v-text-field variant="outlined" density="compact" v-model="sendData.object"
+                                                hide-details="auto" placeholder="ระบุวัตถุประสงค์"></v-text-field>
+                                        </v-col>
+
+
                                         <v-col class="pa-0">
                                             <v-textarea class="hidden-textarea" auto-grow ref="inputField"
                                                 v-model="dataLicense"></v-textarea>
@@ -281,15 +344,12 @@
 
                             <v-tabs-window-item value="person">
                                 <v-form fast-fail @submit.prevent="submitWOther">
-                                    <v-row>
+                                    <p style="font-size: 20px; font-weight: bold;" class="d-flex align-center pb-4">
+                                        <v-icon icon="mdi-camera-plus" color="#3949AB" size="small" class="mr-2" />
+                                        กรุณาถ่ายรูปบัตร หรือเอกสารอื่น ๆ
+                                    </p>
+                                    <v-row class="overflow-y-auto" style="max-height: 600px;">
                                         <v-col>
-                                            <p style="font-size: 20px; font-weight: bold;"
-                                                class="d-flex align-center pb-4">
-                                                <v-icon icon="mdi-camera-plus" color="#3949AB" size="small"
-                                                    class="mr-2" />
-                                                กรุณาถ่ายรูปบัตร หรือเอกสารอื่น ๆ
-                                            </p>
-
                                             <v-row>
                                                 <v-col cols="12" class="py-2">
                                                     <!-- ✅ แสดง video เฉพาะตอนยังไม่ถ่าย -->
@@ -326,15 +386,91 @@
                                                     width="100%" style="border: 1px solid grey; border-radius: 10px;" />
                                             </div>
 
-                                            <v-btn variant="flat"
-                                                :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                                                type="submit" color="#66BB6A" width="100%" class="mt-4" size="large">
-                                                บันทึกขาเข้า
-                                                <v-icon class="ml-2">mdi-tray-arrow-down</v-icon>
-                                            </v-btn>
-                                            <CheckOut @update="getData()" />
+                                            <v-col cols="12" lg="5" class="text-start pt-5">
+                                                <p>ชื่อ-นามสกุล</p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field density="compact" variant="outlined"
+                                                    placeholder="ระบุชื่อ-นามสกุล" v-model="sendData.name"
+                                                    :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
+                                                    required hide-details="auto"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
+                                                <p>จากบริษัท
+                                                    <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                </p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field variant="outlined" density="compact"
+                                                    v-model="sendData.agency" hide-details="auto"
+                                                    placeholder="ระบุหน่วยงาน"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
+                                                <p>เบอร์โทรศัพท์</p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field type="tel" density="compact" variant="outlined"
+                                                    placeholder="ระบุเบอร์โทรศัพท์" v-model="sendData.tel"
+                                                    hide-details="auto" :rules="[
+                                                        v => !!v || 'กรุณาระบุเบอร์โทรศัพท์',
+                                                        v => /^[0-9]*$/.test(v) || 'กรุณาใส่เฉพาะตัวเลขเท่านั้น',
+                                                    ]" maxlength="10"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
+                                                <p>
+                                                    จำนวนผู้มาติดต่อ
+                                                    <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                </p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field variant="outlined" density="compact"
+                                                    v-model="sendData.totalVisitor" hide-details="auto"
+                                                    placeholder="ระบุจำนวนผู้มาติดต่อ"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
+                                                <p>
+                                                    ผู้รับการติดต่อ
+                                                    <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                </p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field variant="outlined" density="compact"
+                                                    v-model="sendData.contactPerson" hide-details="auto"
+                                                    placeholder="ระบุชื่อผู้รับการติดต่อ"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
+                                                <p>
+                                                    แผนกที่ต้องการติดต่อ
+                                                    <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                </p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field variant="outlined" density="compact"
+                                                    v-model="sendData.department" hide-details="auto"
+                                                    placeholder="ระบุชื่อแผนก"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" lg="5" class="pt-2">
+                                                <p>
+                                                    วัตถุประสงค์
+                                                    <span style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                </p>
+                                            </v-col>
+                                            <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                <v-text-field variant="outlined" density="compact"
+                                                    v-model="sendData.object" hide-details="auto"
+                                                    placeholder="ระบุวัตถุประสงค์"></v-text-field>
+                                            </v-col>
                                         </v-col>
                                     </v-row>
+                                    <v-col>
+                                        <v-btn variant="flat"
+                                            :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                            type="submit" color="#66BB6A" width="100%" class="mt-4" size="large">
+                                            บันทึกขาเข้า
+                                            <v-icon class="ml-2">mdi-tray-arrow-down</v-icon>
+                                        </v-btn>
+                                        <CheckOut @update="getData()" />
+                                    </v-col>
                                 </v-form>
                             </v-tabs-window-item>
                         </v-tabs-window>
@@ -344,6 +480,112 @@
             <!-- ################################################## -->
         </v-row>
     </div>
+
+    <!-- ################################################## -->
+    <!-- //NOTE - Print Form -->
+    <div id="app">
+        <!-- <div>
+            <v-btn @click="printForm()">พิมพ์ฟอร์ม</v-btn>
+        </div> -->
+        <div id="form-container" style="display: none;">
+            <div style="text-align: center;">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h4>สแกนขาออก</h4>
+                    <qrcode-vue :value="sendData._id" :size="100" level="H" render-as="canvas"
+                        :key="sendData._id"></qrcode-vue>
+                    <h4 style="padding-bottom: 0px;">ใบผ่าน เข้า-ออก รหัส
+                        <span style="font-weight: 400;font-size: 12px;">(No.)</span>
+                        <p style="font-size: 12px;font-weight: 400;">{{ sendData._id }}</p>
+                    </h4>
+                </div>
+
+                <h4>บริษัท ซันสวีท จำกัด (มหาชน)</h4>
+            </div>
+            <div style="text-align: start; font-size: 12px;">
+                <!-- <p style="font-weight: bold;">วันที่ :
+                    <span style="font-weight: 400;">
+                        {{ dateFormatDayandTime(sendData.time) }}
+                    </span>
+                </p> -->
+                <p style="font-weight: bold;">เวลาเข้า <span
+                        style="font-size: 10px;color: #BDBDBD;font-weight: 300;">(Time
+                        IN)</span> :
+                    <span style="font-weight: 400;">
+                        {{ dateFormatDayandTime(sendData.time) }} - {{ formatitemdevice(sendData.time) }}
+                    </span>
+                </p>
+
+                <p style="font-weight: bold;">เวลาออก <span
+                        style="font-size: 10px;color: #BDBDBD; font-weight: 300;">(Time
+                        OUT)</span> :
+                    <span style="display: inline-block; border-bottom: 1px solid grey; width: 100px;"></span>
+                </p>
+
+                <p style="font-weight: bold;">
+                    วัตถุประสงค์ : <span style="font-weight: 400;">{{ sendData.object }}</span> <br /><span
+                        style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Purpose of
+                        Visit)</span>
+
+                </p>
+
+                <p style="font-weight: bold;">ชื่อ-นามสกุล :
+                    <span style="font-weight: 400;">
+                        {{ sendData.name }}
+                    </span> <br />
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Name-Surname)</span>
+                </p>
+
+                <p style="font-weight: bold;">จากบริษัท : <span style="font-weight: 400;">{{ sendData.agency }}</span>
+                    <br /> <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(From Company)</span>
+                </p>
+
+                <p style="font-weight: bold;">จำนวนผู้มาติดต่อ : <span style="font-weight: 400;">{{
+                    sendData.totalVisitor
+                        }} คน</span>
+                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Total Visitor)</span>
+                </p>
+
+                <p style="font-weight: bold;">ผู้รับการติดต่อ : <span style="font-weight: 400;">{{
+                    sendData.contactPerson
+                        }}</span>
+                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
+                </p>
+
+                <p style="font-weight: bold;">ติดต่อแผนก : <span style="font-weight: 400;">{{ sendData.department
+                }}</span>
+                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Deparment)</span>
+                </p>
+            </div>
+
+            <div style="text-align: center;font-weight: 400;font-size: 12px;">
+                <p>
+                    ข้าพเจ้ายินยอมให้บันทึกข้อมูลส่วนบุคคล <br> เพื่อใช้ตามวัตถุประสงค์ของบริษัทฯ
+                </p>
+                <p>
+                    <br>
+                    (<span style="display: inline-block; border-bottom: 1px solid grey; width: 150px;"> </span>)
+                    <br>
+                    <span>ลงชื่อผู้มาติดต่อ</span> <br>
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Visitor Sign)</span>
+                </p>
+            </div>
+            <div style="text-align: start; font-size: 12px;">
+                <p>
+                    ลงชื่อ ผู้รับการติดต่อ : <span
+                        style="display: inline-block; border-bottom: 1px solid grey; width: 130px;"></span>
+                    <br>
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact person sign)</span>
+                </p>
+                <p>
+                    ลงชื่อ เจ้าหน้าที่ รปภ. : <span
+                        style="display: inline-block; border-bottom: 1px solid grey; width: 130px;"></span>
+                    <br>
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact person sign)</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- ################################################## -->
 </template>
 
 <script>
@@ -354,11 +596,14 @@ import { ImageService } from "../../api/UploadImage";
 import { formatitemdevice, dateFormat, dateFormatValue, dateFormatDayandTime, datetimeFormatLimit } from '../../function/day'
 import CheckOut from './CheckOut.vue'
 import { CdataService } from '../../api/Cdata';
+import QrcodeVue from "qrcode.vue";
 export default {
     components: {
         CheckOut,
+        QrcodeVue,
     },
-    setup() {
+    emits: ['created'],
+    setup(props, context) {
         const cdata = new CdataService();
         const store = useStore();
         const imgService = new ImageService();
@@ -383,6 +628,10 @@ export default {
             object: '',
             contactPerson: '',
             totalVisitor: 1,
+            department: '',
+            _id: '',
+            PersonImage: null,
+            PersonCardImage: null,
         });
         const dataLicense = ref('');
         const inputField = ref(null);
@@ -480,12 +729,65 @@ export default {
             }, 100);
         };
 
+        // ########################################################
+        //NOTE - Function Form Print
+        const printForm = async () => {
+            await nextTick(); // รอให้ Vue อัปเดต DOM
+            const formContainer = document.getElementById("form-container");
+            const qrCanvas = formContainer.querySelector("canvas");
+
+            if (qrCanvas) {
+                const qrImageUrl = qrCanvas.toDataURL("image/png");
+                console.log("QR Code Image URL:", qrImageUrl); // เช็คว่าภาพถูกต้องไหม
+
+                const qrImg = document.createElement("img");
+                qrImg.src = qrImageUrl;
+                qrImg.style.width = "100px";
+                qrImg.style.height = "100px";
+
+                qrCanvas.replaceWith(qrImg);
+            }
+
+            const formContent = formContainer.innerHTML;
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>Visitor</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('@media print {');
+            printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; }');
+            printWindow.document.write('@page { size: 72.1mm 3276mm; margin: 0; }');
+            printWindow.document.write('div { max-width: 72.1mm; margin: 0 auto; padding-right: 1mm;}');
+            printWindow.document.write('footer { position: fixed; bottom: 0; width: 100%; text-align: center; }');
+            printWindow.document.write('.v-row { display: flex; flex-wrap: wrap; justify-content: space-between; }');
+            printWindow.document.write('.v-col { flex: 0 0 30%; }'); // จัดระเบียบ v-col
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(formContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+
+            printWindow.onload = () => {
+                printWindow.print();
+            };
+
+            printWindow.onafterprint = () => {
+                printWindow.close();
+            };
+        };
+        // ########################################################
+
+        // ########################################################
         //NOTE - Function submit for IdentityNumber
         const submit = async (event) => {
             const res = await event
             if (res.valid === true) {
+                let PersonPic = null;
+                if (sendData.value.image) {
+                    PersonPic = sendData.value.image;
+                } else {
+                    PersonPic = CapturePerson.value;
+                }
                 const formdata = new FormData();
-                formdata.append('image', sendData.value.image)
+                formdata.append('image', PersonPic)
                 await imgService.uploadimg(formdata).then(async (res) => {
                     if (res.message === 'ok') {
                         let CheckToken = '';
@@ -498,69 +800,73 @@ export default {
                         const park = store.state.park;
                         const data = {
                             guestName: sendData.value.name,
-                            licensePlate: sendData.value.licensePlate.License,
-                            licensePlateProvince: '',
-                            start: dateFormatValue(sendData.value.time),
-                            listType: 'fixedlist',
-                            expire: '2025-12-31',
+                            // licensePlate: sendData.value.licensePlate.License,
+                            // licensePlateProvince: '',
+                            // start: dateFormatValue(sendData.value.time),
+                            // listType: 'fixedlist',
+                            // expire: '2025-12-31',
+
+                            driverLicenseId: '',
+                            personCardImgUrl: '',
 
                             identityNumber: sendData.value.identityNumber,
                             address: sendData.value.address,
-                            vehicleType: sendData.value.vehicleType,
                             cate: 'stranger',
                             personImgUrl: res.data.filePath,
-                            cdataId: sendData.value._id,
                             timeStamp: sendData.value.time,
                             visitorTel: sendData.value.tel,
+
+
+                            agency: sendData.value.agency || '',
+                            object: sendData.value.object || '',
+                            contactPerson: sendData.value.contactPerson || '',
+                            totalVisitor: sendData.value.totalVisitor || '',
+                            department: sendData.value.department || '',
                         }
-                        console.log("Data in submit", data)
-                        // await lp.CreateLP(park, data, token).then(async (res) => {
-                        //     if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                        //         Swal.fire({
-                        //             icon: 'success',
-                        //             title: `บันทึกข้อมูลสำเร็จ!`,
-                        //         });
-                        //         await printForm();
-                        //         await deleteFromIndexedDB(sendData.value.id);
-                        //         sendData.value = {
-                        //             msg: '',
-                        //             licensePlate: { License: '' },
-                        //             vehicleType: 'TRUCK',
-                        //             time: new Date(),
-                        //             name: '',
-                        //             identityNumber: '',
-                        //             address: '',
-                        //             tel: '',
-                        //         };
-                        //         document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                        //         proxy.getData();
-                        //     } else if (res.data.message === 'validate error') {
-                        //         Swal.fire({
-                        //             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                        //             icon: 'warning',
-                        //         })
-                        //     }
-                        //     // else if (res.data.message === 'This license has been added') {
-                        //     //     Swal.fire({
-                        //     //         title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
-                        //     //         text: 'กรุณาลองใหม่อีกครั้ง',
-                        //     //         icon: 'warning',
-                        //     //         showConfirmButton: true,
-                        //     //         confirmButtonColor: '#E53935',
-                        //     //     })
-                        //     // } 
-                        //     else {
-                        //         Swal.fire({
-                        //             icon: 'warning',
-                        //             title: `มีบางอย่างผิดพลาด !`,
-                        //             toast: true,
-                        //             position: 'top-end',
-                        //             showConfirmButton: false,
-                        //             timer: 3000,
-                        //             timerProgressBar: true,
-                        //         });
-                        //     }
-                        // })
+                        await cdata.Create(park, data, token).then(async (res) => {
+                            if (res.message === 'ok' || res.data.message === 'This license has been added') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: `บันทึกข้อมูลสำเร็จ!`,
+                                });
+                                sendData.value._id = res.data._id
+                                await printForm();
+                                Object.assign(sendData.value, {
+                                    msg: '',
+                                    licensePlate: { License: '' },
+                                    vehicleType: 'TRUCK',
+                                    time: new Date(),
+                                    name: '',
+                                    identityNumber: '',
+                                    address: '',
+                                    image: null,
+                                    licenseId: '',
+                                    tel: '',
+                                    agency: '',
+                                    object: '',
+                                    contactPerson: '',
+                                    totalVisitor: 1,
+                                    department: '',
+                                });
+                                document.getElementById('PhotoPerson').src = "/Logo-Sunsweet-Final.svg";
+                                context.emit('created');
+                            } else if (res.data.message === 'validate error') {
+                                Swal.fire({
+                                    title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                                    icon: 'warning',
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: `มีบางอย่างผิดพลาด !`,
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                });
+                            }
+                        })
                     } else {
                         Swal.fire({
                             title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
@@ -571,41 +877,51 @@ export default {
                 })
             }
         }
+        // ########################################################
 
+
+        // ########################################################
         //NOTE - Function submit for Driver License
         const submitBylicenseId = async (event) => {
-            const res = await event
+            const res = await event;
             if (res.valid === true) {
-                const token = localStorage.getItem('token');
-                const park = store.state.park;
-                const data = {
-                    guestName: sendData.value.name,
-                    licensePlate: sendData.value.licensePlate.License,
-                    licensePlateProvince: '',
-                    start: dateFormatValue(sendData.value.time),
-                    listType: 'fixedlist',
-                    expire: '2025-12-31',
+                let PersonPic = CapturePerson.value;
 
-                    identityNumber: sendData.value.identityNumber,
-                    vehicleType: sendData.value.vehicleType,
-                    cate: 'stranger',
-                    cdataId: sendData.value._id,
-                    timeStamp: sendData.value.time,
+                const buildAndSendData = async (personImgUrl = '') => {
+                    const token = store.state.role === 'security'
+                        ? localStorage.getItem('retoken')
+                        : localStorage.getItem('token');
 
-                    driverLicenseId: sendData.value.licenseId,
-                    visitorTel: sendData.value.tel,
-                }
-                console.log("Data in submit by licenseId", data)
-                proxy.getData();
-                await lp.CreateLP(park, data, token).then(async (res) => {
-                    if (res.message === 'ok' || res.data.message === 'This license has been added') {
+                    const park = store.state.park;
+
+                    const data = {
+                        guestName: sendData.value.name,
+                        cate: 'stranger',
+                        timeStamp: sendData.value.time,
+                        personImgUrl: personImgUrl,
+                        driverLicenseId: sendData.value.licenseId,
+                        visitorTel: sendData.value.tel,
+
+                        identityNumber: '',
+                        personCardImgUrl: '',
+                        address: '',
+
+                        agency: sendData.value.agency || '',
+                        object: sendData.value.object || '',
+                        contactPerson: sendData.value.contactPerson || '',
+                        totalVisitor: sendData.value.totalVisitor || '',
+                        department: sendData.value.department || '',
+                    };
+
+                    const cRes = await cdata.Create(park, data, token);
+                    if (cRes.message === 'ok' || cRes.data.message === 'This license has been added') {
                         Swal.fire({
                             icon: 'success',
                             title: `บันทึกข้อมูลสำเร็จ!`,
                         });
+                        sendData.value._id = cRes.data._id;
                         await printForm();
-                        await deleteFromIndexedDB(sendData.value.id);
-                        sendData.value = {
+                        Object.assign(sendData.value, {
                             msg: '',
                             licensePlate: { License: '' },
                             vehicleType: 'TRUCK',
@@ -613,26 +929,61 @@ export default {
                             name: '',
                             identityNumber: '',
                             address: '',
+                            image: null,
+                            licenseId: '',
                             tel: '',
-                        };
-                        document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                        this.getData();
-                    } else if (res.data.message === 'validate error') {
+                            agency: '',
+                            object: '',
+                            contactPerson: '',
+                            totalVisitor: 1,
+                            department: '',
+                        });
+                        retakeImage();
+                        context.emit('created');
+                    } else if (cRes.data.message === 'validate error') {
                         Swal.fire({
                             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
                             icon: 'warning',
-                        })
+                        });
                     } else {
                         Swal.fire({
                             icon: 'warning',
                             title: `มีบางอย่างผิดพลาด !`,
                             text: 'กรุณาลองใหม่อีกครั้ง',
                         });
-                        console.log("Error : ", res.data)
+                        console.log("Error : ", cRes.data);
                     }
-                })
+                };
+
+                // เช็คว่ามีรูปไหม
+                if (PersonPic) {
+                    const formdata = new FormData();
+                    formdata.append('image', PersonPic);
+                    try {
+                        const uploadRes = await imgService.uploadimg(formdata);
+                        if (uploadRes.message === 'ok') {
+                            await buildAndSendData(uploadRes.data.filePath || '');
+                        } else {
+                            Swal.fire({
+                                title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
+                                html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${uploadRes.data.message}`,
+                                icon: 'warning',
+                            });
+                        }
+                    } catch (err) {
+                        Swal.fire({
+                            title: 'เกิดข้อผิดพลาดในการอัปโหลด!',
+                            text: err.message || 'ไม่สามารถดำเนินการได้',
+                            icon: 'error',
+                        });
+                    }
+                } else {
+                    // ถ้าไม่มีรูป → ส่งเลย
+                    await buildAndSendData('');
+                }
             }
         }
+        // ########################################################
 
         let wSocket = ref(null);
         let debugFlag = ref(true);
@@ -733,7 +1084,7 @@ export default {
             const fileName = "image.jpg"
             sendData.value.image = base64Tofile(base64str, fileName);
             console.log("ข้อมูลหลังจากมี file : ", sendData.value)
-            var photo = document.getElementById("Photo");  // เลือก element img ที่มี id = "Photo"
+            var photo = document.getElementById("PhotoPerson");  // เลือก element img ที่มี id = "Photo"
 
             if (base64str != null && base64str !== "") {
                 // กรณีที่ Base64 string ถูกต้อง
@@ -870,20 +1221,20 @@ export default {
             isCapturedDoc.value = false
         }
 
-        const submitWOther = async (event) => {
-            const res = await event
-            if (res.valid === true) {
-                if (!sendData.value._id || sendData.value._id === 'undefined') {
-                    Swal.fire({
-                        title: 'กรุณาเลือกทะเบียนรถ !!',
-                        html: '<h2>จากทางด้านซ้ายมือ</h2>',
-                        icon: 'warning',
-                    });
-                } else {
-                    const formdata = new FormData();
-                    formdata.append('image', UPimage.value)
+        //NOTE - กรณีมีทั้งรูปคน และรูปบัตร
+        const PersonNCard = async () => {
+            //NOTE - รูปคน
+            const formdata = new FormData();
+            formdata.append('image', CapturePerson.value);
+            await imgService.uploadimg(formdata).then(async (res) => {
+                if (res.message === 'ok') {
+                    //NOTE - รูปบัตร
+                    sendData.value.PersonImage = res.data.filePath;
+                    const dataform = new FormData();
+                    dataform.append('image', UPimage.value);
                     await imgService.uploadimg(formdata).then(async (res) => {
-                        if (res.message === 'ok') {
+                        if (res.message == 'ok') {
+                            sendData.value.PersonCardImage = res.data.filePath;
                             let CheckToken = '';
                             if (store.state.role === 'security') {
                                 CheckToken = localStorage.getItem('retoken');
@@ -893,31 +1244,32 @@ export default {
                             const token = CheckToken;
                             const park = store.state.park;
                             const data = {
-                                // guestName: sendData.value.name,
-                                licensePlate: sendData.value.licensePlate.License,
-                                licensePlateProvince: '',
-                                start: dateFormatValue(sendData.value.time),
-                                listType: 'fixedlist',
-                                expire: '2025-12-31',
-
-                                // identityNumber: sendData.value.identityNumber,
-                                // address: sendData.value.address,
-                                // vehicleType: sendData.value.vehicleType,
+                                guestName: sendData.value.name,
+                                driverLicenseId: '',
+                                identityNumber: '',
                                 cate: 'stranger',
-                                personImgUrl: res.data.filePath,
-                                cdataId: sendData.value._id,
                                 timeStamp: sendData.value.time,
-                                // visitorTel: sendData.value.tel,
+                                address: '',
+
+                                personImgUrl: sendData.value.PersonImage,
+                                personCardImgUrl: sendData.value.PersonCardImage,
+                                visitorTel: sendData.value.tel,
+
+                                agency: sendData.value.agency || '',
+                                object: sendData.value.object || '',
+                                contactPerson: sendData.value.contactPerson || '',
+                                totalVisitor: sendData.value.totalVisitor || '',
+                                department: sendData.value.department || '',
+
                             }
-                            await lp.CreateLP(park, data, token).then(async (res) => {
+                            await cdata.Create(park, data, token).then(async (res) => {
                                 if (res.message === 'ok' || res.data.message === 'This license has been added') {
                                     Swal.fire({
                                         icon: 'success',
                                         title: `บันทึกข้อมูลสำเร็จ!`,
                                     });
                                     await printForm();
-                                    await deleteFromIndexedDB(sendData.value.id);
-                                    sendData.value = {
+                                    Object.assign(sendData.value, {
                                         msg: '',
                                         licensePlate: { License: '' },
                                         vehicleType: 'TRUCK',
@@ -925,12 +1277,18 @@ export default {
                                         name: '',
                                         identityNumber: '',
                                         address: '',
+                                        image: null,
+                                        licenseId: '',
                                         tel: '',
-                                    };
-                                    UPimage.value = null;
-                                    capturedImage.value = null;
-                                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                                    proxy.getData();
+                                        agency: '',
+                                        object: '',
+                                        contactPerson: '',
+                                        totalVisitor: 1,
+                                        department: '',
+                                    });
+                                    retakeImage();
+                                    retakeDocImage();
+                                    context.emit('created');
                                 } else if (res.data.message === 'validate error') {
                                     Swal.fire({
                                         title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
@@ -957,6 +1315,145 @@ export default {
                             });
                         }
                     })
+                } else {
+                    Swal.fire({
+                        title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
+                        html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
+                        icon: 'warning',
+                    });
+                }
+            })
+        }
+
+        //NOTE - กรณีมีแค่รูปคนหรือรูปบัตร
+        const OnlyPersonOrCard = async () => {
+            const formdata = new FormData();
+            let usedImage = null;
+
+            if (CapturePerson.value) {
+                formdata.append('image', CapturePerson.value);
+                usedImage = 'Capture';
+            } else if (UPimage.value) {
+                formdata.append('image', UPimage.value);
+                usedImage = 'Upload';
+            } else {
+                Swal.fire({
+                    title: 'ไม่พบรูปภาพ!',
+                    text: 'กรุณาถ่ายรูปหรืออัปโหลดภาพก่อนส่งข้อมูล',
+                    icon: 'warning',
+                });
+                return;
+            }
+
+            try {
+                const res = await imgService.uploadimg(formdata);
+
+                if (res.message === 'ok') {
+                    // กำหนด URL ตามภาพที่ถูกใช้งาน
+                    if (usedImage === 'Capture') {
+                        sendData.value.PersonImage = res.filepath;
+                        sendData.value.PersonCardImage = null;
+                    } else if (usedImage === 'Upload') {
+                        sendData.value.PersonCardImage = res.filepath;
+                        sendData.value.PersonImage = null;
+                    }
+
+                    // ดำเนินการส่งข้อมูล
+                    let CheckToken = store.state.role === 'security'
+                        ? localStorage.getItem('retoken')
+                        : localStorage.getItem('token');
+
+                    const park = store.state.park;
+                    const data = {
+                        guestName: sendData.value.name,
+                        driverLicenseId: '',
+                        identityNumber: '',
+                        cate: 'stranger',
+                        timeStamp: sendData.value.time,
+                        address: '',
+                        visitorTel: sendData.value.tel,
+
+                        personImgUrl: sendData.value.PersonImage,
+                        personCardImgUrl: sendData.value.PersonCardImage,
+
+                        agency: sendData.value.agency || '',
+                        object: sendData.value.object || '',
+                        contactPerson: sendData.value.contactPerson || '',
+                        totalVisitor: sendData.value.totalVisitor || '',
+                        department: sendData.value.department || '',
+                    };
+
+                    const lpRes = await cdata.Create(park, data, CheckToken);
+
+                    if (lpRes.message === 'ok' || lpRes.data.message === 'This license has been added') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `บันทึกข้อมูลสำเร็จ!`,
+                        });
+
+                        await printForm();
+
+                        // reset ข้อมูล
+                        Object.assign(sendData.value, {
+                            msg: '',
+                            licensePlate: { License: '' },
+                            vehicleType: 'TRUCK',
+                            time: new Date(),
+                            name: '',
+                            identityNumber: '',
+                            address: '',
+                            image: null,
+                            licenseId: '',
+                            tel: '',
+                            agency: '',
+                            object: '',
+                            contactPerson: '',
+                            totalVisitor: 1,
+                            department: '',
+                        });
+                        UPimage.value = null;
+                        capturedImage.value = null;
+                        document.getElementById('PhotoPerson').src = "/Logo-Sunsweet-Final.svg";
+                        context.emit('created');
+                    } else if (lpRes.data.message === 'validate error') {
+                        Swal.fire({
+                            title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                            icon: 'warning',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `มีบางอย่างผิดพลาด !`,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
+                        html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
+                        icon: 'warning',
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'เกิดข้อผิดพลาด!',
+                    text: error.message || 'ไม่สามารถดำเนินการได้',
+                    icon: 'error',
+                });
+            }
+        }
+
+        const submitWOther = async (event) => {
+            const res = await event
+            if (res.valid === true) {
+                if (CapturePerson.value && UPimage.value) {
+                    PersonNCard();
+                } else {
+                    OnlyPersonOrCard();
                 }
             }
         }
@@ -970,6 +1467,7 @@ export default {
         const videoPerson = ref(null);
         const canvasPerson = ref(null);
         const isCaptured = ref(false);
+        const CapturePerson = ref(null);
 
         const startCamera = async () => {
             try {
@@ -997,13 +1495,32 @@ export default {
             }
         };
 
-        const captureImage = () => {
-            const context = canvasPerson.value.getContext('2d');
-            canvasPerson.value.width = videoPerson.value.videoWidth;
-            canvasPerson.value.height = videoPerson.value.videoHeight;
-            context.drawImage(videoPerson.value, 0, 0, canvasPerson.value.width, canvasPerson.value.height);
-            capturedImagePerson.value = canvasPerson.value.toDataURL('image/jpeg');
-            isCaptured.value = true; // ปิดกล้องหลังจากจับภาพ
+        // const captureImage = () => {
+        //     const context = canvasPerson.value.getContext('2d');
+        //     canvasPerson.value.width = videoPerson.value.videoWidth;
+        //     canvasPerson.value.height = videoPerson.value.videoHeight;
+        //     context.drawImage(videoPerson.value, 0, 0, canvasPerson.value.width, canvasPerson.value.height);
+        //     capturedImagePerson.value = canvasPerson.value.toDataURL('image/jpeg');
+        //     isCaptured.value = true; // ปิดกล้องหลังจากจับภาพ
+        // }
+
+        const captureImage = async () => {
+            const video = videoPerson.value;
+            const canvas = canvasPerson.value;
+            const ctx = canvas.getContext('2d')
+
+            canvas.width = 320
+            canvas.height = 240
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+            capturedImagePerson.value = canvas.toDataURL('image/jpeg', 0.8)
+
+            const file = await compressAndConvertToFile(canvas)
+            CapturePerson.value = file
+            console.log('📸 ไฟล์ที่ได้:', CapturePerson.value)
+            console.log('✅ ได้ไฟล์ขนาด', file.size, 'bytes')
+
+            isCaptured.value = true;
         }
 
         const retakeImage = () => {
@@ -1049,6 +1566,7 @@ export default {
             dataLicense,
             sendDataLicense,
             submitBylicenseId,
+            printForm,
 
             //NOTE - Function Format Date
             formatitemdevice,

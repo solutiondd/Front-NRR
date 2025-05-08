@@ -264,7 +264,25 @@
                                                     <!-- //NOTE - form ของ บัตรประชาชน -->
                                                     <v-tabs-window-item value="id">
                                                         <v-form fast-fail @submit.prevent="submit">
-                                                            <v-row class="d-flex align-top pb-2 px-3">
+                                                            <v-row class="pa-3">
+                                                                <v-col cols="5" lg="5" class="pa-0">
+                                                                    <p style="font-size: 20px; font-weight: bold;"
+                                                                        class="d-flex align-center">
+                                                                        <v-icon icon="mdi-card-account-details"
+                                                                            size="small"
+                                                                            class="mr-2"></v-icon>ข้อมูลคนขับ
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="7" class="pa-0 text-end">
+                                                                    <!-- <v-btn color="primary" @click="readIDCard()"><v-icon
+                                                                class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn> -->
+                                                                    <v-btn :ripple="false" class="ml-2" color="black"
+                                                                        variant="text" icon="mdi-refresh" size="small"
+                                                                        @click="resetSendData"></v-btn>
+                                                                </v-col>
+                                                            </v-row>
+                                                            <v-row class="d-flex align-top pb-2 px-3 overflow-yp-auto"
+                                                                style="height:600px;">
                                                                 <v-col v-if="loading" class="pa-2">
                                                                     <div>
                                                                         <v-progress-linear color="cyan"
@@ -272,24 +290,7 @@
                                                                     </div>
                                                                 </v-col>
                                                                 <v-col cols="12" class="pb-0 pr-0">
-                                                                    <v-row class="pa-3">
-                                                                        <v-col cols="5" lg="5" class="pa-0">
-                                                                            <p style="font-size: 20px; font-weight: bold;"
-                                                                                class="d-flex align-center">
-                                                                                <v-icon icon="mdi-card-account-details"
-                                                                                    size="small"
-                                                                                    class="mr-2"></v-icon>ข้อมูลคนขับ
-                                                                            </p>
-                                                                        </v-col>
-                                                                        <v-col cols="7" class="pa-0 text-end">
-                                                                            <!-- <v-btn color="primary" @click="readIDCard()"><v-icon
-                                                                class="mr-2">mdi-text-box-search-outline</v-icon>อ่านข้อมูลบัตร</v-btn> -->
-                                                                            <v-btn :ripple="false" class="ml-2"
-                                                                                color="black" variant="text"
-                                                                                icon="mdi-refresh" size="small"
-                                                                                @click="resetSendData"></v-btn>
-                                                                        </v-col>
-                                                                    </v-row>
+
                                                                 </v-col>
                                                                 <v-col cols="12" lg="5">
                                                                     <p>รูปภาพ</p>
@@ -344,6 +345,68 @@
                                                                         :rules="sendData.address ? [] : [v => !!v || 'โปรดระบุที่อยู่']"
                                                                         required auto-grow></v-textarea>
                                                                 </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>จากบริษัท
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.agency" hide-details="auto"
+                                                                        placeholder="ระบุหน่วยงาน"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        จำนวนผู้มาติดต่อ
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.totalVisitor"
+                                                                        hide-details="auto"
+                                                                        placeholder="ระบุจำนวนผู้มาติดต่อ"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        ผู้รับการติดต่อ
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.contactPerson"
+                                                                        hide-details="auto"
+                                                                        placeholder="ระบุชื่อผู้รับการติดต่อ"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        แผนกที่ต้องการติดต่อ
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.department"
+                                                                        hide-details="auto"
+                                                                        placeholder="ระบุชื่อแผนก"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        วัตถุประสงค์
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.object" hide-details="auto"
+                                                                        placeholder="ระบุวัตถุประสงค์"></v-text-field>
+                                                                </v-col>
                                                             </v-row>
                                                             <v-divider class="mt-2" :thickness="2"></v-divider>
                                                             <v-card-actions class="px-0">
@@ -361,20 +424,21 @@
                                                     <!-- //NOTE - form ของ ใบขับบี่ -->
                                                     <v-tabs-window-item value="license">
                                                         <v-form fast-fail @submit.prevent="submitBylicenseId">
-                                                            <v-row class="d-flex align-top pb-2 px-3">
-                                                                <v-col cols="12" class="pb-0 pr-0">
-                                                                    <p style="font-size: 20px; font-weight: bold;"
-                                                                        class="d-flex align-center">
-                                                                        <v-icon icon="mdi-card-account-details"
-                                                                            size="small"
-                                                                            class="mr-2"></v-icon>ข้อมูลคนขับ
-                                                                        <v-spacer></v-spacer>
-                                                                        <v-btn :ripple="false" class="ml-2"
-                                                                            color="black" variant="text"
-                                                                            icon="mdi-refresh" size="small"
-                                                                            @click="resetSendData"></v-btn>
-                                                                    </p>
-                                                                </v-col>
+                                                            <v-col cols="12" class="pb-0 pr-0 pt-0">
+                                                                <p style="font-size: 20px; font-weight: bold;"
+                                                                    class="d-flex align-center">
+                                                                    <v-icon icon="mdi-card-account-details" size="small"
+                                                                        class="mr-2"></v-icon>ข้อมูลคนขับ
+                                                                    <v-spacer></v-spacer>
+                                                                    <v-btn :ripple="false" class="ml-2" color="black"
+                                                                        variant="text" icon="mdi-refresh" size="small"
+                                                                        @click="resetSendData"></v-btn>
+                                                                </p>
+                                                            </v-col>
+                                                            <v-row
+                                                                class="d-flex align-top pt-5 pb-2 px-3 overflow-yp-auto"
+                                                                style="height: 600px;">
+
                                                                 <v-col cols="12" lg="5" class="text-start pt-2">
                                                                     <p>เลขประจำตัวประชาชน</p>
                                                                 </v-col>
@@ -419,6 +483,69 @@
                                                                         :rules="sendData.licenseId ? [] : [v => !!v || 'โปรดระบุเลขที่ใบขับขี่']"
                                                                         required hide-details="auto"></v-text-field>
                                                                 </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>จากบริษัท
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.agency" hide-details="auto"
+                                                                        placeholder="ระบุหน่วยงาน"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        จำนวนผู้มาติดต่อ
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.totalVisitor"
+                                                                        hide-details="auto"
+                                                                        placeholder="ระบุจำนวนผู้มาติดต่อ"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        ผู้รับการติดต่อ
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.contactPerson"
+                                                                        hide-details="auto"
+                                                                        placeholder="ระบุชื่อผู้รับการติดต่อ"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        แผนกที่ต้องการติดต่อ
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.department"
+                                                                        hide-details="auto"
+                                                                        placeholder="ระบุชื่อแผนก"></v-text-field>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="5" class="pt-2">
+                                                                    <p>
+                                                                        วัตถุประสงค์
+                                                                        <span
+                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                    </p>
+                                                                </v-col>
+                                                                <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                    <v-text-field variant="outlined" density="compact"
+                                                                        v-model="sendData.object" hide-details="auto"
+                                                                        placeholder="ระบุวัตถุประสงค์"></v-text-field>
+                                                                </v-col>
+
                                                                 <v-col class="pa-0">
                                                                     <v-textarea class="hidden-textarea" auto-grow
                                                                         ref="inputField"
@@ -442,15 +569,16 @@
                                                     <!-- //NOTE - form ของ เอกสารอื่น ๆ -->
                                                     <v-tabs-window-item value="person">
                                                         <v-form fast-fail @submit.prevent="submitWOther">
-                                                            <v-row>
-                                                                <v-col>
-                                                                    <p style="font-size: 20px; font-weight: bold;"
-                                                                        class="d-flex align-center pb-4">
-                                                                        <v-icon icon="mdi-camera-plus" color="#3949AB"
-                                                                            size="small" class="mr-2" />
-                                                                        กรุณาถ่ายรูปบัตร หรือเอกสารอื่น ๆ
-                                                                    </p>
-
+                                                            <v-col cols="12">
+                                                                <p style="font-size: 20px; font-weight: bold;"
+                                                                    class="d-flex align-center pb-4">
+                                                                    <v-icon icon="mdi-camera-plus" color="#3949AB"
+                                                                        size="small" class="mr-2" />
+                                                                    กรุณาถ่ายรูปบัตร หรือเอกสารอื่น ๆ
+                                                                </p>
+                                                            </v-col>
+                                                            <v-row class="overflow-yp-auto" style="height: 600px;">
+                                                                <v-col cols="12">
                                                                     <v-row>
                                                                         <v-col cols="12" class="py-2">
                                                                             <!-- ✅ แสดง video เฉพาะตอนยังไม่ถ่าย -->
@@ -462,8 +590,6 @@
                                                                                 style="display: none;" />
                                                                         </v-col>
                                                                     </v-row>
-
-
 
                                                                     <div class="pt-5 d-flex justify-center">
                                                                         <v-btn size="large" block @click="capture()"
@@ -494,19 +620,108 @@
                                                                             alt="Captured image" width="100%"
                                                                             style="border: 1px solid grey; border-radius: 10px;" />
                                                                     </div>
-
-                                                                    <v-btn variant="flat"
-                                                                        :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                                                                        type="submit" color="#66BB6A" width="100%"
-                                                                        class="mt-4" size="large">
-                                                                        บันทึกขาเข้า
-                                                                        <v-icon
-                                                                            class="ml-2">mdi-tray-arrow-down</v-icon>
-                                                                    </v-btn>
-
-                                                                    <CheckOut @update="getData()" />
+                                                                    <v-col cols="12" lg="5" class="text-start pt-5">
+                                                                        <p>ชื่อ-นามสกุล</p>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                        <v-text-field density="compact"
+                                                                            variant="outlined"
+                                                                            placeholder="ระบุชื่อ-นามสกุล"
+                                                                            v-model="sendData.name"
+                                                                            :rules="sendData.name ? [] : [v => !!v || 'โปรดระบุชื่อ-นามสกุล']"
+                                                                            required hide-details="auto"></v-text-field>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="5" class="pt-2">
+                                                                        <p>จากบริษัท
+                                                                            <span
+                                                                                style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                        </p>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                        <v-text-field variant="outlined"
+                                                                            density="compact" v-model="sendData.agency"
+                                                                            hide-details="auto"
+                                                                            placeholder="ระบุหน่วยงาน"></v-text-field>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="5" class="pt-2">
+                                                                        <p>เบอร์โทรศัพท์</p>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                        <v-text-field type="tel" density="compact"
+                                                                            variant="outlined"
+                                                                            placeholder="ระบุเบอร์โทรศัพท์"
+                                                                            v-model="sendData.tel" hide-details="auto"
+                                                                            :rules="[
+                                                                                v => !!v || 'กรุณาระบุเบอร์โทรศัพท์',
+                                                                                v => /^[0-9]*$/.test(v) || 'กรุณาใส่เฉพาะตัวเลขเท่านั้น',
+                                                                            ]" maxlength="10"></v-text-field>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="5" class="pt-2">
+                                                                        <p>
+                                                                            จำนวนผู้มาติดต่อ
+                                                                            <span
+                                                                                style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                        </p>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                        <v-text-field variant="outlined"
+                                                                            density="compact"
+                                                                            v-model="sendData.totalVisitor"
+                                                                            hide-details="auto"
+                                                                            placeholder="ระบุจำนวนผู้มาติดต่อ"></v-text-field>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="5" class="pt-2">
+                                                                        <p>
+                                                                            ผู้รับการติดต่อ
+                                                                            <span
+                                                                                style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                        </p>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                        <v-text-field variant="outlined"
+                                                                            density="compact"
+                                                                            v-model="sendData.contactPerson"
+                                                                            hide-details="auto"
+                                                                            placeholder="ระบุชื่อผู้รับการติดต่อ"></v-text-field>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="5" class="pt-2">
+                                                                        <p>
+                                                                            แผนกที่ต้องการติดต่อ
+                                                                            <span
+                                                                                style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                        </p>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                        <v-text-field variant="outlined"
+                                                                            density="compact"
+                                                                            v-model="sendData.department"
+                                                                            hide-details="auto"
+                                                                            placeholder="ระบุชื่อแผนก"></v-text-field>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="5" class="pt-2">
+                                                                        <p>
+                                                                            วัตถุประสงค์
+                                                                            <span
+                                                                                style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                        </p>
+                                                                    </v-col>
+                                                                    <v-col cols="12" lg="7" class="pa-0 pb-2">
+                                                                        <v-text-field variant="outlined"
+                                                                            density="compact" v-model="sendData.object"
+                                                                            hide-details="auto"
+                                                                            placeholder="ระบุวัตถุประสงค์"></v-text-field>
+                                                                    </v-col>
                                                                 </v-col>
                                                             </v-row>
+                                                            <v-btn variant="flat"
+                                                                :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                                                type="submit" color="#66BB6A" width="100%" class="mt-4"
+                                                                size="large">
+                                                                บันทึกขาเข้า
+                                                                <v-icon class="ml-2">mdi-tray-arrow-down</v-icon>
+                                                            </v-btn>
+
+                                                            <CheckOut @update="getData()" />
                                                         </v-form>
                                                     </v-tabs-window-item>
                                                     <!-- ######################################################################################################### -->
@@ -519,12 +734,12 @@
 
                             <!-- //NOTE - Form for Person -->
                             <v-tabs-window-item value="person">
-                                <PersonRegister />
+                                <PersonRegister @created="CreatedSuccess()" />
                             </v-tabs-window-item>
                         </v-tabs-window>
                     </v-card>
                 </v-col>
-                <v-col v-if="!isHorizontal" cols="12">
+                <v-col v-if="!isHorizontal" cols="12" class="pt-0 pb-0">
                     <!-- <RemainTable ref="remainTable" /> -->
                     <v-card class="ma-2" style="background-color: #FAFAFA;">
                         <div>
@@ -602,61 +817,90 @@
                     <h4>สแกนขาออก</h4>
                     <qrcode-vue :value="sendData._id" :size="100" level="H" render-as="canvas"
                         :key="sendData._id"></qrcode-vue>
-                    <p style="font-size: 12px;">{{ sendData._id }}</p>
+                    <h4 style="padding-bottom: 0px;">ใบผ่าน เข้า-ออก รหัส
+                        <span style="font-weight: 400;font-size: 12px;">(No.)</span>
+                        <p style="font-size: 12px;font-weight: 400;">{{ sendData._id }}</p>
+                    </h4>
                 </div>
-                <h3 style="padding-bottom: 0px;">บันทึกการเข้า-ออก</h3>
-                <h3>บริษัท ซันสวีท จำกัด (มหาชน)</h3>
+
+                <h4>บริษัท ซันสวีท จำกัด (มหาชน)</h4>
             </div>
             <div style="text-align: start; font-size: 12px;">
-                <p style="font-weight: bold;">วันที่ :
+                <p style="font-weight: bold;">เวลาเข้า <span
+                        style="font-size: 10px;color: #BDBDBD;font-weight: 300;">(Time
+                        IN)</span> :
                     <span style="font-weight: 400;">
-                        {{ dateFormatDayandTime(sendData.time) }}
+                        {{ dateFormatDayandTime(sendData.time) }} - {{ formatitemdevice(sendData.time) }}
                     </span>
                 </p>
-                <p style="font-weight: bold;">เวลาเข้า :
-                    <span style="font-weight: 400;">
-                        {{ formatitemdevice(sendData.time) }}
-                    </span>
+                <p style="font-weight: bold;">เวลาออก <span
+                        style="font-size: 10px;color: #BDBDBD; font-weight: 300;">(Time
+                        OUT)</span> :
+                    <span style="display: inline-block; border-bottom: 1px solid grey; width: 100px;"></span>
                 </p>
-                <p style="font-weight: bold;">ชื่อ (ผู้ติดต่อ) :
+                <p style="font-weight: bold;">
+                    วัตถุประสงค์ : <span style="font-weight: 400;">{{ sendData.object }}</span> <br /><span
+                        style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Purpose of
+                        Visit)</span>
+
+                </p>
+                <p style="font-weight: bold;">ชื่อ-นามสกุล :
                     <span style="font-weight: 400;">
                         {{ sendData.name }}
-                    </span>
+                    </span> <br />
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Name-Surname)</span>
                 </p>
-                <p style="font-weight: bold;">บริษัท/หน่วยงาน : <span
-                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 150px;"></span> </p>
-                <p style="font-weight: bold;">จำนวนคน : <span
-                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 180px;"></span></p>
-
-                <p style="font-weight: bold;">ทะเบียนรถ :
+                <p style="font-weight: bold;">ทะเบียนรถ
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Car)</span> :
                     <span style="font-weight: 400;">
                         {{ sendData.licensePlate.License }}
                     </span>
                 </p>
-                <p style="font-weight: bold;">ติดต่อแผนก/คุณ : <span
-                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 150px;"></span></p>
-                <p style="font-weight: bold;">รายละเอียดกิจธุระ : <span
-                        style="display: inline-block; border-bottom: 1px dashed black; min-width: 140px;"></span></p>
+                <p style="font-weight: bold;">จากบริษัท : <span style="font-weight: 400;">{{ sendData.agency }}</span>
+                    <br /> <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(From Company)</span>
+                </p>
+                <p style="font-weight: bold;">จำนวนผู้มาติดต่อ : <span style="font-weight: 400;">{{
+                    sendData.totalVisitor
+                        }} คน</span>
+                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Total Visitor)</span>
+                </p>
+                <p style="font-weight: bold;">ผู้รับการติดต่อ : <span style="font-weight: 400;">{{
+                    sendData.contactPerson
+                        }}</span>
+                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
+                </p>
+                <p style="font-weight: bold;">ติดต่อแผนก : <span style="font-weight: 400;">{{ sendData.department
+                        }}</span>
+                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Deparment)</span>
+                </p>
             </div>
 
-            <div>
-                <v-row>
-                    <v-col>
-                        <p style="font-size: 12px; text-align: center;margin-top: 2px;padding-bottom: 5px;">
-                            ลงชื่อผู้ติดต่อ</p>
-                        <div style="border: 1px solid black;padding: 30px;"></div>
-                    </v-col>
-                    <v-col>
-                        <p style="font-size: 12px; text-align: center;margin-top: 2px;padding-bottom: 5px;">ลงชื่อ รปภ.
-                        </p>
-                        <div style="border: 1px solid black;padding: 30px;"></div>
-                    </v-col>
-                    <v-col>
-                        <p style="font-size: 12px; text-align: center;margin-top: 2px;margin-bottom: 2px;">
-                            ลงชื่อผู้รับการติดต่อ</p>
-                        <div style="border: 1px solid black;padding: 30px;"></div>
-                    </v-col>
-                </v-row>
+            <div style="text-align: center;font-weight: 400;font-size: 12px;">
+                <p>
+                    ข้าพเจ้ายินยอมให้บันทึกข้อมูลส่วนบุคคล <br> เพื่อใช้ตามวัตถุประสงค์ของบริษัทฯ
+                </p>
+                <p>
+                    <br>
+                    (<span style="display: inline-block; border-bottom: 1px solid grey; width: 150px;"> </span>)
+                    <br>
+                    <span>ลงชื่อผู้มาติดต่อ</span> <br>
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Visitor Sign)</span>
+                </p>
+            </div>
+
+            <div style="text-align: start; font-size: 12px;">
+                <p>
+                    ลงชื่อ ผู้รับการติดต่อ : <span
+                        style="display: inline-block; border-bottom: 1px solid grey; width: 130px;"></span>
+                    <br>
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact person sign)</span>
+                </p>
+                <p>
+                    ลงชื่อ เจ้าหน้าที่ รปภ. : <span
+                        style="display: inline-block; border-bottom: 1px solid grey; width: 130px;"></span>
+                    <br>
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact person sign)</span>
+                </p>
             </div>
         </div>
     </div>
@@ -697,6 +941,11 @@ export default defineComponent({
             image: null,
             licenseId: '',
             tel: '',
+            agency: '',
+            object: '',
+            contactPerson: '',
+            totalVisitor: 1,
+            department: '',
         })
 
         const dataLicense = ref('');
@@ -715,15 +964,6 @@ export default defineComponent({
         const { proxy } = getCurrentInstance()
 
         let timer = null;
-
-        watch(activeTab, (newVal) => {
-            if (newVal === 'license') {
-                // หน่วงเวลาก่อน focus เล็กน้อย เผื่อ Vuetify render UI ยังไม่เสร็จ
-                setTimeout(() => {
-                    inputField.value?.focus();
-                }, 100);
-            }
-        });
 
         watch(dataLicense, (newVal) => {
 
@@ -1040,6 +1280,12 @@ export default defineComponent({
                                 cdataId: sendData.value._id,
                                 timeStamp: sendData.value.time,
                                 visitorTel: sendData.value.tel,
+
+                                agency: sendData.value.agency || '',
+                                object: sendData.value.object || '',
+                                contactPerson: sendData.value.contactPerson || '',
+                                totalVisitor: sendData.value.totalVisitor || '',
+                                department: sendData.value.department || '',
                             }
                             await lp.CreateLP(park, data, token).then(async (res) => {
                                 if (res.message === 'ok' || res.data.message === 'This license has been added') {
@@ -1058,6 +1304,11 @@ export default defineComponent({
                                         identityNumber: '',
                                         address: '',
                                         tel: '',
+                                        agency: '',
+                                        object: '',
+                                        contactPerson: '',
+                                        totalVisitor: 1,
+                                        department: '',
                                     };
                                     document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
                                     proxy.getData();
@@ -1100,6 +1351,25 @@ export default defineComponent({
             }
         }
 
+        //#####################################################
+        //NOTE - Function to Reset When Create form Person Success
+        const CreatedSuccess = () => {
+            proxy.getData();
+            sendData.value = {
+                msg: '',
+                licensePlate: { License: '' },
+                vehicleType: 'TRUCK',
+                time: new Date(),
+                name: '',
+                identityNumber: '',
+                address: '',
+                tel: '',
+            };
+            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+        }
+        //#####################################################
+
+
         const submitBylicenseId = async (event) => {
             const res = await event
             if (res.valid === true) {
@@ -1128,9 +1398,13 @@ export default defineComponent({
 
                         driverLicenseId: sendData.value.licenseId,
                         visitorTel: sendData.value.tel,
+
+                        agency: sendData.value.agency || '',
+                        object: sendData.value.object || '',
+                        contactPerson: sendData.value.contactPerson || '',
+                        totalVisitor: sendData.value.totalVisitor || '',
+                        department: sendData.value.department || '',
                     }
-                    console.log("Data in submit by licenseId", data)
-                    proxy.getData();
                     await lp.CreateLP(park, data, token).then(async (res) => {
                         if (res.message === 'ok' || res.data.message === 'This license has been added') {
                             Swal.fire({
@@ -1148,9 +1422,14 @@ export default defineComponent({
                                 identityNumber: '',
                                 address: '',
                                 tel: '',
+                                agency: '',
+                                object: '',
+                                contactPerson: '',
+                                totalVisitor: 1,
+                                department: '',
                             };
                             document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                            this.getData();
+                            proxy.getData();
                         } else if (res.data.message === 'validate error') {
                             Swal.fire({
                                 title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
@@ -1699,21 +1978,28 @@ export default defineComponent({
                             const token = CheckToken;
                             const park = store.state.park;
                             const data = {
-                                guestName: '',
+                                guestName: sendData.value.name,
                                 licensePlate: sendData.value.licensePlate.License,
                                 licensePlateProvince: '',
                                 start: dateFormatValue(sendData.value.time),
                                 listType: 'fixedlist',
                                 expire: '2025-12-31',
 
-                                // identityNumber: sendData.value.identityNumber,
-                                // address: sendData.value.address,
+                                identityNumber: '',
+                                address: '',
+
                                 vehicleType: sendData.value.vehicleType,
                                 cate: 'stranger',
                                 personCardImgUrl: res.data.filePath,
                                 cdataId: sendData.value._id,
                                 timeStamp: sendData.value.time,
                                 visitorTel: sendData.value.tel,
+
+                                agency: sendData.value.agency || '',
+                                object: sendData.value.object || '',
+                                contactPerson: sendData.value.contactPerson || '',
+                                totalVisitor: sendData.value.totalVisitor || '',
+                                department: sendData.value.department || '',
                             }
                             await lp.CreateLP(park, data, token).then(async (res) => {
                                 if (res.message === 'ok' || res.data.message === 'This license has been added') {
@@ -1804,6 +2090,8 @@ export default defineComponent({
             submitWOther,
             retakeDocImage,
             isCapturedDoc,
+
+            CreatedSuccess,
         }
     },
     components: {
@@ -1847,7 +2135,7 @@ export default defineComponent({
         ],
         data: [],
         page: 1,
-        itemsPerPage: 10,
+        itemsPerPage: 5,
         startDate: new Date(),
         endDate: new Date(),
         tabs: {
@@ -1929,6 +2217,10 @@ export default defineComponent({
 
 <style scoped>
 .overflow-y-auto {
+    overflow-y: auto;
+}
+
+.overflow-yp-auto {
     overflow-y: auto;
 }
 
