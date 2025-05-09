@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="Reportdialog" @input="$emit('update:modelValue', $event)" width="85%">
+    <v-dialog :value="Reportdialog" @update:modelValue="$emit('update:modelValue', $event)" width="85%">
         <v-card>
             <div>
                 <v-toolbar :color="typeMap[type]?.color" density="comfortable">
@@ -7,15 +7,15 @@
                         <v-icon :icon="typeMap[type]?.icon" size="small" class="mr-2" />
                         {{ typeMap[type]?.text || 'ไม่พบข้อมูล' }}
                     </v-toolbar-title>
-                    <v-btn icon="mdi-close" size="small" @click="$emit('update:modelValue', false)"></v-btn>
+                    <v-btn icon="mdi-close" size="small" @click="closeDialog"></v-btn>
                 </v-toolbar>
             </div>
             <div class="pa-3">
-                <!-- <v-text-field class="pt-5 px-5" density="comfortable" variant="outlined"
-                    label="ค้นหา (ทะเบียนรถ, เจ้าของ)" prepend-inner-icon="mdi-magnify"
-                    v-model="searchQuery"></v-text-field> -->
+                <v-text-field class="pt-5 px-5" density="comfortable" variant="outlined"
+                    label="ค้นหา (ทะเบียนรถ, เจ้าของ)" prepend-inner-icon="mdi-magnify" v-model="searchQuery"
+                    clearable></v-text-field>
                 <v-card variant="flat">
-                    <v-data-table :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="data"
+                    <v-data-table :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="filteredData"
                         class="elevation-1" hide-default-footer>
                         <template v-slot:headers="column">
                             <tr>
@@ -89,6 +89,17 @@ export default {
         pageCount() {
             return Math.ceil(this.data.length / this.itemsPerPage);
         },
+        filteredData() {
+            if (!this.searchQuery) return this.data;
+
+            const query = this.searchQuery.toLowerCase();
+
+            return this.data.filter(item => {
+                const licenseMatch = item.license?.toLowerCase().includes(query);
+                const personMatch = item.person?.some(p => p.name?.toLowerCase().includes(query));
+                return licenseMatch || personMatch;
+            });
+        }
     },
     watch: {
         type: {
@@ -200,6 +211,10 @@ export default {
                     hour12: false
                 }).replace(",", "");
             }
+        },
+        closeDialog() {
+            this.searchQuery = '';
+            this.$emit('update:modelValue', false);
         },
     }
 }
