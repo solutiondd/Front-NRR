@@ -119,7 +119,7 @@ export default {
                             } else {
                                 this.$swal({
                                     icon: 'warning',
-                                    title: `มีบางอย่างผิดพลาด !`,
+                                    text: `มีบางอย่างผิดพลาด ! ${res.data.message}`,
                                 });
                             }
                         })
