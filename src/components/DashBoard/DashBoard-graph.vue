@@ -1,6 +1,41 @@
 <template>
+    <v-col cols="12" class="mb-8 pa-0">
+        <v-card class="pa-5" width="100%">
+            <h3 class="d-flex align-center"><v-icon color="#FF4D00" icon="mdi-calendar-filter" class="mr-2" />ตัวกรอง
+            </h3>
+            <v-row class="mt-2">
+                <v-col cols="12" sm="5">
+                    <p class="pb-2">วันทื่เริ่มต้น</p>
+                    <v-menu ref="menu" v-model="dialogStart" :close-on-content-click="false"
+                        v-model:propName="startDate" transition="scale-transition" offset-y min-width="auto">
+                        <template v-slot:activator="{ props }">
+                            <v-text-field density="comfortable" variant="outlined" v-model="FormatStart"
+                                prepend-inner-icon="mdi-calendar-today" v-bind="props" hide-details></v-text-field>
+                        </template>
+                        <v-date-picker color="primary" v-model="startDate"
+                            @update:modelValue="dialogStart = false, startDate = $event"></v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="12" sm="5">
+                    <p class="pb-2">วันที่สิ้นสุด</p>
+                    <v-menu ref="menu" v-model="dialogEnd" :close-on-content-click="false" v-model:propName="endDate"
+                        transition="scale-transition" offset-y min-width="auto">
+                        <template v-slot:activator="{ props }">
+                            <v-text-field v-model="FormatEnd" density="comfortable" variant="outlined"
+                                prepend-inner-icon="mdi-calendar" v-bind="props" hide-details></v-text-field>
+                        </template>
+                        <v-date-picker color="primary" v-model="endDate"
+                            @update:modelValue="dialogEnd = false, endDate = $event"></v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="12" sm="2" class="d-flex align-end">
+                    <v-btn color="primary" height="48px" icon="mdi-magnify" @click="getData"></v-btn>
+                </v-col>
+            </v-row>
+        </v-card>
+    </v-col>
     <v-row class="pa-0">
-        <v-col cols="12" sm="12" md="6">
+        <v-col class="pt-0" cols="12" sm="12" md="6">
             <v-card class="pa-5 " width="100%">
                 <h3 class="pb-5">ข้อมูลกราฟ วันนี้ {{ dateFormatDayandTime(new Date()) }}</h3>
                 <div class="chart-container mx-auto">
@@ -8,7 +43,7 @@
                 </div>
             </v-card>
         </v-col>
-        <v-col cols="12" sm="12" md="6">
+        <v-col class="pt-0" cols="12" sm="12" md="6">
             <v-card class="pa-5" width="100%">
                 <h3 class="pb-5">ข้อมูลตัวเลข วันนี้ {{ dateFormatDayandTime(new Date()) }}</h3>
                 <v-row>
@@ -35,7 +70,7 @@
                             <p style="font-size: 18px;">รวมทั้งหมด</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
                                 dataDashBoard.visitor + dataDashBoard.stranger
-                            }} คัน</p>
+                                }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -99,7 +134,8 @@
                     </v-col>
                 </v-row>
                 <!-- <ReportVisitor v-model="dialog" :type="selectedType" /> -->
-                <ReportVisitorGroupByLP v-model="dialog" :type="selectedType" />
+                <ReportVisitorGroupByLP :DateStart="startDate" :DateEnd="endDate" v-model="dialog"
+                    :type="selectedType" />
             </v-card>
 
             <!-- <v-card class="pa-5 mt-5" width="100%">
@@ -190,6 +226,14 @@ export default {
         ReportVisitor,
         ReportVisitorGroupByLP
     },
+    computed: {
+        FormatStart() {
+            return dateFormatValue(this.startDate)
+        },
+        FormatEnd() {
+            return dateFormatValue(this.endDate)
+        }
+    },
     data() {
         return {
             chartData: {
@@ -260,51 +304,14 @@ export default {
             },
             dataDashBoard: [],
             startDate: new Date(),
-            endDate: new Date(),
+            endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
             dialog: false,
             selectedType: '',
+            dialogStart: false,
+            dialogEnd: false,
         };
     },
-    // computed: {
-    //     chartOptions() {
-    //         const isDark = this.theme.global.current.value.dark; // เช็คว่าธีมเป็น dark หรือไม่
-    //         return {
-    //             responsive: true,
-    //             maintainAspectRatio: false,
-    //             plugins: {
-    //                 legend: {
-    //                     labels: {
-    //                         color: '#ffffff', // กำหนดสีให้เป็นขาวเสมอ
-    //                     },
-    //                 },
-    //                 tooltip: {
-    //                     titleFont: {
-    //                         color: '#ffffff', // สีฟอนต์ของ tooltip
-    //                     },
-    //                     bodyFont: {
-    //                         color: '#ffffff', // สีฟอนต์ของ body ใน tooltip
-    //                     },
-    //                     footerFont: {
-    //                         color: '#ffffff', // สีฟอนต์ของ footer ใน tooltip
-    //                     },
-    //                 },
-    //                 datalabels: {
-    //                     color: '#ffffff', // กำหนดสีของ datalabels เป็นสีขาว
-    //                     font: {
-    //                         weight: "bold",
-    //                         size: 16,
-    //                     },
-    //                     anchor: "center",
-    //                     align: "center",
-    //                 },
-    //             },
-    //             // เพิ่ม cutout เพื่อให้เป็น Donut Chart
-    //             cutout: '70%',
-    //         };
-    //     },
-    // },
     mounted() {
-        this.endDate = this.addDays(this.startDate, +1)
         this.getData();
     },
     methods: {
@@ -357,11 +364,6 @@ export default {
                 }
             })
 
-        },
-        addDays(date, days) {
-            const newDate = new Date(date);
-            newDate.setDate(newDate.getDate() + days);
-            return newDate;
         },
         getFontSize() {
             const screenWidth = window.innerWidth;

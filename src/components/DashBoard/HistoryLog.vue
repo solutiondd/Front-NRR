@@ -73,7 +73,7 @@
                     <td class="text-center" style="min-width: 150px;">
                         {{ row.item?.person?.name }}
                     </td>
-                    <td class="text-center py-3">
+                    <!-- <td class="text-center py-3">
                         <div v-if="row.item?.person?.personImgUrl">
                             <img class="zoom" :src="baseUrl + row.item.person.personImgUrl" alt="image"
                                 style="width: 100px; height: auto;">
@@ -84,7 +84,7 @@
                             <img class="zoom" :src="baseUrl + row.item.person.personCardImgUrl" alt="image"
                                 style="width: 150px; height: auto;">
                         </div>
-                    </td>
+                    </td> -->
                     <td class="text-center">
                         {{ formatDateTime(row.item.time) }}
                     </td>
@@ -163,8 +163,8 @@ export default {
             { title: 'ภาพป้ายทะเบียน 2', align: 'center', sortable: false, key: 'platesPhoto2' },
             { title: 'หมายเลขทะเบียน', align: 'center', sortable: false, key: 'license' },
             { title: 'ชื่อผู้ติดต่อ', align: 'center', sortable: false, key: 'license' },
-            { title: 'รูปผู้มาติดต่อ', align: 'center', sortable: false, key: 'license' },
-            { title: 'เอกสารอื่น ๆ', align: 'center', sortable: false, key: 'license' },
+            // { title: 'รูปผู้มาติดต่อ', align: 'center', sortable: false, key: 'license' },
+            // { title: 'เอกสารอื่น ๆ', align: 'center', sortable: false, key: 'license' },
             { title: 'วันที่/เวลา (ขาเข้า)', align: 'center', sortable: false, key: 'entry.time' },
             { title: 'วันที่/เวลา (ขาออก)', align: 'center', sortable: false, key: 'entry.checkoutTimeStamp' },
             { title: 'รายละเอียด', align: 'center', sortable: false, key: 'entry.msg' },

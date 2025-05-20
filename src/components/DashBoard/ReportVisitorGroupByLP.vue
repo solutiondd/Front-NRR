@@ -1,19 +1,20 @@
 <template>
     <v-dialog :value="Reportdialog" @update:modelValue="$emit('update:modelValue', $event)" width="85%">
+        <div>
+            <v-toolbar :color="typeMap[type]?.color" density="comfortable">
+                <v-toolbar-title class="d-flex align-center">
+                    <v-icon :icon="typeMap[type]?.icon" size="small" class="mr-2" />
+                    {{ typeMap[type]?.text || 'ไม่พบข้อมูล' }}
+                </v-toolbar-title>
+                <v-btn icon="mdi-close" size="small" @click="closeDialog"></v-btn>
+            </v-toolbar>
+        </div>
+        <div class="pa-3" style="background-color: #212121;">
+            <v-text-field class="pt-5 px-5" density="comfortable" variant="outlined" label="ค้นหา (ทะเบียนรถ, เจ้าของ)"
+                prepend-inner-icon="mdi-magnify" v-model="searchQuery" clearable hide-details></v-text-field>
+        </div>
         <v-card>
-            <div>
-                <v-toolbar :color="typeMap[type]?.color" density="comfortable">
-                    <v-toolbar-title class="d-flex align-center">
-                        <v-icon :icon="typeMap[type]?.icon" size="small" class="mr-2" />
-                        {{ typeMap[type]?.text || 'ไม่พบข้อมูล' }}
-                    </v-toolbar-title>
-                    <v-btn icon="mdi-close" size="small" @click="closeDialog"></v-btn>
-                </v-toolbar>
-            </div>
             <div class="pa-3">
-                <v-text-field class="pt-5 px-5" density="comfortable" variant="outlined"
-                    label="ค้นหา (ทะเบียนรถ, เจ้าของ)" prepend-inner-icon="mdi-magnify" v-model="searchQuery"
-                    clearable></v-text-field>
                 <v-card variant="flat">
                     <v-data-table :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="filteredData"
                         class="elevation-1" hide-default-footer>
@@ -72,6 +73,8 @@ export default {
     props: {
         Reportdialog: Boolean,
         type: String,
+        DateStart: Date,
+        DateEnd: Date,
     },
     components: {
         Detail,
@@ -104,6 +107,8 @@ export default {
     watch: {
         type: {
             handler(newVal) {
+                this.startDate = this.DateStart;
+                this.endDate = this.DateEnd;
                 this.getData(newVal);
             },
             immediate: true // <-- เรียกทันทีเมื่อเริ่มต้น
@@ -143,13 +148,14 @@ export default {
         ],
         data: [],
         page: 1,
-        itemsPerPage: 10,
+        itemsPerPage: 7,
         startDate: new Date(),
         endDate: new Date(),
         searchQuery: '',
     }),
     mounted() {
-        this.endDate = this.addDays(this.startDate, +1)
+
+        // this.endDate = this.addDays(this.startDate, +1)
     },
     methods: {
         async getData(type) {
