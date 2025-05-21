@@ -740,7 +740,7 @@ import { useStore } from 'vuex';
 import QrcodeVue from "qrcode.vue";
 import CheckOut from '../../components/Security-Guard/CheckOut.vue';
 import { ImageService } from "../../api/UploadImage";
-
+import ThtoEng from '../../utils/MapThToEng';
 export default {
     setup() {
         const store = useStore();
@@ -800,10 +800,15 @@ export default {
             }, 800);
         });
 
-        // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
+        const convertThtoEng = (input) => {
+            return input.map(char => ThtoEng[chat] || char).join('');
+        }
+
         // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
         const parseDriverLicenseData = (input) => {
-            const lines = input.split("\n");
+            const Convert = convertThtoEng(input)
+            console.log('convert Success : ', Convert)
+            const lines = Convert.split("\n");
 
             let foundName = false;
             let foundId = false;
