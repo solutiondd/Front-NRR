@@ -2,7 +2,7 @@
     <v-row class="pa-0 pb-5">
         <v-col cols="12">
             <v-card class="pa-5">
-                <h3 class="pa-5 text-center">ข้อมูลการเข้า/ออก รายชั่วโมง</h3>
+                <h3 class="pa-5 text-center">ข้อมูลขาเข้า รายชั่วโมง</h3>
                 <LineChart :chart-data="chartData" :options="chartOptions" />
             </v-card>
         </v-col>

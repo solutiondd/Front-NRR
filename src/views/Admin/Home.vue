@@ -8,8 +8,8 @@
             <v-tabs align-tabs="start" v-model="tab" bg-color="primary">
                 <v-tab value="history" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
                     (มียานพาหนะ)</v-tab>
-                <v-tab value="people" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
-                    (ไม่มียานพาหนะ)</v-tab>
+                <!-- <v-tab value="people" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
+                    (ไม่มียานพาหนะ)</v-tab> -->
             </v-tabs>
 
             <v-card-text>
@@ -17,9 +17,9 @@
                     <v-tabs-window-item value="history">
                         <HistoryLog />
                     </v-tabs-window-item>
-                    <v-tabs-window-item value="people">
+                    <!-- <v-tabs-window-item value="people">
                         <HistoryLogPerson />
-                    </v-tabs-window-item>
+                    </v-tabs-window-item> -->
                 </v-tabs-window>
             </v-card-text>
         </v-card>
