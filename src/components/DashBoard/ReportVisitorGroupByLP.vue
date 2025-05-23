@@ -35,12 +35,14 @@
                                     {{ row.item.license }}
                                 </td>
                                 <td class="text-center" style="min-width: 180px;">
-                                    <div v-for="lp in row.item.person" :key="lp.identityNumber">
+                                    <div v-for="lp in row.item.person" :key="lp">
                                         {{ lp.name }}
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    {{ formatDateTime(row.item.timeStamp[0]) }}
+                                    <p v-if="this.type === 'CheckOut'">{{
+                                        formatDateTime(row.item.entryTime) }}</p>
+                                    <p v-else>{{ formatDateTime(row.item.timeStamp[0]) }}</p>
                                 </td>
                                 <td class="text-center">
                                     {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
@@ -49,7 +51,7 @@
                                     <v-chip color="red">{{ row.item.msg }}</v-chip>
                                 </td>
                                 <td class="text-center">
-                                    <Detail :data="row.item.data" />
+                                    <Detail :data="row.item.data" :TypeOf="this.type" />
                                 </td>
                             </tr>
                         </template>
@@ -152,6 +154,7 @@ export default {
         startDate: new Date(),
         endDate: new Date(),
         searchQuery: '',
+        timeEntry: '',
     }),
     mounted() {
 
@@ -160,6 +163,8 @@ export default {
     methods: {
         async getData(type) {
             try {
+                const statusin = 'in';
+                const statusout = 'out';
                 const start = datetimeFormatLimit(this.startDate);
                 const end = datetimeFormatLimit(this.endDate);
                 const park = this.$store.state.park;
@@ -181,7 +186,7 @@ export default {
                 if (type === 'Registered') {
                     res = await this.stranger.RegisteredGroup(start, end, park);
                 } else if (type === 'CheckOut') {
-                    res = await this.stranger.CheckOutGroup(start, end, park);
+                    res = await this.stranger.ReportCR(start, end, statusout);
                 } else if (type === 'NotRegister') {
                     res = await this.stranger.NotRegisterGroup(start, end, park);
                 } else if (type === 'Remaining') {
@@ -190,8 +195,20 @@ export default {
 
                 if (res?.message === 'ok') {
                     this.data = res.data;
-                    // this.data.reverse();
-                    this.page = 1;
+                    if (type === 'CheckOut') {
+                        this.data = this.data.map(item => {
+                            const firstEntry = item.data.find(entry => entry.inout && entry.inout.toUpperCase() === "ENTRY");
+                            return {
+                                ...item,
+                                entryTime: firstEntry?.time || '-',
+                            };
+                        });
+                        console.log(this.data)
+                        // this.timeEntry = timeEn ? timeEn.time : '-';
+                        // this.data.reverse();
+                        this.page = 1;
+                    }
+
                 }
             } catch (error) {
                 console.log(`Error for type: ${type}`, error)

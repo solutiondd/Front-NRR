@@ -1,11 +1,13 @@
 <template>
     <v-col cols="12" class="mb-8 pa-0">
         <v-card class="pa-5" width="100%">
-            <h3 class="d-flex align-center"><v-icon color="#FF4D00" icon="mdi-calendar-filter" class="mr-2" />ตัวกรอง
-            </h3>
-            <v-row class="mt-2">
-                <v-col cols="12" sm="5">
-                    <p class="pb-2">วันทื่เริ่มต้น</p>
+            <v-row class="mt-1">
+                <v-col cols="4" sm="2" lg="1" class="d-flex align-center justify-center pt-0">
+                    <h3 class="d-flex align-center"><v-icon color="#FF4D00" icon="mdi-calendar-filter"
+                            class="mr-2" />วันที่
+                    </h3>
+                </v-col>
+                <v-col cols="9" sm="5" class="pt-0">
                     <v-menu ref="menu" v-model="dialogStart" :close-on-content-click="false"
                         v-model:propName="startDate" transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ props }">
@@ -16,7 +18,7 @@
                             @update:modelValue="dialogStart = false, startDate = $event"></v-date-picker>
                     </v-menu>
                 </v-col>
-                <v-col cols="12" sm="5">
+                <!-- <v-col cols="12" sm="5">
                     <p class="pb-2">วันที่สิ้นสุด</p>
                     <v-menu ref="menu" v-model="dialogEnd" :close-on-content-click="false" v-model:propName="endDate"
                         transition="scale-transition" offset-y min-width="auto">
@@ -27,8 +29,8 @@
                         <v-date-picker color="primary" v-model="endDate"
                             @update:modelValue="dialogEnd = false, endDate = $event"></v-date-picker>
                     </v-menu>
-                </v-col>
-                <v-col cols="12" sm="2" class="d-flex align-end">
+                </v-col> -->
+                <v-col cols="3" sm="2" class="d-flex align-end pt-0">
                     <v-btn color="primary" height="48px" icon="mdi-magnify" @click="getData"></v-btn>
                 </v-col>
             </v-row>
@@ -37,7 +39,7 @@
     <v-row class="pa-0">
         <v-col class="pt-0" cols="12" sm="12" md="6">
             <v-card class="pa-5 " width="100%">
-                <h3 class="pb-5">ข้อมูลกราฟ วันนี้ {{ dateFormatDayandTime(new Date()) }}</h3>
+                <h3 class="pb-5">ข้อมูลกราฟ วันนี้ {{ dateFormatDayandTime(this.startDate) }}</h3>
                 <div class="chart-container mx-auto">
                     <DoughnutChart :chart-data="chartData" :options="chartOptions" />
                 </div>
@@ -45,7 +47,7 @@
         </v-col>
         <v-col class="pt-0" cols="12" sm="12" md="6">
             <v-card class="pa-5" width="100%">
-                <h3 class="pb-5">ข้อมูลตัวเลข วันนี้ {{ dateFormatDayandTime(new Date()) }}</h3>
+                <h3 class="pb-5">ข้อมูลตัวเลข วันนี้ {{ dateFormatDayandTime(this.startDate) }}</h3>
                 <v-row>
                     <v-col cols="12" sm="6">
                         <v-card class="pa-3" color="#66BB6A">
@@ -304,7 +306,7 @@ export default {
             },
             dataDashBoard: [],
             startDate: new Date(),
-            endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
+            endDate: new Date(),
             dialog: false,
             selectedType: '',
             dialogStart: false,
@@ -316,6 +318,7 @@ export default {
     },
     methods: {
         async getData() {
+            this.endDate = this.addDays(this.startDate, +1)
             const start = datetimeFormatLimit(this.startDate);
             const end = datetimeFormatLimit(this.endDate);
             const parkId = this.$store.state.park
@@ -364,6 +367,11 @@ export default {
                 }
             })
 
+        },
+        addDays(date, days) {
+            const newDate = new Date(date);
+            newDate.setDate(newDate.getDate() + days);
+            return newDate;
         },
         getFontSize() {
             const screenWidth = window.innerWidth;

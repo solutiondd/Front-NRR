@@ -144,4 +144,28 @@ export class StrangerService {
 
     return responseData;
   }
+
+  async ReportCR(start, end, status) {
+    let data = null;
+
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${this.baseUrl}api/v1/stranger/list?dateStart=${start}&dateEnd=${end}&status=${status}`,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    };
+
+    await axios
+      .request(config)
+      .then((response) => {
+        data = response.data;
+      })
+      .catch((error) => {
+        data = { error: error.message, data: error?.response?.data };
+      });
+
+    return data;
+  }
 }
