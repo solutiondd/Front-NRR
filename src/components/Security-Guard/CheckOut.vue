@@ -122,6 +122,7 @@ export default {
                             } else {
                                 this.$swal({
                                     icon: 'warning',
+
                                     title: `มีบางอย่างผิดพลาด !`,
                                     text: `${res.data.message}`
                                 }).then(() => {

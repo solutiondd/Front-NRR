@@ -25,6 +25,7 @@
                         <p>ยี่ห้อรถ : {{ data.brand }}</p>
                         <p>สีรถ : {{ data.carColor }}</p>
                         <p>ประเภทยานพาหนะ : {{ vehicleLabel }}</p>
+                        <p>ประเภทสิทธิ์ : {{ data.category }}</p>
                     </v-col>
                     <v-col cols="12">
                         <h3 class="d-flex align-center pb-2"><v-icon size="small"
