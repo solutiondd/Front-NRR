@@ -5,8 +5,15 @@
         <DashBoard />
         <DashBoardLine />
         <v-card>
-            <v-tabs v-model="tab" bg-color="primary">
-                <v-tab value="history" style="font-weight: bold;">ประวัติการเข้า-ออก</v-tab>
+            <v-tabs align-tabs="start" v-model="tab" bg-color="primary">
+                <!-- //NOTE - หัวข้อ Tabs [ก่อนมีกล้อง Web-Cam] -->
+                <v-tab value="history" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก</v-tab>
+
+                <!-- //NOTE - หัวข้อ Tabs [หลังมีกล้อง Web-Cam] -->
+                <!-- <v-tab value="history" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
+                    (มียานพาหนะ)</v-tab> -->
+                <!-- <v-tab value="people" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
+                    (ไม่มียานพาหนะ)</v-tab> -->
             </v-tabs>
 
             <v-card-text>
@@ -14,6 +21,9 @@
                     <v-tabs-window-item value="history">
                         <HistoryLog />
                     </v-tabs-window-item>
+                    <!-- <v-tabs-window-item value="people">
+                        <HistoryLogPerson />
+                    </v-tabs-window-item> -->
                 </v-tabs-window>
             </v-card-text>
         </v-card>
@@ -22,11 +32,13 @@
 
 <script>
 import HistoryLog from '../../components/DashBoard/HistoryLog.vue';
+import HistoryLogPerson from '../../components/DashBoard/HistoryLogPerson.vue';
 import DashBoard from './DashBoard.vue';
 import DashBoardLine from '../../components/DashBoard/DashBoard-line.vue';
 export default {
     components: {
         HistoryLog,
+        HistoryLogPerson,
         DashBoard,
         DashBoardLine
     },
@@ -34,7 +46,7 @@ export default {
         items: [
             'หน้าหลัก',
         ],
-        tab: 'history'
+        tab: null,
     }),
 }
 </script>

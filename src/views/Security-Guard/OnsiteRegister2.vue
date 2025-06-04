@@ -870,7 +870,7 @@
                     <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
                 </p>
                 <p style="font-weight: bold;">ติดต่อแผนก : <span style="font-weight: 400;">{{ sendData.department
-                        }}</span>
+                }}</span>
                     <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Deparment)</span>
                 </p>
             </div>

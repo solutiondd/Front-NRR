@@ -41,6 +41,7 @@
 import { VisitorService } from "../../api/Visitor";
 import moment from "moment"
 import { ref, watch } from "vue";
+import ThtoEng from "../../utils/MapThToEng";
 export default {
     emits: ['update'],
     setup() {
@@ -70,7 +71,10 @@ export default {
     computed: {
         formatDate() {
             return moment(this.sendData.TransactionTime).format('DD/MM/YYYY HH:mm:ss')
-        }
+        },
+        convertInput() {
+            return this.convertThtoEng(this.sendData.TransctionId);
+        },
     },
     data: () => ({
         dialog: false,
@@ -91,7 +95,7 @@ export default {
             if (res.valid === true) {
                 const isoDate = this.changeFormatDate(this.sendData.TransactionTime, 0);
                 const data = {
-                    transactionId: this.sendData.TransctionId,
+                    transactionId: this.convertInput,
                     timeStamp: isoDate,
                 }
                 this.$swal({
@@ -103,7 +107,6 @@ export default {
                     cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
-                        console.log("sendData : ", data)
                         await this.visitor.checkout(data).then(res => {
                             if (res.message === 'ok') {
                                 this.$swal({
@@ -119,10 +122,22 @@ export default {
                             } else {
                                 this.$swal({
                                     icon: 'warning',
-                                    text: `มีบางอย่างผิดพลาด ! ${res.data.message}`,
-                                });
+
+                                    title: `มีบางอย่างผิดพลาด !`,
+                                    text: `${res.data.message}`
+                                }).then(() => {
+                                    this.sendData = {
+                                        TransctionId: '',
+                                        TransactionTime: new Date(),
+                                    }
+                                })
                             }
-                        })
+                        });
+                    } else if (result.isDismissed) {
+                        this.sendData = {
+                            TransctionId: '',
+                            TransactionTime: new Date(),
+                        };
                     }
                 })
             }
@@ -138,6 +153,9 @@ export default {
             date.setHours(Rawdate.getHours() + offset);
 
             return date.toISOString();
+        },
+        convertThtoEng(text) {
+            return text.split('').map(char => ThtoEng[char] || char).join('');
         }
     },
 }

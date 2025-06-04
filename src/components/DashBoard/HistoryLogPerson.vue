@@ -2,14 +2,9 @@
     <div class="pa-5">
         <v-row>
             <v-col cols="12" class="pb-5">
-                <!-- //NOTE - Title ที่อัพเดทแล้ว [รอแบบไม่มียานพาหนะ] -->
-                <!-- <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก (มียานพาหนะ)<v-icon
-                        class="ml-2">mdi-history</v-icon>
-                </p> -->
-
-                <!-- //NOTE - Title แบบมียานพาหนะ -->
-                <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก<v-icon
-                        class="ml-2">mdi-history</v-icon>
+                <p style="font-size: 25px; font-weight: bold;">
+                    รายการประวัติการเข้า-ออก (ไม่มียานพาหนะ)
+                    <v-icon class="ml-2">mdi-history</v-icon>
                 </p>
             </v-col>
             <v-col cols="12" class="pt-0">
@@ -34,23 +29,14 @@
                             </v-dialog>
                         </v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                        <v-text-field prepend-inner-icon="mdi-card-text" density="comfortable" variant="outlined"
-                            label="ค้นหาตามป้ายทะเบียนรถ" v-model="licenseplate" hide-details></v-text-field>
-                    </v-col>
-                    <v-col cols="auto">
-                        <v-btn width="100%" prepend-icon="mdi-magnify" color="primary" @click="getData()">ค้นหา</v-btn>
-                    </v-col>
-                    <v-col cols="auto">
-                        <v-btn icon="mdi-refresh" size="small" color="grey-darken-2" @click="clearFilter()"></v-btn>
-                    </v-col>
                 </v-row>
             </v-col>
         </v-row>
     </div>
     <v-card variant="flat">
         <v-data-table fixed-headers :headers="headers" :page="page" :items-per-page="itemsPerPage"
-            :server-items-length="totalItems" :items="data" class="elevation-1" :search="search" item-value="_id">
+            :server-items-length="totalItems" :items="data" class="elevation-1" :search="search" item-value="_id"
+            hide-default-footer>
             <template v-slot:headers="column">
                 <tr>
                     <th class="text-center" v-for="hd in column.headers[0]" :key="hd.title">
@@ -58,7 +44,7 @@
                     </th>
                 </tr>
             </template>
-            <template v-slot:item="row">
+            <!-- <template v-slot:item="row">
                 <tr>
                     <td class="text-center">
                         {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
@@ -79,7 +65,7 @@
                     <td class="text-center" style="min-width: 150px;">
                         {{ row.item?.person?.name }}
                     </td>
-                    <!-- <td class="text-center py-3">
+                    <td class="text-center py-3">
                         <div v-if="row.item?.person?.personImgUrl">
                             <img class="zoom" :src="baseUrl + row.item.person.personImgUrl" alt="image"
                                 style="width: 100px; height: auto;">
@@ -90,7 +76,7 @@
                             <img class="zoom" :src="baseUrl + row.item.person.personCardImgUrl" alt="image"
                                 style="width: 150px; height: auto;">
                         </div>
-                    </td> -->
+                    </td>
                     <td class="text-center">
                         {{ formatDateTime(row.item.time) }}
                     </td>
@@ -108,21 +94,14 @@
                     <td class="text-center">
                         <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>
                     </td>
-                    <!-- <td class="text-center">
-                        <v-chip v-if="row.item.hooked === false" color="red-lighten-2">
-                            {{ row.item.hooked }}
-                        </v-chip>
-                        <v-chip v-if="row.item.hooked === true" color="green-lighten-2">
-                            {{ row.item.hooked }}
-                        </v-chip>
-                    </td> -->
                 </tr>
-            </template>
-            <template v-slot:bottom>
+            </template> -->
+
+            <!-- <template v-slot:bottom>
                 <div class="text-center pt-2">
                     <v-pagination v-model="page" :length="pageCount" @update:modelValue="getData"></v-pagination>
                 </div>
-            </template>
+            </template> -->
         </v-data-table>
     </v-card>
 </template>
@@ -135,10 +114,11 @@ export default {
         const his = new HistorylogSer();
         const baseUrl = import.meta.env.VITE_APP_BASE_URL;
         return {
-            his,
-            baseUrl,
+            dateFormatValue,
             datetimeFormat,
-            dateFormatValue
+            datetimeFormatLimit,
+            his,
+            baseUrl
         }
     },
     computed: {
@@ -153,14 +133,13 @@ export default {
         },
     },
     data: () => ({
+        dialogStart: false,
+        dialogEnd: false,
         startDate: new Date(),
         endDate: new Date(),
-        Url: '',
         page: 1,
-        licenseplate: '',
         itemsPerPage: 5,
         totalItems: 0,
-        imagePreview: null,
         data: [],
         search: '',
         headers: [
@@ -169,72 +148,26 @@ export default {
             { title: 'ภาพป้ายทะเบียน 2', align: 'center', sortable: false, key: 'platesPhoto2' },
             { title: 'หมายเลขทะเบียน', align: 'center', sortable: false, key: 'license' },
             { title: 'ชื่อผู้ติดต่อ', align: 'center', sortable: false, key: 'license' },
-            // { title: 'รูปผู้มาติดต่อ', align: 'center', sortable: false, key: 'license' },
-            // { title: 'เอกสารอื่น ๆ', align: 'center', sortable: false, key: 'license' },
+            { title: 'รูปผู้มาติดต่อ', align: 'center', sortable: false, key: 'license' },
+            { title: 'เอกสารอื่น ๆ', align: 'center', sortable: false, key: 'license' },
             { title: 'วันที่/เวลา (ขาเข้า)', align: 'center', sortable: false, key: 'entry.time' },
             { title: 'วันที่/เวลา (ขาออก)', align: 'center', sortable: false, key: 'entry.checkoutTimeStamp' },
             { title: 'รายละเอียด', align: 'center', sortable: false, key: 'entry.msg' },
             { title: 'ประเภทการเข้า/ออก', align: 'center', sortable: false, key: 'inout' },
-            // { title: 'สถานะการเชื่อมต่อ', align: 'center', sortable: false, key: 'hooked' },
         ],
-        dialogStart: false,
-        dialogEnd: false,
     }),
     mounted() {
         this.endDate = this.addDays(this.startDate, +1)
-        this.getData();
+        // this.getData();
     },
     methods: {
-        async getData() {
-            this.data = [];
-            const start = datetimeFormatLimit(this.startDate)
-            const end = datetimeFormatLimit(this.endDate);
-            const page = this.page
-            const limit = this.itemsPerPage
-            const park = this.$store.state.park
-            const license = this.licenseplate
-            await this.his.getRecHis(limit, page, start, end, license, park).then(res => {
-                if (res.message === 'ok') {
-                    this.data = res.data;
-                    this.totalItems = res.totalItem;
-                    this.itemsPerPage = Number(res.itemPerpage)
-                    console.log(this.data)
-                }
-            })
-        },
-        formatDateTime(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleString("th-TH", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
-            }).replace(",", "");
-        },
         addDays(date, days) {
             const newDate = new Date(date);
             newDate.setDate(newDate.getDate() + days);
             return newDate;
         },
-        clearFilter() {
-            this.licenseplate = '';
-            this.getData();
-        },
     }
-
 }
 </script>
 
-<style scoped>
-.zoom {
-    transition: transform .2s;
-}
-
-.zoom:hover {
-    transform: scale(1.5);
-    z-index: 1;
-}
-</style>
+<style scoped></style>

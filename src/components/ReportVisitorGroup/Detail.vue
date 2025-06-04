@@ -12,8 +12,8 @@
             <v-card>
                 <div class="pa-5">
                     <v-card variant="flat">
-                        <v-data-table :page="page" :items-per-page="itemsPerPage" :headers="headers" :items="detailData"
-                            class="elevation-1" hide-default-footer>
+                        <v-data-table :page="page" :items-per-page="itemsPerPage" :headers="filterHeader"
+                            :items="detailData" class="elevation-1" hide-default-footer>
                             <template v-slot:headers="column">
                                 <tr>
                                     <th style="font-size: 13px;" class="text-center" v-for="hd in column.headers[0]"
@@ -39,13 +39,23 @@
                                         {{ row.item.license }}
                                     </td>
                                     <td>
-                                        {{ formatDateTime(row.item.time) }}
+                                        <p v-if="this.TypeOf === 'CheckOut'">{{
+                                            formatDateTime(row.item.EntryTime) }}
+                                        </p>
+                                        <p v-else>{{ formatDateTime(row.item.time) }}</p>
                                     </td>
                                     <td>
-                                        {{ formatDateTime(row.item.checkoutTimeStamp) }}
+                                        <p v-if="row.item.checkoutTimeStamp">{{
+                                            formatDateTime(row.item.checkoutTimeStamp) }}</p>
+                                        <p v-else-if="row.item.ExitTime">{{ formatDateTime(row.item.ExitTime)
+                                            }}</p>
+                                        <p v-else>-</p>
                                     </td>
                                     <td>
                                         <v-chip color="red">{{ row.item.msg }}</v-chip>
+                                    </td>
+                                    <td v-if="this.TypeOf === 'CheckOut'">
+                                        <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>
                                     </td>
                                 </tr>
                             </template>
@@ -67,6 +77,7 @@
 export default {
     props: {
         data: Array,
+        TypeOf: String,
     },
     setup() {
         const baseUrl = import.meta.env.VITE_APP_BASE_URL;
@@ -78,13 +89,22 @@ export default {
         data: {
             immediate: true,
             handler(newVal) {
-                this.detailData = newVal;
+                this.FilterData(newVal);
+                // this.detailData = newVal;
             }
         }
     },
     computed: {
         pageCount() {
             return Math.ceil(this.data.length / this.itemsPerPage);
+        },
+        filterHeader() {
+            if (this.TypeOf === 'CheckOut') {
+                return this.headers;
+            } else {
+                // กรองออก header ที่ key === 'entry.inout'
+                return this.headers.filter(h => h.key !== 'entry.inout');
+            }
         },
     },
     data: () => ({
@@ -97,6 +117,7 @@ export default {
             { title: 'วันที่/เวลา (ขาเข้า)', align: 'center', sortable: false, key: 'entry.time' },
             { title: 'วันที่/เวลา (ขาออก)', align: 'center', sortable: false, key: 'entry.checkoutTimeStamp' },
             { title: 'รายละเอียด', align: 'center', sortable: false, key: 'entry.msg' },
+            { title: 'ประเภทการเข้า/ออก', align: 'center', sortable: false, key: 'entry.inout' },
         ],
         page: 1,
         itemsPerPage: 5,
@@ -121,6 +142,22 @@ export default {
                     hour12: false
                 }).replace(",", "");
             }
+        },
+        FilterData(Pdata) {
+            const separateTime = Pdata.map(item => {
+                if (item.inout === "ENTRY") {
+                    return {
+                        ...item, EntryTime: item.time
+                    };
+                } else if (item.inout === "EXIT") {
+                    return {
+                        ...item, ExitTime: item.time
+                    }
+                } else {
+                    return item;
+                }
+            });
+            this.detailData = separateTime;
         },
     }
 }

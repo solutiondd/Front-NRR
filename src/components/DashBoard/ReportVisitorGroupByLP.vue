@@ -1,21 +1,22 @@
 <template>
-    <v-dialog :value="Reportdialog" @input="$emit('update:modelValue', $event)" width="85%">
+    <v-dialog :value="Reportdialog" @update:modelValue="$emit('update:modelValue', $event)" width="85%">
+        <div>
+            <v-toolbar :color="typeMap[type]?.color" density="comfortable">
+                <v-toolbar-title class="d-flex align-center">
+                    <v-icon :icon="typeMap[type]?.icon" size="small" class="mr-2" />
+                    {{ typeMap[type]?.text || 'ไม่พบข้อมูล' }}
+                </v-toolbar-title>
+                <v-btn icon="mdi-close" size="small" @click="closeDialog"></v-btn>
+            </v-toolbar>
+        </div>
+        <div class="pa-3" style="background-color: #212121;">
+            <v-text-field class="pt-5 px-5" density="comfortable" variant="outlined" label="ค้นหา (ทะเบียนรถ, เจ้าของ)"
+                prepend-inner-icon="mdi-magnify" v-model="searchQuery" clearable hide-details></v-text-field>
+        </div>
         <v-card>
-            <div>
-                <v-toolbar :color="typeMap[type]?.color" density="comfortable">
-                    <v-toolbar-title class="d-flex align-center">
-                        <v-icon :icon="typeMap[type]?.icon" size="small" class="mr-2" />
-                        {{ typeMap[type]?.text || 'ไม่พบข้อมูล' }}
-                    </v-toolbar-title>
-                    <v-btn icon="mdi-close" size="small" @click="$emit('update:modelValue', false)"></v-btn>
-                </v-toolbar>
-            </div>
             <div class="pa-3">
-                <!-- <v-text-field class="pt-5 px-5" density="comfortable" variant="outlined"
-                    label="ค้นหา (ทะเบียนรถ, เจ้าของ)" prepend-inner-icon="mdi-magnify"
-                    v-model="searchQuery"></v-text-field> -->
                 <v-card variant="flat">
-                    <v-data-table :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="data"
+                    <v-data-table :headers="headers" :page="page" :items-per-page="itemsPerPage" :items="filteredData"
                         class="elevation-1" hide-default-footer>
                         <template v-slot:headers="column">
                             <tr>
@@ -34,12 +35,14 @@
                                     {{ row.item.license }}
                                 </td>
                                 <td class="text-center" style="min-width: 180px;">
-                                    <div v-for="lp in row.item.person" :key="lp.identityNumber">
+                                    <div v-for="lp in row.item.person" :key="lp">
                                         {{ lp.name }}
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    {{ formatDateTime(row.item.timeStamp[0]) }}
+                                    <p v-if="this.type === 'CheckOut' || this.type === 'Remaining'">{{
+                                        formatDateTime(row.item.entryTime) }}</p>
+                                    <p v-else>{{ formatDateTime(row.item.timeStamp[0]) }}</p>
                                 </td>
                                 <td class="text-center">
                                     {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
@@ -48,7 +51,7 @@
                                     <v-chip color="red">{{ row.item.msg }}</v-chip>
                                 </td>
                                 <td class="text-center">
-                                    <Detail :data="row.item.data" />
+                                    <Detail :data="row.item.data" :TypeOf="this.type" />
                                 </td>
                             </tr>
                         </template>
@@ -72,6 +75,8 @@ export default {
     props: {
         Reportdialog: Boolean,
         type: String,
+        DateStart: Date,
+        DateEnd: Date,
     },
     components: {
         Detail,
@@ -89,10 +94,23 @@ export default {
         pageCount() {
             return Math.ceil(this.data.length / this.itemsPerPage);
         },
+        filteredData() {
+            if (!this.searchQuery) return this.data;
+
+            const query = this.searchQuery.toLowerCase();
+
+            return this.data.filter(item => {
+                const licenseMatch = item.license?.toLowerCase().includes(query);
+                const personMatch = item.person?.some(p => p.name?.toLowerCase().includes(query));
+                return licenseMatch || personMatch;
+            });
+        }
     },
     watch: {
         type: {
             handler(newVal) {
+                this.startDate = this.DateStart;
+                this.endDate = this.DateEnd;
                 this.getData(newVal);
             },
             immediate: true // <-- เรียกทันทีเมื่อเริ่มต้น
@@ -132,17 +150,21 @@ export default {
         ],
         data: [],
         page: 1,
-        itemsPerPage: 10,
+        itemsPerPage: 7,
         startDate: new Date(),
         endDate: new Date(),
         searchQuery: '',
+        timeEntry: '',
     }),
     mounted() {
-        this.endDate = this.addDays(this.startDate, +1)
+
+        // this.endDate = this.addDays(this.startDate, +1)
     },
     methods: {
         async getData(type) {
             try {
+                const statusin = 'in';
+                const statusout = 'out';
                 const start = datetimeFormatLimit(this.startDate);
                 const end = datetimeFormatLimit(this.endDate);
                 const park = this.$store.state.park;
@@ -164,17 +186,29 @@ export default {
                 if (type === 'Registered') {
                     res = await this.stranger.RegisteredGroup(start, end, park);
                 } else if (type === 'CheckOut') {
-                    res = await this.stranger.CheckOutGroup(start, end, park);
+                    res = await this.stranger.ReportCR(start, end, statusout);
                 } else if (type === 'NotRegister') {
                     res = await this.stranger.NotRegisterGroup(start, end, park);
                 } else if (type === 'Remaining') {
-                    res = await this.stranger.RemainingGroup(start, end, park);
+                    res = await this.stranger.ReportCR(start, end, statusin);
                 }
 
                 if (res?.message === 'ok') {
                     this.data = res.data;
-                    // this.data.reverse();
-                    this.page = 1;
+                    if (type === 'CheckOut' || type === 'Remaining') {
+                        this.data = this.data.map(item => {
+                            const firstEntry = item.data.find(entry => entry.inout && entry.inout.toUpperCase() === "ENTRY");
+                            return {
+                                ...item,
+                                entryTime: firstEntry?.time || '-',
+                            };
+                        });
+                        console.log(this.data)
+                        // this.timeEntry = timeEn ? timeEn.time : '-';
+                        // this.data.reverse();
+                        this.page = 1;
+                    }
+
                 }
             } catch (error) {
                 console.log(`Error for type: ${type}`, error)
@@ -186,7 +220,7 @@ export default {
             return newDate;
         },
         formatDateTime(dateString) {
-            if (dateString === null || dateString === undefined || !dateString) {
+            if (dateString === null || dateString === undefined || !dateString || dateString === '-') {
                 return '-';
             } else {
                 const date = new Date(dateString);
@@ -200,6 +234,10 @@ export default {
                     hour12: false
                 }).replace(",", "");
             }
+        },
+        closeDialog() {
+            this.searchQuery = '';
+            this.$emit('update:modelValue', false);
         },
     }
 }
