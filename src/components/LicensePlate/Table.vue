@@ -49,6 +49,9 @@
                         {{ row.item.vehicleType }}
                     </td>
                     <td class="text-center">
+                        {{ row.item?.category }}
+                    </td>
+                    <td class="text-center">
                         {{ dateFormat(row.item.start) }}
                     </td>
                     <td v-if="row.item.cate !== 'stranger'" class="text-center">
@@ -133,6 +136,7 @@ export default {
             { title: 'เลขทะเบียน', align: 'center', sortable: false, key: 'licensePlate' },
             { title: 'จังหวัด', align: 'center', sortable: false, key: 'licensePlateProvince' },
             { title: 'ประเภทรถ', align: 'center', sortable: false, key: 'vehicleType' },
+            { title: 'ประเภทสิทธิ์', align: 'center', sortable: false, key: 'category' },
             { title: 'วันที่เริ่ม', align: 'center', sortable: false, key: 'start' },
             { title: 'วันที่หมดอายุ', align: 'center', sortable: false, key: 'expire' },
             { title: 'เจ้าของ', align: 'center', sortable: false, key: 'guestName' },

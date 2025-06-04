@@ -72,7 +72,7 @@
                             <p style="font-size: 18px;">รวมทั้งหมด</p>
                             <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
                                 dataDashBoard.visitor + dataDashBoard.stranger
-                                }} คัน</p>
+                            }} คัน</p>
                         </v-card>
                     </v-col>
                 </v-row>

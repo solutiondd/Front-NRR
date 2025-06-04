@@ -6,8 +6,12 @@
         <DashBoardLine />
         <v-card>
             <v-tabs align-tabs="start" v-model="tab" bg-color="primary">
-                <v-tab value="history" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
-                    (มียานพาหนะ)</v-tab>
+                <!-- //NOTE - หัวข้อ Tabs [ก่อนมีกล้อง Web-Cam] -->
+                <v-tab value="history" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก</v-tab>
+
+                <!-- //NOTE - หัวข้อ Tabs [หลังมีกล้อง Web-Cam] -->
+                <!-- <v-tab value="history" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
+                    (มียานพาหนะ)</v-tab> -->
                 <!-- <v-tab value="people" style="font-weight: bold;font-size: 16px;">ประวัติการเข้า-ออก
                     (ไม่มียานพาหนะ)</v-tab> -->
             </v-tabs>

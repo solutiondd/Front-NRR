@@ -40,7 +40,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <p v-if="this.type === 'CheckOut'">{{
+                                    <p v-if="this.type === 'CheckOut' || this.type === 'Remaining'">{{
                                         formatDateTime(row.item.entryTime) }}</p>
                                     <p v-else>{{ formatDateTime(row.item.timeStamp[0]) }}</p>
                                 </td>
@@ -190,12 +190,12 @@ export default {
                 } else if (type === 'NotRegister') {
                     res = await this.stranger.NotRegisterGroup(start, end, park);
                 } else if (type === 'Remaining') {
-                    res = await this.stranger.RemainingGroup(start, end, park);
+                    res = await this.stranger.ReportCR(start, end, statusin);
                 }
 
                 if (res?.message === 'ok') {
                     this.data = res.data;
-                    if (type === 'CheckOut') {
+                    if (type === 'CheckOut' || type === 'Remaining') {
                         this.data = this.data.map(item => {
                             const firstEntry = item.data.find(entry => entry.inout && entry.inout.toUpperCase() === "ENTRY");
                             return {
@@ -220,7 +220,7 @@ export default {
             return newDate;
         },
         formatDateTime(dateString) {
-            if (dateString === null || dateString === undefined || !dateString) {
+            if (dateString === null || dateString === undefined || !dateString || dateString === '-') {
                 return '-';
             } else {
                 const date = new Date(dateString);
