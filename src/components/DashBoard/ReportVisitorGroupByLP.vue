@@ -42,7 +42,7 @@
                                 <td class="text-center">
                                     <p v-if="this.type === 'CheckOut' || this.type === 'Remaining'">{{
                                         formatDateTime(row.item.entryTime) }}</p>
-                                    <p v-else>{{ formatDateTime(row?.item?.timeStamp[0]) }}</p>
+                                    <p v-else> {{ row.item.timeStamp && row.item.timeStamp.length > 0 ? formatDateTime(row.item.timeStamp[0]) : '-' }}</p>
                                 </td>
                                 <td class="text-center">
                                     {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
