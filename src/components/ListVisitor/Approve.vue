@@ -31,6 +31,7 @@ export default {
         async getData() {
             this.getDevice();
             this.LicensePlateDB = this.lpdata;
+            console.log("LicensePlateDB : ", this.LicensePlateDB);
             const park = this.$store.state.park;
             const token = localStorage.getItem("token");
             const data = {
@@ -38,7 +39,7 @@ export default {
                 licensePlate: this.LicensePlateDB.licensePlate.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
                 licensePlateProvince: this.LicensePlateDB.licensePlateProvince,
                 listType: this.LicensePlateDB.listType,
-                start: dateFormatValue(this.LicensePlateDB.start_date),
+                start: dateFormatValue(this.LicensePlateDB.start),
                 expire: '2025-12-31',
 
                 agency: this.LicensePlateDB.agency,
@@ -48,11 +49,13 @@ export default {
                 object: this.LicensePlateDB.object,
                 cate: 'visitor',
                 vehicleType: this.LicensePlateDB.vehicleType,
+                category: this.LicensePlateDB.category,
 
                 contactPerson: this.LicensePlateDB.contactPerson,
                 department: this.LicensePlateDB.department,
                 visitorTel: this.LicensePlateDB.tel,
             }
+            console.log("Data to send: ", data);
             await this.lp.CreateLP(park, data, token).then(async (res) => {
                 if (res.message === 'ok') {
                     const licenseId = res.data._id

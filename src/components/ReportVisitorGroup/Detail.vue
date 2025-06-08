@@ -157,7 +157,9 @@ export default {
                     return item;
                 }
             });
-            this.detailData = separateTime;
+            // this.detailData = separateTime;
+            this.detailData = [...separateTime].sort((a, b) => new Date(b.time) - new Date(a.time));
+
         },
     }
 }

@@ -42,10 +42,15 @@
                                 <td class="text-center">
                                     <p v-if="this.type === 'CheckOut' || this.type === 'Remaining'">{{
                                         formatDateTime(row.item.entryTime) }}</p>
-                                    <p v-else> {{ row.item.timeStamp && row.item.timeStamp.length > 0 ? formatDateTime(row.item.timeStamp[0]) : '-' }}</p>
+                                    <p v-else> {{ row.item.timeStamp && row.item.timeStamp.length > 0 ?
+                                        formatDateTime(row.item.timeStamp[0]) : '-' }}</p>
                                 </td>
                                 <td class="text-center">
-                                    {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
+                                    <p>{{ formatDateTime(row.item.checkoutTimeStamp[0]) }}</p>
+
+                                    <!-- <p v-if="row.item.checkoutTimeStamp.length > 0">{{
+                                        formatDateTime(row.item.checkoutTimeStamp[0]) }}</p>
+                                    <p v-else>{{ LastExit(row.item.data) }}</p> -->
                                 </td>
                                 <td class="tex-center">
                                     <v-chip color="red">{{ row.item.msg }}</v-chip>
@@ -157,7 +162,6 @@ export default {
         timeEntry: '',
     }),
     mounted() {
-
         // this.endDate = this.addDays(this.startDate, +1)
     },
     methods: {
@@ -238,6 +242,24 @@ export default {
         closeDialog() {
             this.searchQuery = '';
             this.$emit('update:modelValue', false);
+        },
+        LastExit(AttData) {
+            console.log("Att Data : ", AttData);
+            if (!Array.isArray(AttData) || AttData.length === 0) {
+                return '-';
+            }
+
+            const lastExit = AttData.filter(item => item.inout && item.inout.toUpperCase() === "EXIT");
+            if (lastExit.length === 0) {
+                return '-';
+            }
+
+            const lastExitTime = lastExit.reduce((latest, current) => {
+                const currentTime = new Date(current.time);
+                return currentTime > latest ? currentTime : latest;
+            }, new Date(lastExit[0].time));
+
+            return this.formatDateTime(lastExitTime);
         },
     }
 }

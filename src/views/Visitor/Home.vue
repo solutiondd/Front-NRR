@@ -192,7 +192,7 @@ export default {
         dialogSuccess: false,
         dialog: false,
         sendData: {
-            start_date: new Date(),
+            date: new Date(),
             guestName: '',
             licensePlate: '',
             licensePlateProvince: '',
@@ -242,7 +242,7 @@ export default {
                     licensePlate: this.sendData.licensePlate.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
                     licensePlateProvince: this.sendData.licensePlateProvince,
                     listType: this.sendData.listType,
-                    start: dateFormatValue(this.sendData.start_date),
+                    start: dateFormatValue(this.sendData.date),
                     expire: '2025-12-31',
 
                     agency: this.sendData.agency,

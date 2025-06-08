@@ -763,7 +763,7 @@ export default {
 
         // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
         const parseDriverLicenseData = (input) => {
-            const Convert = convertThtoEng(input)
+            const Convert = input
             console.log('convert Success : ', Convert)
             const lines = Convert.split("\n");
 
