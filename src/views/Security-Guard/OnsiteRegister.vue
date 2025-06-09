@@ -745,7 +745,6 @@ export default {
         });
 
         watch(dataLicense, (newVal) => {
-
             console.log("📌 dataLicense เปลี่ยนค่า:", newVal);
             // ถ้ามีการเปลี่ยนค่าใหม่ ให้ยกเลิกการทำงานของฟังก์ชันก่อนหน้า
             clearTimeout(timer);
@@ -762,37 +761,117 @@ export default {
         }
 
         // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
+        // const parseDriverLicenseData = (input) => {
+        //     const lines = input.split("\n");
+
+        //     let foundName = false;
+        //     let foundId = false;
+        //     let foundLicenseId = false;
+
+        //     for (const line of lines) {
+        //         // ตรวจสอบและแยกชื่อ-นามสกุล
+        //         if (!foundName && line.startsWith("%")) {
+        //             const match = line.match(/\^([A-Za-z]+)\$([A-Za-z]+)\$/);
+        //             if (match) {
+        //                 sendData.value.name = `${match[2]} ${match[1]}`;
+        //                 foundName = true;
+        //             }
+        //         }
+
+        //         // ตรวจสอบและแยกเลขประจำตัวประชาชน
+        //         else if (!foundId && line.startsWith(";")) {
+        //             const match = line.match(/;600764(\d{13})=/);
+        //             if (match) {
+        //                 sendData.value.identityNumber = match[1];
+        //                 foundId = true;
+        //             }
+        //         }
+
+        //         // ตรวจสอบและแยกเลขที่ใบขับขี่
+        //         else if (!foundLicenseId && line.startsWith("+")) {
+        //             const match = line.match(/(\d{7,8})\s*\d+/);
+        //             if (match) {
+        //                 sendData.value.licenseId = match[1];
+        //                 foundLicenseId = true;
+        //             }
+        //         }
+        //     }
+
+        //     // 🔍 เงื่อนไข fallback ถ้า pattern ปกติไม่ match:
+        //     if (!foundId) {
+        //         const idMatch = input.match(/(\d{13})/);
+        //         if (idMatch) {
+        //             sendData.value.identityNumber = idMatch[1];
+        //         }
+        //     }
+
+        //     if (!foundLicenseId) {
+        //         const licenseMatch = input.match(/(?:\D|^)(\d{7,8})(?:\D|$)/);
+        //         if (licenseMatch) {
+        //             sendData.value.licenseId = licenseMatch[1];
+        //         }
+        //     }
+
+        //     if (!foundName) {
+        //         // fallback แบบง่าย: หาชื่อจาก $NAME SURNAME?
+        //         const nameMatch = input.match(/\$([A-Z]+)\s+([A-Z]+)[^A-Z]?/);
+        //         if (nameMatch) {
+        //             sendData.value.name = `${nameMatch[1]} ${nameMatch[2]}`;
+        //         }
+        //     }
+
+        //     console.log("✅ แยกค่าสำเร็จ:", {
+        //         name: sendData.value.name,
+        //         identityNumber: sendData.value.identityNumber,
+        //         licenseId: sendData.value.licenseId,
+        //     });
+
+        //     // ล้าง textarea
+        //     dataLicense.value = "";
+
+        //     // โฟกัสกลับไปที่ input
+        //     setTimeout(() => {
+        //         inputField.value?.focus();
+        //     }, 100);
+        // };
+
         const parseDriverLicenseData = (input) => {
-            const Convert = input
-            console.log('convert Success : ', Convert)
-            const lines = Convert.split("\n");
+            const lines = input.split("\n");
 
             let foundName = false;
             let foundId = false;
             let foundLicenseId = false;
 
             for (const line of lines) {
-                // ตรวจสอบและแยกชื่อ-นามสกุล
-                if (!foundName && line.startsWith("%")) {
-                    const match = line.match(/\^([A-Za-z]+)\$([A-Za-z]+)\$/);
-                    if (match) {
-                        sendData.value.name = `${match[2]} ${match[1]}`;
+                // ✅ ตรวจสอบชื่อ (รองรับทั้งชื่อเดียว หรือ นามสกุล + ชื่อ + คำนำหน้า)
+                if (!foundName && line.includes("^")) {
+                    // รูปแบบ $CHAYKONG$MR.
+                    let match1 = line.match(/\$(\w+)\$(\w+)\$/);
+                    if (match1) {
+                        sendData.value.name = `${match1[1]} ${match1[2]}`;
                         foundName = true;
+                    } else {
+                        // รูปแบบ LEELAWATCHARAMAS$WATCHARAPON$MR.
+                        let match2 = line.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^/i);
+                        if (match2) {
+                            sendData.value.name = `${match2[2]} ${match2[1]}`; // ชื่อ + นามสกุล
+                            foundName = true;
+                        }
                     }
                 }
 
-                // ตรวจสอบและแยกเลขประจำตัวประชาชน
-                else if (!foundId && line.startsWith(";")) {
-                    const match = line.match(/;600764(\d{13})=/);
+                // ✅ ตรวจสอบเลขประจำตัวประชาชน
+                if (!foundId && line.startsWith(";")) {
+                    const match = line.match(/;600764(\d{13})/);
                     if (match) {
                         sendData.value.identityNumber = match[1];
                         foundId = true;
                     }
                 }
 
-                // ตรวจสอบและแยกเลขที่ใบขับขี่
-                else if (!foundLicenseId && line.startsWith("+")) {
-                    const match = line.match(/(\d{7,8})\s*\d+/);
+                // ✅ ตรวจสอบเลขที่ใบขับขี่
+                if (!foundLicenseId && line.startsWith("+")) {
+                    const match = line.match(/\d{4,5}\s+\d{1,2}\s+(\d{7,8})/);
                     if (match) {
                         sendData.value.licenseId = match[1];
                         foundLicenseId = true;
@@ -800,7 +879,7 @@ export default {
                 }
             }
 
-            // 🔍 เงื่อนไข fallback ถ้า pattern ปกติไม่ match:
+            // fallback สำหรับเลขบัตร ปชช.
             if (!foundId) {
                 const idMatch = input.match(/(\d{13})/);
                 if (idMatch) {
@@ -808,6 +887,7 @@ export default {
                 }
             }
 
+            // fallback สำหรับเลขใบขับขี่
             if (!foundLicenseId) {
                 const licenseMatch = input.match(/(?:\D|^)(\d{7,8})(?:\D|$)/);
                 if (licenseMatch) {
@@ -815,8 +895,8 @@ export default {
                 }
             }
 
+            // fallback สำหรับชื่อ ถ้ายังหาไม่เจอเลย
             if (!foundName) {
-                // fallback แบบง่าย: หาชื่อจาก $NAME SURNAME?
                 const nameMatch = input.match(/\$([A-Z]+)\s+([A-Z]+)[^A-Z]?/);
                 if (nameMatch) {
                     sendData.value.name = `${nameMatch[1]} ${nameMatch[2]}`;
@@ -829,14 +909,13 @@ export default {
                 licenseId: sendData.value.licenseId,
             });
 
-            // ล้าง textarea
             dataLicense.value = "";
 
-            // โฟกัสกลับไปที่ input
             setTimeout(() => {
                 inputField.value?.focus();
             }, 100);
         };
+
 
         let ScreenSocket = null
 
