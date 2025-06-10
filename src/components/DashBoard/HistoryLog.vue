@@ -131,6 +131,9 @@
 import { HistorylogSer } from "../../api/Historylog";
 import { dateFormatValue, datetimeFormat, datetimeFormatLimit } from "../../function/day";
 export default {
+    props: {
+        centerDate: Date,
+    },
     setup() {
         const his = new HistorylogSer();
         const baseUrl = import.meta.env.VITE_APP_BASE_URL;
@@ -151,6 +154,13 @@ export default {
         FormatEnd() {
             return dateFormatValue(this.endDate);
         },
+    },
+    watch: {
+        centerDate(newVal) {
+            this.startDate = newVal
+            this.endDate = this.addDays(this.startDate, +1)
+            this.getData();
+        }
     },
     data: () => ({
         startDate: new Date(),

@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="Reportdialog" @update:modelValue="$emit('update:modelValue', $event)" width="85%">
+    <v-dialog :model-value="modelValue" @update:model-value="$emit('update:model-value', $event)" width="85%">
         <div>
             <v-toolbar :color="typeMap[type]?.color" density="comfortable">
                 <v-toolbar-title class="d-flex align-center">
@@ -78,6 +78,7 @@ import { StrangerService } from '../../api/ReportStranger';
 import Detail from '../ReportVisitorGroup/Detail.vue';
 export default {
     props: {
+        modelValue: Boolean,
         Reportdialog: Boolean,
         type: String,
         DateStart: Date,
@@ -112,6 +113,13 @@ export default {
         }
     },
     watch: {
+        modelValue(newVal) {
+            if (newVal) {
+                this.startDate = this.DateStart;
+                this.endDate = this.DateEnd;
+                this.getData(this.type);
+            }
+        },
         type: {
             handler(newVal) {
                 this.startDate = this.DateStart;

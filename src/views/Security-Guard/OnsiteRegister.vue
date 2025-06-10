@@ -836,6 +836,18 @@ export default {
         // };
 
         const parseDriverLicenseData = (input) => {
+            if (/[ก-๙]/.test(input)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาเปลี่ยนภาษา',
+                    text: 'กรุณาเปลี่ยนภาษาบนแป้นพิมพ์ และ ลองใหม่อีกครั้ง',
+                }).then(() => {
+                    dataLicense.value = ''; // reset ค่าใน dataLicense (ถ้า dataLicense เป็น ref)
+                });
+                return; // ❌ หยุดการทำงานต่อถ้าพบอักษรไทย
+            }
+
+
             const lines = input.split("\n");
 
             let foundName = false;
@@ -844,21 +856,43 @@ export default {
 
             for (const line of lines) {
                 // ✅ ตรวจสอบชื่อ (รองรับทั้งชื่อเดียว หรือ นามสกุล + ชื่อ + คำนำหน้า)
-                if (!foundName && line.includes("^")) {
-                    // รูปแบบ $CHAYKONG$MR.
-                    let match1 = line.match(/\$(\w+)\$(\w+)\$/);
-                    if (match1) {
-                        sendData.value.name = `${match1[1]} ${match1[2]}`;
+                // if (!foundName && line.includes("^")) {
+                //     // รูปแบบ $CHAYKONG$MR.
+                //     let match1 = line.match(/\$(\w+)\$(\w+)\$/);
+                //     if (match1) {
+                //         sendData.value.name = `${match1[2]} ${match1[1]}`;
+                //         foundName = true;
+                //     } else {
+                //         // รูปแบบ LEELAWATCHARAMAS$WATCHARAPON$MR.
+                //         let match2 = line.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^/i);
+                //         if (match2) {
+                //             sendData.value.name = `${match2[2]} ${match2[1]}`; // ชื่อ + นามสกุล
+                //             foundName = true;
+                //         }
+                //     }
+                // }
+                const trimmedLine = line.trim();
+                console.log("Checking line:", trimmedLine);
+                if (!foundName && trimmedLine.includes("$")) {
+                    // 1. จับ pattern เต็ม: %  ^LASTNAME$FIRSTNAME$TITLE^^?
+                    let matchFull = trimmedLine.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
+                    if (matchFull) {
+                        sendData.value.name = `${matchFull[2]} ${matchFull[1]}`; // FIRSTNAME LASTNAME
                         foundName = true;
-                    } else {
-                        // รูปแบบ LEELAWATCHARAMAS$WATCHARAPON$MR.
-                        let match2 = line.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^/i);
-                        if (match2) {
-                            sendData.value.name = `${match2[2]} ${match2[1]}`; // ชื่อ + นามสกุล
-                            foundName = true;
-                        }
+                        console.log("✅ Found name (pattern full):", sendData.value.name);
+                        continue;
+                    }
+
+                    // 2. จับ pattern สั้น: %  ^$FIRSTNAME$TITLE^^?
+                    let matchShort = trimmedLine.match(/\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
+                    if (matchShort) {
+                        sendData.value.name = `${matchShort[2]} ${matchShort[1]}`; // TITLE FIRSTNAME
+                        foundName = true;
+                        console.log("✅ Found name (pattern short):", sendData.value.name);
+                        continue;
                     }
                 }
+
 
                 // ✅ ตรวจสอบเลขประจำตัวประชาชน
                 if (!foundId && line.startsWith(";")) {

@@ -11,15 +11,21 @@
             </v-col>
             <v-col cols="12" class="pt-0">
                 <v-row class="d-flex align-center">
-                    <v-col cols="12" sm="8" md="9" lg="10">
+                    <v-col cols="12" sm="8" md="9" lg="8">
                         <v-text-field hide-details prepend-inner-icon="mdi-magnify" density="comfortable"
                             variant="outlined" label="ค้นหา" v-model="search"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="3" lg="2">
+                        <v-select label="ค้นหาตามสถานะ" hide-details variant="outlined" density="comfortable"
+                            v-model="filterStatus" :items="Allstatus" item-value="value" item-title="label"
+                            clearable></v-select>
                     </v-col>
                     <v-col cols="12" sm="4" md="3" lg="2">
                         <v-btn prepend-icon="mdi-magnify" color="primary" @click="getData()">ค้นหา</v-btn>
                         <v-btn icon="mdi-refresh" color="grey-darken-2" size="small" class="ml-3"
                             @click="clearSearch()"></v-btn>
                     </v-col>
+
                 </v-row>
             </v-col>
         </v-row>
@@ -74,6 +80,7 @@
                         </div>
                     </td>
                     <td class="text-center">
+                        <UpgradStranger @success="getData()" :id="row.item._id" :data="row.item" />
                         <UploadToCloud @success="getData()" :id="row.item._id" :data="row.item" />
                     </td>
                     <td class="text-center">
@@ -105,6 +112,7 @@ import Create from "../../components/LicensePlate/Create.vue";
 import { dateFormat } from "../../function/day";
 import Detail from '../../components/LicensePlate/Detail.vue';
 import DetailStranger from "./Detail-stranger.vue";
+import UpgradStranger from "./UpgradStranger.vue";
 export default {
     setup() {
         const lp = new LPService();
@@ -118,7 +126,8 @@ export default {
         Delete,
         Create,
         Detail,
-        DetailStranger
+        DetailStranger,
+        UpgradStranger
     },
     computed: {
         pageCount() {
@@ -144,6 +153,12 @@ export default {
             { title: 'การอนุมัติ', align: 'center', sortable: false, key: 'devices' },
             { title: 'สถานะ', align: 'center', sortable: false, key: 'status' },
             { title: 'จัดการ', align: 'center', sortable: false, key: 'manage' },
+        ],
+        filterStatus: null,
+        Allstatus: [
+            { value: '', label: 'พนักงาน' },
+            { value: 'visitor', label: 'ผู้ติดต่อที่ลงทะเบียน' },
+            { value: 'stranger', label: 'ผู้ติดต่อที่ไม่ได้ลงทะเบียน' }
         ],
     }),
     async mounted() {

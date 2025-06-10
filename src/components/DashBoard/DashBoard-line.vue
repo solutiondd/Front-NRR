@@ -21,6 +21,9 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 ChartJS.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend, ChartDataLabels);
 
 export default defineComponent({
+    props: {
+        centerDate: Date,
+    },
     setup() {
         const his = new HistorylogSer();
         return {
@@ -29,6 +32,12 @@ export default defineComponent({
         }
     },
     components: { LineChart },
+    watch: {
+        centerDate(newVal) {
+            this.startDate = newVal
+            this.getData()
+        }
+    },
     data() {
         return {
             chartData: {
@@ -151,6 +160,7 @@ export default defineComponent({
                 }
             },
             ReportData: [],
+            startDate: new Date(),
         };
     },
     mounted() {
@@ -158,7 +168,7 @@ export default defineComponent({
     },
     methods: {
         async getData() {
-            const date = dateFormatValue(new Date())
+            const date = dateFormatValue(this.startDate)
             const parkId = this.$store.state.park;
             await this.his.getReportDay(date, parkId).then(res => {
                 if (res.message === 'ok') {

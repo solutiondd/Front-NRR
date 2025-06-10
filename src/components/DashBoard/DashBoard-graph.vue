@@ -1,6 +1,6 @@
 <template>
     <v-col cols="12" class="mb-8 pa-0">
-        <v-card class="pa-5" width="100%">
+        <!-- <v-card class="pa-5" width="100%">
             <v-row class="mt-1">
                 <v-col cols="4" sm="2" lg="1" class="d-flex align-center justify-center pt-0">
                     <h3 class="d-flex align-center"><v-icon color="#FF4D00" icon="mdi-calendar-filter"
@@ -18,23 +18,11 @@
                             @update:modelValue="dialogStart = false, startDate = $event"></v-date-picker>
                     </v-menu>
                 </v-col>
-                <!-- <v-col cols="12" sm="5">
-                    <p class="pb-2">วันที่สิ้นสุด</p>
-                    <v-menu ref="menu" v-model="dialogEnd" :close-on-content-click="false" v-model:propName="endDate"
-                        transition="scale-transition" offset-y min-width="auto">
-                        <template v-slot:activator="{ props }">
-                            <v-text-field v-model="FormatEnd" density="comfortable" variant="outlined"
-                                prepend-inner-icon="mdi-calendar" v-bind="props" hide-details></v-text-field>
-                        </template>
-                        <v-date-picker color="primary" v-model="endDate"
-                            @update:modelValue="dialogEnd = false, endDate = $event"></v-date-picker>
-                    </v-menu>
-                </v-col> -->
                 <v-col cols="3" sm="2" class="d-flex align-end pt-0">
                     <v-btn color="primary" height="48px" icon="mdi-magnify" @click="getData"></v-btn>
                 </v-col>
             </v-row>
-        </v-card>
+        </v-card> -->
     </v-col>
     <v-row class="pa-0">
         <v-col class="pt-0" cols="12" sm="12" md="6">
@@ -210,6 +198,9 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, DoughnutController, ChartDa
 ChartJS.defaults.color = '#ffffff';
 
 export default {
+    props: {
+        centerDate: Date,
+    },
     setup() {
         const theme = useTheme();
         const his = new HistorylogSer();
@@ -234,6 +225,12 @@ export default {
         },
         FormatEnd() {
             return dateFormatValue(this.endDate)
+        }
+    },
+    watch: {
+        centerDate(newVal) {
+            this.startDate = newVal
+            this.getData()
         }
     },
     data() {
