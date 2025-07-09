@@ -168,4 +168,84 @@ export class StrangerService {
 
     return data;
   }
+
+  //ANCHOR - CR Stranger Group By licensePlate
+  async RegisteredIn(start, end, parkId, type = "register") {
+    return this.strangerList(
+      "get",
+      `api/v1/stranger/list?dateStart=${start}&dateEnd=${end}&parkId=${parkId}&type=${type}`
+    );
+  }
+
+  async CheckOutByCam(
+    start,
+    end,
+    parkId,
+    status = "out",
+    type = "register",
+    typeOut = "camera"
+  ) {
+    return this.strangerList(
+      "get",
+      `api/v1/stranger/list?dateStart=${start}&dateEnd=${end}&parkId=${parkId}&status=${status}&type=${type}&outBy=${typeOut}`
+    );
+  }
+
+  async CheckOutByQr(
+    start,
+    end,
+    parkId,
+    status = "out",
+    type = "register",
+    typeOut = "qrcode"
+  ) {
+    return this.strangerList(
+      "get",
+      `api/v1/stranger/list?dateStart=${start}&dateEnd=${end}&parkId=${parkId}&status=${status}&type=${type}&outBy=${typeOut}`
+    );
+  }
+
+  async NotRegisterIn(start, end, parkId, type = "noregist") {
+    return this.strangerList(
+      "get",
+      `api/v1/stranger/list?dateStart=${start}&dateEnd=${end}&parkId=${parkId}&type=${type}`
+    );
+  }
+  async NotRegisterOut(start, end, parkId, status = "out", type = "noregist") {
+    return this.strangerList(
+      "get",
+      `api/v1/stranger/list?dateStart=${start}&dateEnd=${end}&parkId=${parkId}&status=${status}&type=${type}`
+    );
+  }
+
+  async RemainingInSite(start, end, parkId, status = "in") {
+    return this.strangerList(
+      "get",
+      `api/v1/stranger/list?dateStart=${start}&dateEnd=${end}&parkId=${parkId}&status=${status}`
+    );
+  }
+
+  async strangerList(method, endpoint) {
+    let responseData = null;
+
+    const config = {
+      method,
+      maxBodyLength: Infinity,
+      url: `${this.baseUrl}${endpoint}`,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    };
+
+    await axios
+      .request(config)
+      .then((response) => {
+        responseData = response.data;
+      })
+      .catch((error) => {
+        responseData = { error: error.message, data: error?.response?.data };
+      });
+
+    return responseData;
+  }
 }

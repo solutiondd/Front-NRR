@@ -14,138 +14,162 @@
                             <v-text-field density="comfortable" variant="outlined" v-model="FormatStart"
                                 prepend-inner-icon="mdi-calendar-today" v-bind="props" hide-details></v-text-field>
                         </template>
-                        <v-date-picker color="primary" v-model="startDate"
-                            @update:modelValue="dialogStart = false, startDate = $event"></v-date-picker>
-                    </v-menu>
-                </v-col>
-                <v-col cols="3" sm="2" class="d-flex align-end pt-0">
-                    <v-btn color="primary" height="48px" icon="mdi-magnify" @click="getData"></v-btn>
-                </v-col>
-            </v-row>
-        </v-card> -->
+<v-date-picker color="primary" v-model="startDate"
+    @update:modelValue="dialogStart = false, startDate = $event"></v-date-picker>
+</v-menu>
+</v-col>
+<v-col cols="3" sm="2" class="d-flex align-end pt-0">
+    <v-btn color="primary" height="48px" icon="mdi-magnify" @click="getData"></v-btn>
+</v-col>
+</v-row>
+</v-card> -->
     </v-col>
     <v-row class="pa-0">
-        <v-col class="pt-0" cols="12" sm="12" md="6">
-            <v-card class="pa-5 " width="100%">
+        <v-col class="pt-0" cols="12" sm="12" md="6" lg="6">
+            <v-card class="pa-5 " width="100%" height="100%">
                 <h3 class="pb-5">ข้อมูลกราฟ วันนี้ {{ dateFormatDayandTime(this.startDate) }}</h3>
                 <div class="chart-container mx-auto">
                     <DoughnutChart :chart-data="chartData" :options="chartOptions" />
                 </div>
             </v-card>
         </v-col>
-        <v-col class="pt-0" cols="12" sm="12" md="6">
-            <v-card class="pa-5" width="100%">
-                <h3 class="pb-5">ข้อมูลตัวเลข วันนี้ {{ dateFormatDayandTime(this.startDate) }}</h3>
-                <v-row>
-                    <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#66BB6A">
-                            <p style="font-size: 18px;">รถพนักงาน</p>
-                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member }} คัน</p>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#F57F17">
-                            <p style=" font-size: 18px;">รถผู้ติดต่อที่ลงทะเบียน</p>
-                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.visitor }} คัน</p>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#E53935">
-                            <p style="font-size: 18px;">รถผู้ติดต่อที่ไม่ได้ลงทะเบียน</p>
-                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.stranger }} คัน</p>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="primary">
-                            <p style="font-size: 18px;">รวมทั้งหมด</p>
-                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
-                                dataDashBoard.visitor + dataDashBoard.stranger
-                            }} คัน</p>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-card>
-            <v-card class="pa-5 mt-5" width="100%">
-                <h3 class="pb-5">ข้อมูลรถผู้ติดต่อที่ไม่ได้ลงทะเบียน</h3>
-                <v-row>
-                    <v-col cols="12" sm="6">
-                        <v-card color="#66BB6A">
-                            <v-row class="pa-3">
-                                <v-col cols="8">
-                                    <p style="font-size:18px;">ลงทะเบียนเวลาเข้า</p>
-                                    <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.registered }} คัน</p>
-                                </v-col>
-                                <v-col cols="4" class="d-flex align-end justify-end">
-                                    <v-btn variant="text" @click="openDialog('Registered')">คลิก</v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                        <v-card color="#E53935">
-                            <v-row class="pa-3">
-                                <v-col cols="9">
-                                    <p style="font-size:18px;">ลงทะเบียนเวลาออก</p>
-                                    <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.exited }} คัน</p>
-                                </v-col>
-                                <v-col cols="3" class="d-flex align-end justify-end">
-                                    <v-btn variant="text" @click="openDialog('CheckOut')">คลิก</v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#757575">
-                            <v-row>
-                                <v-col cols="9">
-                                    <p style="font-size:18px;">ไม่ได้ลงทะเบียนเวลาเข้า</p>
-                                    <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.notRegistered }} คัน
-                                    </p>
-                                </v-col>
-                                <v-col cols="3" class="d-flex align-end justify-end">
-                                    <v-btn variant="text" @click="openDialog('NotRegister')">คลิก</v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                        <v-card color="primary">
-                            <v-row class="pa-3">
-                                <v-col cols="9">
-                                    <p style="font-size: 18px;">คงเหลือในพื้นที่</p>
-                                    <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.registered -
-                                        dataDashBoard.exited }} คัน</p>
-                                </v-col>
-                                <v-col cols="3" class="d-flex align-end justify-end">
-                                    <v-btn variant="text" @click="openDialog('Remaining')">คลิก</v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-card>
-                    </v-col>
-                </v-row>
-                <!-- <ReportVisitor v-model="dialog" :type="selectedType" /> -->
-                <ReportVisitorGroupByLP :DateStart="startDate" :DateEnd="endDate" v-model="dialog"
-                    :type="selectedType" />
-            </v-card>
-
-            <!-- <v-card class="pa-5 mt-5" width="100%">
-                <h3 class="pb-5">ข้อมูลทั้งหมด</h3>
-                <v-row>
-                    <v-col cols="12" sm="6" color="primary">
-                        <v-card class="pa-3" color="#66BB6A">
-                            <p style="font-size: 18px;">รถพนักงานที่ลงทะเบียน (คัน)</p>
-                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.totalMember }} คัน</p>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                        <v-card class="pa-3" color="#F57F17">
-                            <p style="font-size: 18px;">รถผู้มาติดต่อที่ลงทะเบียน (คัน)</p>
-                            <p style="font-size: 22px; font-weight: bold;">{{ dataDashBoard.totalVisitor }} คัน
-                            </p>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-card> -->
+        <v-col class="pt-0" cols="12" sm="12" md="6" lg="6">
+            <v-col class="pa-0">
+                <v-card class="pa-5" width="100%">
+                    <h3 class="pb-5">ข้อมูลตัวเลข วันนี้ {{ dateFormatDayandTime(this.startDate) }}</h3>
+                    <v-row>
+                        <v-col cols="12" sm="6" md="6" lg="6">
+                            <v-card class="pa-3" color="#66BB6A">
+                                <p style="font-size: 18px;">รถพนักงาน</p>
+                                <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member }} คัน</p>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="6">
+                            <v-card class="pa-3" color="#F57F17">
+                                <p style=" font-size: 18px;">รถผู้ติดต่อที่ลงทะเบียน</p>
+                                <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.visitor }} คัน</p>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="6">
+                            <v-card class="pa-3" color="#E53935">
+                                <p style="font-size: 18px;">รถผู้ติดต่อที่ไม่ได้ลงทะเบียน</p>
+                                <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.stranger }} คัน</p>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="6">
+                            <v-card class="pa-3" color="primary">
+                                <p style="font-size: 18px;">รวมทั้งหมด</p>
+                                <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member +
+                                    dataDashBoard.visitor + dataDashBoard.stranger
+                                }} คัน</p>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-card>
+            </v-col>
+            <v-col class="pa-0">
+                <v-card class="pa-5 mt-5" width="100%">
+                    <h3 class="pb-5">ข้อมูลรถผู้ติดต่อที่ไม่ได้ลงทะเบียน</h3>
+                    <v-row>
+                        <v-col cols="12" sm="6" md="6" lg="4">
+                            <v-card color="#66BB6A">
+                                <v-row class="pa-3">
+                                    <v-col cols="12">
+                                        <p style="font-size:16px;">ลงทะเบียนเวลาเข้า</p>
+                                        <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.registered }}
+                                                คัน
+                                            </p>
+                                            <v-btn variant="text" @click="openDialog('Registered')">คลิก</v-btn>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="4">
+                            <v-card color="#DC3545">
+                                <v-row class="pa-3">
+                                    <v-col cols="12">
+                                        <p style="font-size:16px;">ลงทะเบียนเวลาออกด้วยคิวอาร์โคด</p>
+                                        <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.qrcodeOut }}
+                                                คัน
+                                            </p>
+                                            <v-btn variant="text" @click="openDialog('CheckOutByQR')">คลิก</v-btn>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="4">
+                            <v-card color="#FD7E14">
+                                <v-row class="pa-3">
+                                    <v-col cols="12">
+                                        <p style="font-size:16px;">ลงทะเบียนเวลาออกด้วยกล้อง</p>
+                                        <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.cameraOut }}
+                                                คัน
+                                            </p>
+                                            <v-btn variant="text" @click="openDialog('CheckOutByCam')">คลิก</v-btn>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="4">
+                            <v-card class="pa-3" color="#757575">
+                                <v-row>
+                                    <v-col cols="12">
+                                        <p style="font-size:16px;">ไม่ได้ลงทะเบียนเวลาเข้า</p>
+                                        <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.notRegistered
+                                            }}
+                                                คัน
+                                            </p>
+                                            <v-btn variant="text" @click="openDialog('NotRegisterIN')">คลิก</v-btn>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="4">
+                            <v-card class="pa-3" color="#E091A3">
+                                <v-row>
+                                    <v-col cols="12">
+                                        <p style="font-size:16px;">ไม่ได้ลงทะเบียนเวลาออก</p>
+                                        <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                            <p style="font-size:22px; font-weight: bold;">{{ dataDashBoard.noregistOut
+                                            }}
+                                                คัน
+                                            </p>
+                                            <v-btn variant="text" @click="openDialog('NotRegisterOUT')">คลิก</v-btn>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="4">
+                            <v-card color="primary">
+                                <v-row class="pa-3">
+                                    <v-col cols="12">
+                                        <p style="font-size: 16px;">คงเหลือในพื้นที่</p>
+                                        <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.registered
+                                                -
+                                                (dataDashBoard.qrcodeOut + dataDashBoard.cameraOut) +
+                                                (dataDashBoard.notRegistered - dataDashBoard.noregistOut) }} คัน</p>
+                                            <v-btn variant="text" @click="openDialog('Remaining')">คลิก</v-btn>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                    <!-- <ReportVisitor v-model="dialog" :type="selectedType" /> -->
+                    <ReportVisitorGroupByLP :DateStart="startDate" :DateEnd="endDate" v-model="dialog"
+                        :type="selectedType" />
+                </v-card>
+            </v-col>
         </v-col>
         <v-col cols="12">
             <v-card class="pa-5" width="100%">
@@ -166,18 +190,6 @@
                     </v-col>
                 </v-row>
             </v-card>
-
-            <!-- <v-card class="pa-5" width="100%">
-                <h3 class="pb-5">ข้อมูลรถผู้ติดต่อคงเหลือในพื้นที่</h3>
-                <v-row>
-                    <v-col cols="12" sm="12">
-                        <v-card class="pa-3" color="#757575">
-                            <p style="font-size: 18px;">รถผู้ติดต่อคงเหลือในพื้นที่ (คัน)</p>
-                            <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.currentVisitor }} คัน</p>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-card> -->
         </v-col>
     </v-row>
 </template>
@@ -391,7 +403,7 @@ export default {
 <style>
 .chart-container {
     width: 100%;
-    height: 490px;
+    height: 90%;
     justify-content: center;
     align-content: center;
 }
@@ -399,5 +411,9 @@ export default {
 /* เอาสีฟอนต์ของ canvas เป็นสีขาว */
 canvas {
     color: white !important;
+}
+
+.card-height {
+    height: 100%;
 }
 </style>

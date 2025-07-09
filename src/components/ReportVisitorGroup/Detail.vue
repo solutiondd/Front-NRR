@@ -38,23 +38,33 @@
                                     <td>
                                         {{ row.item.license }}
                                     </td>
-                                    <td>
+                                    <!-- //NOTE - Entry -->
+                                    <td class="text-center">
+                                        <p v-if="row.item.inout === 'ENTRY'">{{ formatDateTime(row.item.time) }}</p>
+                                        <p v-else>-</p>
+                                    </td>
+                                    <!-- <td>
                                         <p v-if="this.TypeOf === 'CheckOut'">{{
                                             formatDateTime(row.item.EntryTime) }}
                                         </p>
                                         <p v-else>{{ formatDateTime(row.item.time) }}</p>
-                                    </td>
-                                    <td>
-                                        <p v-if="row.item.checkoutTimeStamp">{{
-                                            formatDateTime(row.item.checkoutTimeStamp) }}</p>
-                                        <p v-else-if="row.item.ExitTime">{{ formatDateTime(row.item.ExitTime)
-                                            }}</p>
+                                    </td> -->
+                                    <!-- //NOTE - Exit -->
+                                    <td class="text-center">
+                                        <p v-if="row.item.inout === 'EXIT'">{{ formatDateTime(row.item.time) }}</p>
                                         <p v-else>-</p>
                                     </td>
+                                    <!-- <td>
+                                        <p v-if="row.item.checkoutTimeStamp">{{
+                                            formatDateTime(row.item.checkoutTimeStamp) }}</p>
+                                        <p v-else-if="row.item.exitTime">{{ formatDateTime(row.item.exitTime)
+                                            }}</p>
+                                        <p v-else>-</p>
+                                    </td> -->
                                     <td>
                                         <v-chip color="red">{{ row.item.msg }}</v-chip>
                                     </td>
-                                    <td v-if="this.TypeOf === 'CheckOut'">
+                                    <td>
                                         <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>
                                     </td>
                                 </tr>
@@ -99,12 +109,7 @@ export default {
             return Math.ceil(this.data.length / this.itemsPerPage);
         },
         filterHeader() {
-            if (this.TypeOf === 'CheckOut') {
-                return this.headers;
-            } else {
-                // กรองออก header ที่ key === 'entry.inout'
-                return this.headers.filter(h => h.key !== 'entry.inout');
-            }
+            return this.headers;
         },
     },
     data: () => ({
@@ -159,6 +164,7 @@ export default {
             });
             // this.detailData = separateTime;
             this.detailData = [...separateTime].sort((a, b) => new Date(b.time) - new Date(a.time));
+            console.log("detail Data : ", this.detailData)
 
         },
     }

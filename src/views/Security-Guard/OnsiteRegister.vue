@@ -698,6 +698,7 @@ import QrcodeVue from "qrcode.vue";
 import CheckOut from '../../components/Security-Guard/CheckOut.vue';
 import { ImageService } from "../../api/UploadImage";
 import ThtoEng from '../../utils/MapThToEng';
+import { websocket } from 'qz-tray';
 export default {
     setup() {
         const store = useStore();
@@ -1626,6 +1627,7 @@ export default {
             setInterval(checkExpire, 60000); // ตรวจสอบทุกๆ 1 นาที
 
             initWebsocket();
+            connectWSReadCard();
         })
 
         const selectCar = (entry) => {
@@ -1641,6 +1643,159 @@ export default {
             sendData.value.address = '';
             sendData.value.licenseId = '';
             sendData.value.tel = '';
+        }
+
+
+        let Socket = ref(null);
+        let Debug = ref(true);
+        let dataLS = ref(null);
+        let ReaderRes = ref({});
+        let loader = ref(false);
+
+        const connectWSReadCard = () => {
+            Socket = new WebSocket("ws://localhost:4000");
+            Socket.onopen = function () {
+                if (Debug) {
+                    console.log("Card Reader is Connected !!");
+                }
+            }
+            Socket.onmessage = (evt) => OnGetMessageE(evt.data);
+
+            Socket.onclose = (evt) => {
+                if (Debug) {
+                    console.log("WebSocket: Onclose() event Called." + evt);
+                }
+            }
+
+            Socket.onerror = (evt) => {
+                if (Debug) {
+                    console.log("WebSocket : onerror() event Called." + evt);
+                }
+            }
+        }
+
+
+        const OnGetMessageE = (message) => {
+            const messageE = splitMessage(message);
+
+            messageE.forEach((msg) => {
+                if (msg.includes('citizenId')) {
+                    const parsed = JSON.parse(msg);
+
+                    console.log('Got JSON : ', parsed);
+                    handleJsonData(parsed);
+                } else {
+                    console.warn('Got Another : ', msg)
+                }
+            })
+        }
+
+        const handleJsonData = (msgObj) => {
+            // เซฟข้อมูลเข้า data.value แบบ deep clone
+            data.value = JSON.parse(JSON.stringify(msgObj));
+            console.log(data.value);
+
+            // ทำงานตามที่บอก
+            ReaderData.value = data.value;
+            putimagtoScreenRD2(data.value.photo);
+            putDatatoSendDataRD2(ReaderData.value);
+
+            console.log("ReaderData:", ReaderData.value);
+        }
+
+        const splitMessage = (rawData) => {
+            const messages = [];
+
+            let buffer = '';
+            let insideJson = false;
+            let braceCount = 0;
+
+            for (let i = 0; i < rawData.length; i++) {
+                const char = rawData[i];
+
+                buffer += char;
+
+                if (char === '{') {
+                    insideJson = true;
+                    braceCount++;
+                } else if (char === '}') {
+                    braceCount--;
+                    if (braceCount === 0) {
+                        insideJson = false;
+                        messages.push(buffer.trim());
+                        buffer = '';
+                    }
+                } else if (!insideJson && (char === '\n' || char === '\r')) {
+                    if (buffer.trim() !== '') {
+                        messages.push(buffer.trim());
+                    }
+                    buffer = '';
+                }
+            }
+
+            if (buffer.trim() !== '') {
+                messages.push(buffer.trim());
+            }
+
+            return messages;
+        };
+
+        //NOTE - ตัวแปลงข้อมูลรูปภาพ
+        const putimagtoScreenRD2 = (IDPhoto) => {
+            var base64str = IDPhoto;
+            const fileName = "image.jpg"
+            sendData.value.image = base64ToFileRD2(base64str, fileName);
+            console.log("ข้อมูลหลังจากมี file : ", sendData.value)
+            var photo = document.getElementById("Photo");  // เลือก element img ที่มี id = "Photo"
+
+            if (base64str != null && base64str !== "") {
+                // กรณีที่ Base64 string ถูกต้อง
+                photo.setAttribute(
+                    "src",
+                    base64str
+                );
+            } else {
+                // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
+                photo.src = "/Logo-Sunsweet-Final.svg";
+            }
+
+            if (debugFlag) {
+                console.log("Reading is finished");
+            }
+        };
+        const base64ToFileRD2 = (base64String, fileName) => {
+            // แยก Base64 String ออกเป็นส่วนที่ไม่ใช่ header
+            const base64Data = base64String.split(';base64,')[1];
+
+            // แปลง Base64 เป็น Binary Data
+            const byteCharacters = atob(base64Data);
+
+            // สร้าง Array สำหรับเก็บข้อมูลที่แปลงจาก Base64
+            const byteArrays = [];
+            for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+                const slice = byteCharacters.slice(offset, offset + 1024);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+
+            // สร้าง Blob จากข้อมูล
+            const fileBlob = new Blob(byteArrays, { type: 'image/jpeg' });
+
+            // สร้างไฟล์จาก Blob
+            const file = new File([fileBlob], fileName, { type: 'image/jpeg' });
+
+            // Return เป็น File object
+            return file;
+        }
+
+        const putDatatoSendDataRD2 = (data) => {
+            sendData.value.name = `${data.firstNameTH} ${data.lastNameTH}`;
+            sendData.value.identityNumber = data.citizenId;
+            sendData.value.address = data.address;
         }
 
         return {

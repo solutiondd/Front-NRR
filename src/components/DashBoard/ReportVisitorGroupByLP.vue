@@ -40,18 +40,24 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <p v-if="this.type === 'CheckOut' || this.type === 'Remaining'">{{
-                                        formatDateTime(row.item.entryTime) }}</p>
-                                    <p v-else> {{ row.item.timeStamp && row.item.timeStamp.length > 0 ?
-                                        formatDateTime(row.item.timeStamp[0]) : '-' }}</p>
+                                    <p>{{ formatDateTime(row.item.firstTimeStamp) }}</p>
                                 </td>
-                                <td class="text-center">
-                                    <p>{{ formatDateTime(row.item.checkoutTimeStamp[0]) }}</p>
-
-                                    <!-- <p v-if="row.item.checkoutTimeStamp.length > 0">{{
+                                <!-- //NOTE - Condition to show ExitTime -->
+                                <!-- <td v-if="type === 'CheckOutByCam'" class="text-center">
+                                    <p>{{ formatDateTime(row.item.exitTime) }}</p>
+                                </td>
+                                <td v-else-if="type === 'NotRegisterIN' || type === 'NotRegisterOUT'">
+                                    <p v-if="row.item.checkoutTimeStamp.length > 0">{{
                                         formatDateTime(row.item.checkoutTimeStamp[0]) }}</p>
-                                    <p v-else>{{ LastExit(row.item.data) }}</p> -->
+                                    <p v-else>{{ formatDateTime(row.item.exitTime) }}</p>
                                 </td>
+                                <td v-else>
+                                    <p> {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}</p>
+                                </td> -->
+                                <td class="text-center">
+                                    <p>{{ formatDateTime(row.item.exitTime) }}</p>
+                                </td>
+                                <!-- // -->
                                 <td class="tex-center">
                                     <v-chip color="red">{{ row.item.msg }}</v-chip>
                                 </td>
@@ -73,7 +79,7 @@
 </template>
 
 <script>
-import { datetimeFormatLimit } from '../../function/day';
+import { dateFormatValue2, datetimeFormatLimit } from '../../function/day';
 import { StrangerService } from '../../api/ReportStranger';
 import Detail from '../ReportVisitorGroup/Detail.vue';
 export default {
@@ -117,14 +123,16 @@ export default {
             if (newVal) {
                 this.startDate = this.DateStart;
                 this.endDate = this.DateEnd;
-                this.getData(this.type);
+                // this.getData(this.type);
+                this.getCRData(this.type);
             }
         },
         type: {
             handler(newVal) {
                 this.startDate = this.DateStart;
                 this.endDate = this.DateEnd;
-                this.getData(newVal);
+                // this.getData(newVal);
+                this.getCRData(newVal);
             },
             immediate: true // <-- เรียกทันทีเมื่อเริ่มต้น
         },
@@ -136,15 +144,25 @@ export default {
                 text: 'ลงทะเบียนเวลาเข้า',
                 color: '#66BB6A'
             },
-            CheckOut: {
+            CheckOutByQR: {
                 icon: 'mdi-car-arrow-right',
-                text: 'ลงทะเบียนเวลาออก',
-                color: '#E53935'
+                text: 'ลงทะเบียนเวลาออกด้วยคิวอาร์โคด',
+                color: '#DC3545'
             },
-            NotRegister: {
+            CheckOutByCam: {
+                icon: 'mdi-car-arrow-right',
+                text: 'ลงทะเบียนเวลาออกด้วยกล้อง',
+                color: '#FD7E14'
+            },
+            NotRegisterIN: {
                 icon: 'mdi-alert-circle-outline',
                 text: 'ไม่ได้ลงทะเบียนเวลาเข้า',
                 color: '#757575'
+            },
+            NotRegisterOUT: {
+                icon: 'mdi-alert-circle-outline',
+                text: 'ไม่ได้ลงทะเบียนเวลาออก',
+                color: '#E091A3'
             },
             Remaining: {
                 icon: 'mdi-parking',
@@ -171,61 +189,66 @@ export default {
     }),
     mounted() {
         // this.endDate = this.addDays(this.startDate, +1)
+        this.getCRData();
     },
     methods: {
-        async getData(type) {
-            try {
-                const statusin = 'in';
-                const statusout = 'out';
-                const start = datetimeFormatLimit(this.startDate);
-                const end = datetimeFormatLimit(this.endDate);
-                const park = this.$store.state.park;
-                let res;
+        // async getData(type) {
+        //     try {
+        //         const statusin = 'in';
+        //         const statusout = 'out';
+        //         const start = datetimeFormatLimit(this.startDate);
+        //         const end = datetimeFormatLimit(this.endDate);
+        //         const park = this.$store.state.park;
+        //         let res;
 
-                //NOTE - Not Group
-                // if (type === 'Registered') {
-                //     res = await this.stranger.Registered(start, end, park);
-                // } else if (type === 'CheckOut') {
-                //     res = await this.stranger.CheckOut(start, end, park);
-                // } else if (type === 'NotRegister') {
-                //     res = await this.stranger.NotRegister(start, end, park);
-                // } else if (type === 'Remaining') {
-                //     res = await this.stranger.Remaining(start, end, park);
-                // }
+        //         //NOTE - Not Group
+        //         // if (type === 'Registered') {
+        //         //     res = await this.stranger.Registered(start, end, park);
+        //         // } else if (type === 'CheckOut') {
+        //         //     res = await this.stranger.CheckOut(start, end, park);
+        //         // } else if (type === 'NotRegister') {
+        //         //     res = await this.stranger.NotRegister(start, end, park);
+        //         // } else if (type === 'Remaining') {
+        //         //     res = await this.stranger.Remaining(start, end, park);
+        //         // }
 
 
-                //NOTE - Group by LicensePlate
-                if (type === 'Registered') {
-                    res = await this.stranger.RegisteredGroup(start, end, park);
-                } else if (type === 'CheckOut') {
-                    res = await this.stranger.ReportCR(start, end, statusout);
-                } else if (type === 'NotRegister') {
-                    res = await this.stranger.NotRegisterGroup(start, end, park);
-                } else if (type === 'Remaining') {
-                    res = await this.stranger.ReportCR(start, end, statusin);
-                }
+        //         //NOTE - Group by LicensePlate
+        //         if (type === 'Registered') {
+        //             res = await this.stranger.RegisteredGroup(start, end, park);
+        //         } else if (type === 'CheckOutByQR') {
+        //             res = await this.stranger.ReportCR(start, end, statusout);
+        //         } else if (type === 'CheckOutByCam') {
+        //             res = await this.stranger.ReportCR(start, end, statusout);
+        //         } else if (type === 'NotRegisterIN') {
+        //             res = await this.stranger.NotRegisterGroup(start, end, park);
+        //         } else if (type === 'NotRegisterOUT') {
+        //             res = await this.stranger.NotRegisterGroup(start, end, park);
+        //         } else if (type === 'Remaining') {
+        //             res = await this.stranger.ReportCR(start, end, statusin);
+        //         }
 
-                if (res?.message === 'ok') {
-                    this.data = res.data;
-                    if (type === 'CheckOut' || type === 'Remaining') {
-                        this.data = this.data.map(item => {
-                            const firstEntry = item.data.find(entry => entry.inout && entry.inout.toUpperCase() === "ENTRY");
-                            return {
-                                ...item,
-                                entryTime: firstEntry?.time || '-',
-                            };
-                        });
-                        console.log(this.data)
-                        // this.timeEntry = timeEn ? timeEn.time : '-';
-                        // this.data.reverse();
-                        this.page = 1;
-                    }
+        //         if (res?.message === 'ok') {
+        //             this.data = res.data;
+        //             if (type === 'CheckOut' || type === 'Remaining') {
+        //                 this.data = this.data.map(item => {
+        //                     const firstEntry = item.data.find(entry => entry.inout && entry.inout.toUpperCase() === "ENTRY");
+        //                     return {
+        //                         ...item,
+        //                         entryTime: firstEntry?.time || '-',
+        //                     };
+        //                 });
+        //                 console.log(this.data)
+        //                 // this.timeEntry = timeEn ? timeEn.time : '-';
+        //                 // this.data.reverse();
+        //                 this.page = 1;
+        //             }
 
-                }
-            } catch (error) {
-                console.log(`Error for type: ${type}`, error)
-            }
-        },
+        //         }
+        //     } catch (error) {
+        //         console.log(`Error for type: ${type}`, error)
+        //     }
+        // },
         addDays(date, days) {
             const newDate = new Date(date);
             newDate.setDate(newDate.getDate() + days);
@@ -269,6 +292,46 @@ export default {
 
             return this.formatDateTime(lastExitTime);
         },
+        async getCRData(type) {
+            try {
+                const start = datetimeFormatLimit(this.startDate);
+                const end = datetimeFormatLimit(this.endDate);
+                const park = this.$store.state.park;
+
+                let res;
+
+                if (type === 'Registered') {
+                    res = await this.stranger.RegisteredIn(start, end, park);
+                } else if (type === 'CheckOutByQR') {
+                    res = await this.stranger.CheckOutByQr(start, end, park);
+                } else if (type === 'CheckOutByCam') {
+                    res = await this.stranger.CheckOutByCam(start, end, park);
+                } else if (type === 'NotRegisterIN') {
+                    res = await this.stranger.NotRegisterIn(start, end, park);
+                } else if (type === 'NotRegisterOUT') {
+                    res = await this.stranger.NotRegisterOut(start, end, park);
+                }
+                else if (type === 'Remaining') {
+                    res = await this.stranger.RemainingInSite(start, end, 'in');
+                }
+
+                if (res?.message === 'ok') {
+                    this.data = res.data;
+                    console.log(this.data);
+                    this.page = 1;
+                }
+            } catch (error) {
+                this.$swal({
+                    icon: 'error',
+                    title: `มีบางอย่างผิดพลาด!`,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            }
+        }
     }
 }
 </script>

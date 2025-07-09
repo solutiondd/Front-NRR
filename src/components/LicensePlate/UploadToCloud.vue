@@ -66,9 +66,24 @@ export default {
             await this.vehicle.getDevice(this.$store.state.park).then(res => {
                 if (res.message == 'get devices successfully') {
                     this.DeviceData = res.devices;
-                    this.sendData.deviceId = [this.DeviceData[0]._id]
+                    this.sendData.deviceId = this.DeviceData.map(item => item._id);
                     this.sendData.licenseId = this.id
-                    this.submit();
+
+                    const hasOfflineDevice = this.DeviceData.some(device => device.status !== 'ONLINE');
+                    if (hasOfflineDevice) {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'อุปกรณ์ไม่ออนไลน์',
+                            text: 'กรุณาตรวจสอบอุปกรณ์ และลองอีกครั้ง',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    } else {
+                        this.submit();
+                    }
                 }
             })
         },

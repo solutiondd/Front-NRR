@@ -252,7 +252,7 @@ export default {
                     object: this.sendData.object,
                     cate: 'visitor',
                     vehicleType: this.sendData.vehicleType,
-                    category: this.sendData.PermissionVehicle,
+                    category: this.sendData.PermissionVehicle ? this.sendData.PermissionVehicle : '',
 
                     contactPerson: this.sendData.contactPerson,
                     department: this.sendData.department,
