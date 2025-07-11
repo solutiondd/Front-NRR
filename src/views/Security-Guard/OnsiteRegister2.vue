@@ -779,10 +779,10 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                {{ formatDateTime(row.item.timeStamp[0]) }}
+                                                {{ formatDateTime(row.item.firstTimeStamp) }}
                                             </td>
                                             <td class="text-center">
-                                                {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
+                                                <p>{{ formatDateTime(row.item.exitTime) }}</p>
                                             </td>
                                             <td class="text-center">
                                                 <v-chip color="red">{{ row.item.msg }}</v-chip>
@@ -870,7 +870,7 @@
                     <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
                 </p>
                 <p style="font-weight: bold;">ติดต่อแผนก : <span style="font-weight: 400;">{{ sendData.department
-                }}</span>
+                        }}</span>
                     <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Deparment)</span>
                 </p>
             </div>
@@ -980,6 +980,18 @@ export default defineComponent({
 
         // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
         const parseDriverLicenseData = (input) => {
+            if (/[ก-๙]/.test(input)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาเปลี่ยนภาษา',
+                    text: 'กรุณาเปลี่ยนภาษาบนแป้นพิมพ์ และ ลองใหม่อีกครั้ง',
+                }).then(() => {
+                    dataLicense.value = ''; // reset ค่าใน dataLicense (ถ้า dataLicense เป็น ref)
+                });
+                return; // ❌ หยุดการทำงานต่อถ้าพบอักษรไทย
+            }
+
+
             const lines = input.split("\n");
 
             let foundName = false;
@@ -987,27 +999,41 @@ export default defineComponent({
             let foundLicenseId = false;
 
             for (const line of lines) {
-                // ตรวจสอบและแยกชื่อ-นามสกุล
-                if (!foundName && line.startsWith("%")) {
-                    const match = line.match(/\^([A-Za-z]+)\$([A-Za-z]+)\$/);
-                    if (match) {
-                        sendData.value.name = `${match[2]} ${match[1]}`;
+                const trimmedLine = line.trim();
+                console.log("Checking line:", trimmedLine);
+                if (!foundName && trimmedLine.includes("$")) {
+                    // 1. จับ pattern เต็ม: %  ^LASTNAME$FIRSTNAME$TITLE^^?
+                    let matchFull = trimmedLine.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
+                    if (matchFull) {
+                        sendData.value.name = `${matchFull[2]} ${matchFull[1]}`; // FIRSTNAME LASTNAME
                         foundName = true;
+                        console.log("✅ Found name (pattern full):", sendData.value.name);
+                        continue;
+                    }
+
+                    // 2. จับ pattern สั้น: %  ^$FIRSTNAME$TITLE^^?
+                    let matchShort = trimmedLine.match(/\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
+                    if (matchShort) {
+                        sendData.value.name = `${matchShort[2]} ${matchShort[1]}`; // TITLE FIRSTNAME
+                        foundName = true;
+                        console.log("✅ Found name (pattern short):", sendData.value.name);
+                        continue;
                     }
                 }
 
-                // ตรวจสอบและแยกเลขประจำตัวประชาชน
-                else if (!foundId && line.startsWith(";")) {
-                    const match = line.match(/;600764(\d{13})=/);
+
+                // ✅ ตรวจสอบเลขประจำตัวประชาชน
+                if (!foundId && line.startsWith(";")) {
+                    const match = line.match(/;600764(\d{13})/);
                     if (match) {
                         sendData.value.identityNumber = match[1];
                         foundId = true;
                     }
                 }
 
-                // ตรวจสอบและแยกเลขที่ใบขับขี่
-                else if (!foundLicenseId && line.startsWith("+")) {
-                    const match = line.match(/(\d{7,8})\s*\d+/);
+                // ✅ ตรวจสอบเลขที่ใบขับขี่
+                if (!foundLicenseId && line.startsWith("+")) {
+                    const match = line.match(/\d{4,5}\s+\d{1,2}\s+(\d{7,8})/);
                     if (match) {
                         sendData.value.licenseId = match[1];
                         foundLicenseId = true;
@@ -1015,7 +1041,7 @@ export default defineComponent({
                 }
             }
 
-            // 🔍 เงื่อนไข fallback ถ้า pattern ปกติไม่ match:
+            // fallback สำหรับเลขบัตร ปชช.
             if (!foundId) {
                 const idMatch = input.match(/(\d{13})/);
                 if (idMatch) {
@@ -1023,6 +1049,7 @@ export default defineComponent({
                 }
             }
 
+            // fallback สำหรับเลขใบขับขี่
             if (!foundLicenseId) {
                 const licenseMatch = input.match(/(?:\D|^)(\d{7,8})(?:\D|$)/);
                 if (licenseMatch) {
@@ -1030,8 +1057,8 @@ export default defineComponent({
                 }
             }
 
+            // fallback สำหรับชื่อ ถ้ายังหาไม่เจอเลย
             if (!foundName) {
-                // fallback แบบง่าย: หาชื่อจาก $NAME SURNAME?
                 const nameMatch = input.match(/\$([A-Z]+)\s+([A-Z]+)[^A-Z]?/);
                 if (nameMatch) {
                     sendData.value.name = `${nameMatch[1]} ${nameMatch[2]}`;
@@ -1044,10 +1071,8 @@ export default defineComponent({
                 licenseId: sendData.value.licenseId,
             });
 
-            // ล้าง textarea
             dataLicense.value = "";
 
-            // โฟกัสกลับไปที่ input
             setTimeout(() => {
                 inputField.value?.focus();
             }, 100);
@@ -2177,7 +2202,7 @@ export default defineComponent({
             const start = datetimeFormatLimit(this.startDate);
             const end = datetimeFormatLimit(this.endDate);
             const park = this.$store.state.park;
-            await this.stranger.SRgetreport(start, end, park).then((res) => {
+            await this.stranger.RemainingInSite(start, end, park).then((res) => {
                 if (res.message === 'ok') {
                     this.data = res.data;
                     this.page = 1;

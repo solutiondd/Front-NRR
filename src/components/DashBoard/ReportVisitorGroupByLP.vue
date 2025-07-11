@@ -312,7 +312,7 @@ export default {
                     res = await this.stranger.NotRegisterOut(start, end, park);
                 }
                 else if (type === 'Remaining') {
-                    res = await this.stranger.RemainingInSite(start, end, 'in');
+                    res = await this.stranger.RemainingInSite(start, end, park);
                 }
 
                 if (res?.message === 'ok') {

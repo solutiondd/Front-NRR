@@ -856,22 +856,6 @@ export default {
             let foundLicenseId = false;
 
             for (const line of lines) {
-                // ✅ ตรวจสอบชื่อ (รองรับทั้งชื่อเดียว หรือ นามสกุล + ชื่อ + คำนำหน้า)
-                // if (!foundName && line.includes("^")) {
-                //     // รูปแบบ $CHAYKONG$MR.
-                //     let match1 = line.match(/\$(\w+)\$(\w+)\$/);
-                //     if (match1) {
-                //         sendData.value.name = `${match1[2]} ${match1[1]}`;
-                //         foundName = true;
-                //     } else {
-                //         // รูปแบบ LEELAWATCHARAMAS$WATCHARAPON$MR.
-                //         let match2 = line.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^/i);
-                //         if (match2) {
-                //             sendData.value.name = `${match2[2]} ${match2[1]}`; // ชื่อ + นามสกุล
-                //             foundName = true;
-                //         }
-                //     }
-                // }
                 const trimmedLine = line.trim();
                 console.log("Checking line:", trimmedLine);
                 if (!foundName && trimmedLine.includes("$")) {

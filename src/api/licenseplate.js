@@ -7,13 +7,20 @@ export class LPService {
     this.token = localStorage.getItem("token");
   }
 
-  async getAll(parkId, page, itemPerPage, license) {
+  async getAll(parkId, page, itemPerPage, license, status) {
     let data = null;
+    // สร้าง base URL
+    let url = `${this.baseUrl}api/v1/licenseplate/${parkId}?page=${page}&limit=${itemPerPage}&license=${license}`;
+
+    // เพิ่ม status parameter เฉพาะเมื่อมีค่า
+    if (status) {
+      url += `&cate=${status}`;
+    }
 
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${this.baseUrl}api/v1/licenseplate/${parkId}?page=${page}&limit=${itemPerPage}&license=${license}`,
+      url: url,
       headers: {
         Authorization: `Bearer ${this.token}`,
       },

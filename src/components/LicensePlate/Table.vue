@@ -55,16 +55,15 @@
                         {{ row.item.vehicleType }}
                     </td>
                     <td class="text-center">
-                        {{ row.item?.category }}
+                        <p v-if="row.item.category">{{ row.item.category }}</p>
+                        <p v-if="row.item.vehicleType === 'TRUCK' && !row.item.cate">รถส่งข้าวโพด</p>
                     </td>
+
                     <td class="text-center">
                         {{ dateFormat(row.item.start) }}
                     </td>
-                    <td v-if="row.item.cate !== 'stranger'" class="text-center">
-                        {{ dateFormat(row.item.expire) }}
-                    </td>
-                    <td v-else-if="row.item.cate === 'stranger'" class="text-center">
-                        {{ }}
+                    <td class="text-center">
+                        {{ dateFormat(row.item?.expire) }}
                     </td>
                     <td class="text-center">
                         {{ row.item.guestName }}
@@ -84,7 +83,7 @@
                         <UploadToCloud @success="getData()" :id="row.item._id" :data="row.item" />
                     </td>
                     <td class="text-center">
-                        <v-chip v-if="!row.item.cate" color="#689F38">พนักงาน</v-chip>
+                        <v-chip v-if="row.item.cate == 'member'" color="#689F38">พนักงาน</v-chip>
                         <v-chip v-if="row.item.cate === 'visitor'" color="#F57F17">ผู้ติดต่อที่ลงทะเบียน</v-chip>
                         <v-chip v-if="row.item.cate === 'stranger'" color="#E53935">ผู้ติดต่อที่ไม่ได้ลงทะเบียน</v-chip>
                     </td>
@@ -156,7 +155,7 @@ export default {
         ],
         filterStatus: null,
         Allstatus: [
-            { value: '', label: 'พนักงาน' },
+            { value: 'member', label: 'พนักงาน' },
             { value: 'visitor', label: 'ผู้ติดต่อที่ลงทะเบียน' },
             { value: 'stranger', label: 'ผู้ติดต่อที่ไม่ได้ลงทะเบียน' }
         ],
@@ -167,16 +166,27 @@ export default {
     methods: {
         async getData() {
             const licenseplate = this.search
-            await this.lp.getAll(this.$store.state.park, this.page, this.itemsPerPage, licenseplate).then(res => {
-                if (res.status === 'success') {
-                    this.data = res.data;
-                    this.totalItems = res.totalItem;
-                    this.itemsPerPage = Number(res.itemPerPage);
-                }
-            })
+            if (this.filterStatus) {
+                await this.lp.getAll(this.$store.state.park, this.page, this.itemsPerPage, licenseplate, this.filterStatus).then(res => {
+                    if (res.status === 'success') {
+                        this.data = res.data;
+                        this.totalItems = res.totalItem;
+                        this.itemsPerPage = Number(res.itemPerPage);
+                    }
+                })
+            } else {
+                await this.lp.getAll(this.$store.state.park, this.page, this.itemsPerPage, licenseplate).then(res => {
+                    if (res.status === 'success') {
+                        this.data = res.data;
+                        this.totalItems = res.totalItem;
+                        this.itemsPerPage = Number(res.itemPerPage);
+                    }
+                })
+            }
         },
         clearSearch() {
             this.search = '';
+            this.filterStatus = null;
             this.getData();
         }
     }

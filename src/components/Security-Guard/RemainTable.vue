@@ -27,25 +27,45 @@
                             <td class="text-center">
                                 {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
                             </td>
+                            <td class="text-center py-2">
+                                <img class="zoom" :src="baseUrl + row.item.platesPhoto" alt="image"
+                                    style="width: 200px; height: auto;">
+                            </td>
                             <td class="text-center">
+                                <img class="zoom" :src="baseUrl + row.item.platesPhoto2" alt="image"
+                                    style="width: 200px; height: auto;">
+                            </td>
+                            <td>
                                 {{ row.item.license }}
                             </td>
-                            <td class="text-center" style="min-width: 180px;">
-                                <div v-for="lp in row.item.person" :key="lp.identityNumber">
-                                    {{ lp.name }}
-                                </div>
-                            </td>
+                            <!-- //NOTE - Entry -->
                             <td class="text-center">
-                                {{ formatDateTime(row.item.timeStamp[0]) }}
+                                <p v-if="row.item.inout === 'ENTRY'">{{ formatDateTime(row.item.time) }}</p>
+                                <p v-else>-</p>
                             </td>
+                            <!-- <td>
+                                        <p v-if="this.TypeOf === 'CheckOut'">{{
+                                            formatDateTime(row.item.EntryTime) }}
+                                        </p>
+                                        <p v-else>{{ formatDateTime(row.item.time) }}</p>
+                                    </td> -->
+                            <!-- //NOTE - Exit -->
                             <td class="text-center">
-                                {{ formatDateTime(row.item.checkoutTimeStamp[0]) }}
+                                <p v-if="row.item.inout === 'EXIT'">{{ formatDateTime(row.item.time) }}</p>
+                                <p v-else>-</p>
                             </td>
-                            <td class="text-center">
+                            <!-- <td>
+                                        <p v-if="row.item.checkoutTimeStamp">{{
+                                            formatDateTime(row.item.checkoutTimeStamp) }}</p>
+                                        <p v-else-if="row.item.exitTime">{{ formatDateTime(row.item.exitTime)
+                                            }}</p>
+                                        <p v-else>-</p>
+                                    </td> -->
+                            <td>
                                 <v-chip color="red">{{ row.item.msg }}</v-chip>
                             </td>
-                            <td class="text-center">
-                                <DetailRemain :data="row.item.data" />
+                            <td>
+                                <v-chip color="teal-lighten-1">{{ row.item.inout }}</v-chip>
                             </td>
                         </tr>
                     </template>
