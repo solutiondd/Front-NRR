@@ -361,7 +361,7 @@
                                                                     <p>
                                                                         จำนวนผู้มาติดต่อ
                                                                         <span
-                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                            style="color: red;font-size: 14px;">*</span>
                                                                     </p>
                                                                 </v-col>
                                                                 <v-col cols="12" lg="7" class="pa-0 pb-2">
@@ -424,7 +424,8 @@
 
                                                     <!-- //NOTE - form ของ ใบขับบี่ -->
                                                     <v-tabs-window-item value="license">
-                                                        <v-form fast-fail @submit.prevent="submitBylicenseId" class="pt-8">
+                                                        <v-form fast-fail @submit.prevent="submitBylicenseId"
+                                                            class="pt-8">
                                                             <v-row class="pa-3">
                                                                 <v-col cols="12" class="pb-0 pr-0 pt-0">
                                                                     <p style="font-size: 20px; font-weight: bold;"
@@ -503,7 +504,7 @@
                                                                     <p>
                                                                         จำนวนผู้มาติดต่อ
                                                                         <span
-                                                                            style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                            style="color: red;font-size: 14px;">*</span>
                                                                     </p>
                                                                 </v-col>
                                                                 <v-col cols="12" lg="7" class="pa-0 pb-2">
@@ -665,7 +666,7 @@
                                                                         <p>
                                                                             จำนวนผู้มาติดต่อ
                                                                             <span
-                                                                                style="color: grey;font-size: 14px;">(ไม่บังคับ)</span>
+                                                                                style="color: red;font-size: 14px;">*</span>
                                                                         </p>
                                                                     </v-col>
                                                                     <v-col cols="12" lg="7" class="pa-0 pb-2">
