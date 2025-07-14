@@ -258,7 +258,8 @@
                                                     </v-tabs>
                                                 </template>
                                             </v-toolbar>
-                                            <v-card class="pa-4" style="background-color: #FAFAFA; color: black;">
+                                            <v-card class="pa-4"
+                                                style="background-color: #FAFAFA; color: black; height: 100%;">
                                                 <v-tabs-window v-model="activeTab">
 
                                                     <!-- //NOTE - form ของ บัตรประชาชน -->
@@ -423,18 +424,22 @@
 
                                                     <!-- //NOTE - form ของ ใบขับบี่ -->
                                                     <v-tabs-window-item value="license">
-                                                        <v-form fast-fail @submit.prevent="submitBylicenseId">
-                                                            <v-col cols="12" class="pb-0 pr-0 pt-0">
-                                                                <p style="font-size: 20px; font-weight: bold;"
-                                                                    class="d-flex align-center">
-                                                                    <v-icon icon="mdi-card-account-details" size="small"
-                                                                        class="mr-2"></v-icon>ข้อมูลคนขับ
-                                                                    <v-spacer></v-spacer>
-                                                                    <v-btn :ripple="false" class="ml-2" color="black"
-                                                                        variant="text" icon="mdi-refresh" size="small"
-                                                                        @click="resetSendData"></v-btn>
-                                                                </p>
-                                                            </v-col>
+                                                        <v-form fast-fail @submit.prevent="submitBylicenseId" class="pt-8">
+                                                            <v-row class="pa-3">
+                                                                <v-col cols="12" class="pb-0 pr-0 pt-0">
+                                                                    <p style="font-size: 20px; font-weight: bold;"
+                                                                        class="d-flex align-center">
+                                                                        <v-icon icon="mdi-card-account-details"
+                                                                            size="small"
+                                                                            class="mr-2"></v-icon>ข้อมูลคนขับ
+                                                                        <v-spacer></v-spacer>
+                                                                        <v-btn :ripple="false" class="ml-2"
+                                                                            color="black" variant="text"
+                                                                            icon="mdi-refresh" size="small"
+                                                                            @click="resetSendData"></v-btn>
+                                                                    </p>
+                                                                </v-col>
+                                                            </v-row>
                                                             <v-row
                                                                 class="d-flex align-top pt-5 pb-2 px-3 overflow-yp-auto"
                                                                 style="height: 600px;">
@@ -967,6 +972,15 @@ export default defineComponent({
         const { proxy } = getCurrentInstance()
 
         let timer = null;
+
+        watch(activeTab, (newVal) => {
+            if (newVal === 'license') {
+                // หน่วงเวลาก่อน focus เล็กน้อย เผื่อ Vuetify render UI ยังไม่เสร็จ
+                setTimeout(() => {
+                    inputField.value?.focus();
+                }, 100);
+            }
+        });
 
         watch(dataLicense, (newVal) => {
 
