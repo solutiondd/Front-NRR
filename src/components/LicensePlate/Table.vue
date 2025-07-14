@@ -56,7 +56,8 @@
                     </td>
                     <td class="text-center">
                         <p v-if="row.item.category">{{ row.item.category }}</p>
-                        <p v-if="row.item.vehicleType === 'TRUCK' && !row.item.cate">รถส่งข้าวโพด</p>
+                        <p v-if="row.item.vehicleType === 'TRUCK' && !row.item.cate || row.item.cate === 'member'">
+                            รถส่งข้าวโพด</p>
                     </td>
 
                     <td class="text-center">
@@ -68,8 +69,8 @@
                     <td class="text-center">
                         {{ row.item.guestName }}
                     </td>
-                    <td class="text-center">
-                        <div v-for="device in row.item.devices" :key="device._id">
+                    <td class="text-center" style="width: 220px;">
+                        <div v-for="device in row.item.devices" :key="device._id" class="py-1">
                             <v-chip color="primary">
                                 <p>{{ device.name }}</p>
                             </v-chip>
@@ -83,7 +84,8 @@
                         <UploadToCloud @success="getData()" :id="row.item._id" :data="row.item" />
                     </td>
                     <td class="text-center">
-                        <v-chip v-if="row.item.cate == 'member'" color="#689F38">พนักงาน</v-chip>
+                        <v-chip v-if="row.item.cate == 'member' || row.item.cate === ''"
+                            color="#689F38">พนักงาน</v-chip>
                         <v-chip v-if="row.item.cate === 'visitor'" color="#F57F17">ผู้ติดต่อที่ลงทะเบียน</v-chip>
                         <v-chip v-if="row.item.cate === 'stranger'" color="#E53935">ผู้ติดต่อที่ไม่ได้ลงทะเบียน</v-chip>
                     </td>

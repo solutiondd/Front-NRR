@@ -813,6 +813,9 @@
         </div> -->
         <div id="form-container" style="display: none;">
             <div style="text-align: center;">
+                <div>
+                    <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
+                </div>
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h4>สแกนขาออก</h4>
                     <qrcode-vue :value="sendData._id" :size="100" level="H" render-as="canvas"
@@ -870,7 +873,7 @@
                     <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
                 </p>
                 <p style="font-weight: bold;">ติดต่อแผนก : <span style="font-weight: 400;">{{ sendData.department
-                        }}</span>
+                }}</span>
                     <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Deparment)</span>
                 </p>
             </div>
