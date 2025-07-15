@@ -817,25 +817,25 @@
         <!-- <div>
             <v-btn @click="printForm()">พิมพ์ฟอร์ม</v-btn>
         </div> -->
-        <div id="form-container" style="display: none;">
-            <div style="text-align: center;">
-                <div>
+        <div id="form-container" style="visibility: hidden; position: absolute; left: -9999px;">
+            <div style="text-align: center;padding-bottom: 10px;">
+                <div style="padding-bottom: 5px;">
                     <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
                 </div>
                 <div style="text-align: center; margin-bottom: 10px;">
-                    <h4>สแกนขาออก</h4>
+                    <h4 style="padding-bottom: 5px;">สแกนขาออก</h4>
                     <qrcode-vue :value="sendData._id" :size="100" level="H" render-as="canvas"
                         :key="sendData._id"></qrcode-vue>
-                    <h4 style="padding-bottom: 0px;">ใบผ่าน เข้า-ออก รหัส
+                    <h4 style="padding-top: 10px;">ใบผ่าน เข้า-ออก รหัส
                         <span style="font-weight: 400;font-size: 12px;">(No.)</span>
-                        <p style="font-size: 12px;font-weight: 400;">{{ sendData._id }}</p>
+                        <p style="font-size: 12px;font-weight: 400;padding-top: 5px;">{{ sendData._id }}</p>
                     </h4>
                 </div>
 
-                <h4>บริษัท ซันสวีท จำกัด (มหาชน)</h4>
+                <h4 style="padding-bottom:5px; ">บริษัท ซันสวีท จำกัด (มหาชน)</h4>
             </div>
             <div style="text-align: start; font-size: 12px;">
-                <p style="font-weight: bold;">เวลาเข้า <span
+                <p style="font-weight: bold;padding-bottom: 5px;">เวลาเข้า <span
                         style="font-size: 10px;color: #BDBDBD;font-weight: 300;">(Time
                         IN)</span> :
                     <span style="font-weight: 400;">
@@ -845,42 +845,66 @@
                 <p style="font-weight: bold;">เวลาออก <span
                         style="font-size: 10px;color: #BDBDBD; font-weight: 300;">(Time
                         OUT)</span> :
-                    <span style="display: inline-block; border-bottom: 1px solid grey; width: 100px;"></span>
+                    <span style="display: inline-block; border-bottom: 1px dashed grey; width: 140px;"></span>
                 </p>
                 <p style="font-weight: bold;">
-                    วัตถุประสงค์ : <span style="font-weight: 400;">{{ sendData.object }}</span> <br /><span
-                        style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Purpose of
-                        Visit)</span>
-
+                    วัตถุประสงค์ :
+                    <span v-if="sendData.object" style="font-weight: 400;">{{ sendData.object }}</span>
+                    <span v-else
+                        style="display: inline-block; border-bottom: 1px dashed grey; min-width: 175px;">&nbsp;</span>
+                    <br />
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Purpose of Visit)</span>
                 </p>
-                <p style="font-weight: bold;">ชื่อ-นามสกุล :
-                    <span style="font-weight: 400;">
-                        {{ sendData.name }}
-                    </span> <br />
+                <p style="font-weight: bold;">
+                    ชื่อ-นามสกุล :
+                    <span v-if="sendData.name" style="font-weight: 400;">{{ sendData.name }}</span>
+                    <span v-else
+                        style="display: inline-block; border-bottom: 1px dashed grey; min-width: 175px;">&nbsp;</span>
+                    <br />
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Name-Surname)</span>
                 </p>
-                <p style="font-weight: bold;">ทะเบียนรถ
+                <p style="font-weight: bold;">
+                    ทะเบียนรถ
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Car)</span> :
-                    <span style="font-weight: 400;">
-                        {{ sendData.licensePlate.License }}
-                    </span>
-                </p>
-                <p style="font-weight: bold;">จากบริษัท : <span style="font-weight: 400;">{{ sendData.agency }}</span>
-                    <br /> <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(From Company)</span>
-                </p>
-                <p style="font-weight: bold;">จำนวนผู้มาติดต่อ : <span style="font-weight: 400;">{{
-                    sendData.totalVisitor
-                        }} คน</span>
-                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Total Visitor)</span>
-                </p>
-                <p style="font-weight: bold;">ผู้รับการติดต่อ : <span style="font-weight: 400;">{{
-                    sendData.contactPerson
+                    <span v-if="sendData.licensePlate?.License" style="font-weight: 400;">{{
+                        sendData.licensePlate.License
                         }}</span>
-                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
+                    <span v-else
+                        style="display: inline-block; border-bottom: 1px dashed grey; min-width: 160px;">&nbsp;</span>
                 </p>
-                <p style="font-weight: bold;">ติดต่อแผนก : <span style="font-weight: 400;">{{ sendData.department
-                }}</span>
-                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Deparment)</span>
+                <p style="font-weight: bold;">
+                    จากบริษัท :
+                    <span v-if="sendData.agency" style="font-weight: 400;">{{ sendData.agency }}</span>
+                    <span v-else
+                        style="display: inline-block; border-bottom: 1px dashed grey; min-width: 190px;">&nbsp;</span>
+                    <br />
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(From Company)</span>
+                </p>
+                <p style="font-weight: bold;">
+                    จำนวนผู้มาติดต่อ :
+                    <span v-if="sendData.totalVisitor !== undefined && sendData.totalVisitor !== null"
+                        style="font-weight: 400;">
+                        {{ sendData.totalVisitor }} คน
+                    </span>
+                    <span v-else
+                        style="display: inline-block; border-bottom: 1px dashed grey; min-width: 100px;">&nbsp;</span>
+                    <br />
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Total Visitor)</span>
+                </p>
+                <p style="font-weight: bold;">
+                    ผู้รับการติดต่อ :
+                    <span v-if="sendData.contactPerson" style="font-weight: 400;">{{ sendData.contactPerson }}</span>
+                    <span v-else
+                        style="display: inline-block; border-bottom: 1px dashed grey; min-width: 170px;">&nbsp;</span>
+                    <br />
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
+                </p>
+                <p style="font-weight: bold;">ติดต่อแผนก : <span v-if="sendData.department" style="font-weight: 400;">
+                        {{ sendData.department }}
+                    </span>
+                    <span v-else
+                        style="display: inline-block; border-bottom: 1px dashed grey; width: 180px;">&nbsp;</span>
+                    <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Department)</span>
                 </p>
             </div>
 
@@ -908,7 +932,7 @@
                     ลงชื่อ เจ้าหน้าที่ รปภ. : <span
                         style="display: inline-block; border-bottom: 1px solid grey; width: 130px;"></span>
                     <br>
-                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact person sign)</span>
+                    <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(security guard sign)</span>
                 </p>
             </div>
         </div>
@@ -1245,6 +1269,14 @@ export default defineComponent({
         const printForm = async () => {
             await nextTick(); // รอให้ Vue อัปเดต DOM
             const formContainer = document.getElementById("form-container");
+
+            // ✅ ป้องกันไม่ให้ element หาย เพราะ visibility แทน display
+            formContainer.style.visibility = "visible";
+            formContainer.style.position = "absolute";
+            formContainer.style.left = "-9999px";
+
+            await new Promise((resolve) => setTimeout(resolve, 100)); // ป้องกัน canvas ยังไม่ render
+
             const qrCanvas = formContainer.querySelector("canvas");
 
             if (qrCanvas) {
@@ -1261,22 +1293,60 @@ export default defineComponent({
 
             const formContent = formContainer.innerHTML;
             const printWindow = window.open('', '', 'height=600,width=800');
-            printWindow.document.write('<html><head><title>Visitor</title>');
-            printWindow.document.write('<style>');
-            printWindow.document.write('@media print {');
-            printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; }');
-            printWindow.document.write('@page { size: 72.1mm 3276mm; margin: 0; }');
-            printWindow.document.write('div { max-width: 72.1mm; margin: 0 auto; padding-right: 1mm;}');
-            printWindow.document.write('footer { position: fixed; bottom: 0; width: 100%; text-align: center; }');
-            printWindow.document.write('.v-row { display: flex; flex-wrap: wrap; justify-content: space-between; }');
-            printWindow.document.write('.v-col { flex: 0 0 30%; }'); // จัดระเบียบ v-col
-            printWindow.document.write('</style>');
-            printWindow.document.write('</head><body>');
-            printWindow.document.write(formContent);
-            printWindow.document.write('</body></html>');
+            printWindow.document.write(`
+        <html>
+        <head>
+            <title>Visitor</title>
+            <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+            <style>
+                * {
+                    font-family: 'Sarabun', Arial, sans-serif;
+                }
+                p {
+                    padding-bottom: 5px;
+                }
+                @media print {
+                    @page {
+                        size: 72.1mm 3276mm;
+                        margin: 0;
+                    }
+                    body {
+                        margin: 0;
+                        padding: 10px;
+                        text-align: center;
+                    }
+                    div {
+                        max-width: 72.1mm;
+                        margin: 0 auto;
+                        padding-right: 1mm;
+                    }
+                    .v-row {
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: space-between;
+                    }
+                    .v-col {
+                        flex: 0 0 30%;
+                    }
+                    footer {
+                        position: fixed;
+                        bottom: 0;
+                        width: 100%;
+                        text-align: center;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            ${formContent}
+        </body>
+        </html>
+    `);
             printWindow.document.close();
 
             printWindow.onload = () => {
+                printWindow.focus();
                 printWindow.print();
             };
 

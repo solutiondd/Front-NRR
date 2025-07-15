@@ -56,7 +56,7 @@
                     </td>
                     <td class="text-center">
                         <p v-if="row.item.category">{{ row.item.category }}</p>
-                        <p v-if="row.item.vehicleType === 'TRUCK' && !row.item.cate || row.item.cate === 'member'">
+                        <p v-if="row.item.vehicleType === 'TRUCK' && (!row.item.cate || row.item.cate === 'member')">
                             รถส่งข้าวโพด</p>
                     </td>
 
