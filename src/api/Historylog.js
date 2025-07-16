@@ -150,4 +150,28 @@ export class HistorylogSer {
 
     return data;
   }
+
+  async MemberHis(park, start, end, memberType) {
+    let data = null;
+
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${this.baseUrl}api/v1/memberhistory?parkId=${park}&start=${start}&end=${end}&memberType=${memberType}`,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    };
+
+    await axios
+      .request(config)
+      .then((response) => {
+        data = response.data;
+      })
+      .catch((error) => {
+        data = { error: error.message, data: error.response.data };
+      });
+
+    return data;
+  }
 }

@@ -41,13 +41,19 @@
                         <v-col cols="12" sm="6" md="6" lg="6">
                             <v-card class="pa-3" color="#66BB6A">
                                 <p style="font-size: 18px;">รถพนักงาน</p>
-                                <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member }} คัน</p>
+                                <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                    <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.member }} คัน</p>
+                                    <v-btn variant="text" @click="openDialogMember('member')">คลิก</v-btn>
+                                </v-row>
                             </v-card>
                         </v-col>
                         <v-col cols="12" sm="6" md="6" lg="6">
                             <v-card class="pa-3" color="#F57F17">
                                 <p style=" font-size: 18px;">รถผู้ติดต่อที่ลงทะเบียน</p>
-                                <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.visitor }} คัน</p>
+                                <v-row class="pa-3 pb-3" style="justify-content: space-between;">
+                                    <p style="font-size: 22px; font-weight: bold;"> {{ dataDashBoard.visitor }} คัน</p>
+                                    <v-btn variant="text" @click="openDialogMember('visitor')">คลิก</v-btn>
+                                </v-row>
                             </v-card>
                         </v-col>
                         <v-col cols="12" sm="6" md="6" lg="6">
@@ -168,6 +174,8 @@
                     <!-- <ReportVisitor v-model="dialog" :type="selectedType" /> -->
                     <ReportVisitorGroupByLP :DateStart="startDate" :DateEnd="endDate" v-model="dialog"
                         :type="selectedType" />
+                    <ReportMemberHis :DateStart="startDate" :DateEnd="endDate" v-model="dialogMember"
+                        :type="memberType" />
                 </v-card>
             </v-col>
         </v-col>
@@ -203,6 +211,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, DoughnutControlle
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import ReportVisitor from './ReportVisitor.vue';
 import ReportVisitorGroupByLP from './ReportVisitorGroupByLP.vue';
+import ReportMemberHis from './ReportMemberHis.vue';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, DoughnutController, ChartDataLabels);
 
@@ -229,7 +238,8 @@ export default {
     components: {
         DoughnutChart,
         ReportVisitor,
-        ReportVisitorGroupByLP
+        ReportVisitorGroupByLP,
+        ReportMemberHis
     },
     computed: {
         FormatStart() {
@@ -317,7 +327,9 @@ export default {
             startDate: new Date(),
             endDate: new Date(),
             dialog: false,
+            dialogMember: false,
             selectedType: '',
+            memberType: "",
             dialogStart: false,
             dialogEnd: false,
         };
@@ -396,6 +408,10 @@ export default {
             this.selectedType = type;
             this.dialog = true;
         },
+        openDialogMember(type) {
+            this.memberType = type;
+            this.dialogMember = true;
+        }
     },
 };
 </script>

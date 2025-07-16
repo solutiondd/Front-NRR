@@ -24,6 +24,13 @@ function timeminuteFormat(date) {
 function datetimeFormat(date) {
   return dayjs(date).format("DD/MM/YYYY เวลา HH:mm:ss");
 }
+function dateFormatWTime(date) {
+  if (date) {
+    return dayjs(date).format("DD/MM/YYYY HH:mm:ss");
+  } else {
+    return "-";
+  }
+}
 
 function datetimeFormatLimit(date) {
   return dayjs(date).format("YYYY-MM-DDT00:00:00");
@@ -187,5 +194,6 @@ export {
   dateObjectFormat,
   dateFormatValue2,
   dateFormatDayandTime,
-  dateFormatWithFixedTime
+  dateFormatWithFixedTime,
+  dateFormatWTime
 };

@@ -316,6 +316,31 @@ export default {
                 }
 
                 if (res?.message === 'ok') {
+                    if (type === 'Registered') {
+                        res.data.sort((a, b) => new Date(b.firstTimeStamp) - new Date(a.firstTimeStamp));
+                    } else if (type === 'CheckOutByQR') {
+                        res.data.sort((a, b) => {
+                            const aTime = a.checkoutTimeStamp?.[a.checkoutTimeStamp.length - 1] || '1970-01-01';
+                            const bTime = b.checkoutTimeStamp?.[b.checkoutTimeStamp.length - 1] || '1970-01-01';
+                            return new Date(bTime) - new Date(aTime);
+                        });
+                    } else if (type === 'CheckOutByCam') {
+                        res.data.sort((a, b) => {
+                            const aTime = a.exitTime || '1970-01-01';
+                            const bTime = b.exitTime || '1970-01-01';
+                            return new Date(bTime) - new Date(aTime);
+                        });
+                    } else if (type === 'NotRegisterIN') {
+                        res.data.sort((a, b) => new Date(b.firstTimeStamp) - new Date(a.firstTimeStamp));
+                    } else if (type === 'NotRegisterOUT') {
+                        res.data.sort((a, b) => {
+                            const aTime = a.exitTime || '1970-01-01';
+                            const bTime = b.exitTime || '1970-01-01';
+                            return new Date(bTime) - new Date(aTime);
+                        });
+                    } else if (type === 'Remaining') {
+                        res.data.sort((a, b) => new Date(b.firstTimeStamp) - new Date(a.firstTimeStamp));
+                    }
                     this.data = res.data;
                     console.log(this.data);
                     this.page = 1;
