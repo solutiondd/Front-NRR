@@ -28,12 +28,18 @@
                                         {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
                                     </td>
                                     <td class="text-center py-2">
-                                        <img class="zoom" :src="baseUrl + row.item.platesPhoto" alt="image"
-                                            style="width: 200px; height: auto;">
+                                        <!-- <img class="zoom" :src="baseUrl + row.item.platesPhoto" alt="image"
+                                            style="width: 200px; height: auto;"> -->
+                                        <img class="zoom"
+                                            :src="!row.item.platesPhoto.startsWith('http') ? baseUrl + row.item.platesPhoto : row.item.platesPhoto"
+                                            alt="image" style="width: 200px; height: auto;">
                                     </td>
                                     <td class="text-center">
-                                        <img class="zoom" :src="baseUrl + row.item.platesPhoto2" alt="image"
-                                            style="width: 200px; height: auto;">
+                                        <!-- <img class="zoom" :src="baseUrl + row.item.platesPhoto2" alt="image"
+                                            style="width: 200px; height: auto;"> -->
+                                        <img class="zoom"
+                                            :src="!row.item.platesPhoto2.startsWith('http') ? baseUrl + row.item.platesPhoto2 : row.item.platesPhoto2"
+                                            alt="image" style="width: 200px; height: auto;">
                                     </td>
                                     <td>
                                         {{ row.item.license }}
@@ -48,7 +54,7 @@
                                     </td>
                                     <td>
                                         <v-chip v-if="row.item.msg === 'บุคคลภายใน'" color="green">{{ row.item.msg
-                                        }}</v-chip>
+                                            }}</v-chip>
                                         <v-chip v-if="row.item.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'" color="warning">{{
                                             row.item.msg }}</v-chip>
                                     </td>

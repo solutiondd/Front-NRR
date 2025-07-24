@@ -13,8 +13,10 @@
                                 <v-card class="pa-2 cursor-pointer" style="background-color:  #FAFAFA; color: grey;">
                                     <v-row style="color:black;">
                                         <v-col cols="12" class="pa-3 pb-0">
-                                            <v-img :src="baseUrl + entry.platesPhoto2" width="100%"
-                                                class="rounded-lg"></v-img>
+                                            <!-- <v-img :src="baseUrl + entry.platesPhoto2" width="100%"
+                                                class="rounded-lg"></v-img> -->
+                                            <v-img class="rounded-lg" width="100%"
+                                                :src="!entry.platesPhoto2.startsWith('http') ? baseUrl + entry.platesPhoto2 : entry.platesPhoto2"></v-img>
                                             <v-card-title class="px-2">
                                                 <p style="font-size: 1.1rem;">ทะเบียน : {{ entry.licensePlate.License }}
                                                     <span style="color: grey;font-size: 0.9rem;">({{
@@ -71,8 +73,10 @@
                                             style="background-color:  #FAFAFA; color: grey;">
                                             <v-row style="color: black;">
                                                 <v-col cols="12" class="pa-3 pb-0">
-                                                    <v-img :src="baseUrl + entry.platesPhoto2" width="100%"
-                                                        class="rounded-lg"></v-img>
+                                                    <!-- <v-img :src="baseUrl + entry.platesPhoto2" width="100%"
+                                                        class="rounded-lg"></v-img> -->
+                                                    <v-img class="rounded-lg" width="100%"
+                                                        :src="!entry.platesPhoto2.startsWith('http') ? baseUrl + entry.platesPhoto2 : entry.platesPhoto2"></v-img>
                                                     <v-card-title class="px-2">
                                                         <p style="font-size: 1.1rem;">ทะเบียน : {{
                                                             entry.licensePlate.License }}
@@ -175,10 +179,14 @@
 
                                 <v-row class="pt-1">
                                     <v-col cols="12" lg="6" class="">
-                                        <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img>
+                                        <!-- <v-img :src="baseUrl + selectedCar.platesPhoto" width="100%"></v-img> -->
+                                        <v-img width="100%"
+                                            :src="!selectedCar.platesPhoto.startsWith('http') ? baseUrl + selectedCar.platesPhoto : selectedCar.platesPhoto"></v-img>
                                     </v-col>
                                     <v-col cols="12" lg="6" class="">
-                                        <v-img :src="baseUrl + selectedCar.platesPhoto2" width="100%"></v-img>
+                                        <!-- <v-img :src="baseUrl + selectedCar.platesPhoto2" width="100%"></v-img> -->
+                                        <v-img width="100%"
+                                            :src="!selectedCar.platesPhoto2.startsWith('http') ? baseUrl + selectedCar.platesPhoto2 : selectedCar.platesPhoto2"></v-img>
                                     </v-col>
                                     <v-col cols="12" class="d-flex align-center justify-center">
                                         <v-row>

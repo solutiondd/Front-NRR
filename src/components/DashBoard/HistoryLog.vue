@@ -64,12 +64,19 @@
                         {{ ((page - 1) * itemsPerPage) + (row.index + 1) }}
                     </td>
                     <td class="text-center py-3">
-                        <img class="zoom" :src="baseUrl + row.item.platesPhoto" alt="image"
-                            style="width: 250px; height: auto;">
+                        <!-- <img class="zoom" :src="baseUrl + row.item.platesPhoto" alt="image"
+                            style="width: 250px; height: auto;"> -->
+                        <img class="zoom"
+                            :src="!row.item.platesPhoto.startsWith('http') ? baseUrl + row.item.platesPhoto : row.item.platesPhoto"
+                            alt="image" style="width: 250px; height: auto;">
+
                     </td>
                     <td class="text-center py-3">
-                        <img class="zoom" :src="baseUrl + row.item.platesPhoto2" alt="image"
-                            style="width: 250px; height: auto;">
+                        <!-- <img class="zoom" :src="baseUrl + row.item.platesPhoto2" alt="image"
+                            style="width: 250px; height: auto;"> -->
+                        <img class="zoom"
+                            :src="!row.item.platesPhoto2.startsWith('http') ? baseUrl + row.item.platesPhoto2 : row.item.platesPhoto2"
+                            alt="image" style="width: 250px; height: auto;">
                     </td>
                     <td class="text-center" v-for="lp in row.item.plates" :key="lp._id">
                         {{ lp.License }}
