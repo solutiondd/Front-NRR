@@ -45,7 +45,7 @@
                                 </td>
                                 <td>
                                     <v-chip v-if="row.item.msg === 'บุคคลภายใน'" color="green">{{ row.item.msg
-                                        }}</v-chip>
+                                    }}</v-chip>
                                     <v-chip v-if="row.item.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'" color="warning">{{
                                         row.item.msg }}</v-chip>
                                 </td>
