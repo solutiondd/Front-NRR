@@ -359,35 +359,8 @@ export default {
                             },
                         ],
                     };
-
-                    //NOTE - กรณีที่หากไม่มีข้อมูลก็ไม่แสดงออกมาเลย
-                    // const member = this.dataDashBoard.member || 0;
-                    // const visitor = this.dataDashBoard.visitor || 0;
-                    // const stranger = this.dataDashBoard.stranger || 0;
-
-                    // // จับคู่ข้อมูลและสีที่คงที่
-                    // const data = [
-                    //     { label: "รถพนักงาน", value: member, color: "#66BB6A" },  // สีเขียว
-                    //     { label: "รถผู้ติดต่อที่ลงทะเบียน", value: visitor, color: "#F57F17" },  // สีส้ม
-                    //     { label: "รถผู้ติดต่อที่ไม่ได้ลงทะเบียน", value: stranger, color: "#E53935" }  // สีแดง
-                    // ];
-
-                    // // กรองข้อมูลที่มีค่าเป็น 0 ออก
-                    // const filteredData = data.filter(item => item.value !== 0);
-
-                    // // กำหนดข้อมูลที่ต้องการแสดงในกราฟ
-                    // this.chartData = {
-                    //     labels: filteredData.map(item => item.label),
-                    //     datasets: [
-                    //         {
-                    //             data: filteredData.map(item => item.value),
-                    //             backgroundColor: filteredData.map(item => item.color),
-                    //         },
-                    //     ],
-                    // };
                 }
             })
-
         },
         addDays(date, days) {
             const newDate = new Date(date);
