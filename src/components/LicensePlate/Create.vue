@@ -19,8 +19,9 @@
                                 </v-col>
                                 <v-col cols="12" sm="6" class="px-2 pb-0">
                                     <p class="mb-2" style="color: white;">จังหวัด</p>
-                                    <v-autocomplete prepend-inner-icon="mdi-map-marker" :items="ProvinceType" variant="outlined" density="compact"
-                                        placeholder="ระบุจังหวัด" v-model="sendData.province" required
+                                    <v-autocomplete prepend-inner-icon="mdi-map-marker" :items="ProvinceType"
+                                        variant="outlined" density="compact" placeholder="ระบุจังหวัด"
+                                        v-model="sendData.province" required
                                         :rules="[v => !!v || 'โปรดระบุจังหวัด']"></v-autocomplete>
                                 </v-col>
                                 <v-col cols="12" sm="6" class="px-2 py-0">
@@ -87,11 +88,15 @@
 <script>
 import { LPService } from "../../api/licenseplate";
 import { dateFormatYear, dateFormatMonth, dateFormat, dateFormatValue } from "../../function/day";
+import { vehicleService } from '../../api/Vehicle';
+import { provinces } from "../../constant/province";
 export default {
     setup() {
         const lp = new LPService();
+        const vehicle = new vehicleService();
         return {
             lp,
+            vehicle,
             dateFormatYear,
             dateFormatMonth
         }
@@ -130,86 +135,11 @@ export default {
             'MOTORCYCLE',
             'TRUCK'
         ],
-        ProvinceType: [
-            'กรุงเทพฯ',
-            'กระบี่',
-            'กาญจนบุรี',
-            'กาฬสินธุ์',
-            'กำแพงเพชร',
-            'ขอนแก่น',
-            'จันทบุรี',
-            'ฉะเชิงเทรา',
-            'ชลบุรี',
-            'ชัยนาท',
-            'ชัยภูมิ',
-            'ชุมพร',
-            'เชียงใหม่',
-            'เชียงราย',
-            'ตรัง',
-            'ตราด',
-            'ตาก',
-            'นครนายก',
-            'นครปฐม',
-            'นครพนม',
-            'นครราชสีมา',
-            'นครศรีธรรมราช',
-            'นครสวรรค์',
-            'นนทบุรี',
-            'นราธิวาส',
-            'น่าน',
-            'บึงกาฬ',
-            'บุรีรัมย์',
-            'ปทุมธานี',
-            'ประจวบคีรีขันธ์',
-            'ปราจีนบุรี',
-            'ปัตตานี',
-            'พระนครศรีอยุธยา',
-            'พะเยา',
-            'พังงา',
-            'พัทลุง',
-            'พิจิตร',
-            'พิษณุโลก',
-            'เพชรบุรี',
-            'เพชรบูรณ์',
-            'แพร่',
-            'ภูเก็ต',
-            'มหาสารคาม',
-            'มุกดาหาร',
-            'แม่ฮ่องสอน',
-            'ยโสธร',
-            'ยะลา',
-            'ร้อยเอ็ด',
-            'ระนอง',
-            'ระยอง',
-            'ราชบุรี',
-            'ลพบุรี',
-            'ลำปาง',
-            'ลำพูน',
-            'เลย',
-            'ศรีสะเกษ',
-            'สกลนคร',
-            'สงขลา',
-            'สตูล',
-            'สมุทรปราการ',
-            'สมุทรสงคราม',
-            'สมุทรสาคร',
-            'สระแก้ว',
-            'สระบุรี',
-            'สิงห์บุรี',
-            'สุโขทัย',
-            'สุพรรณบุรี',
-            'สุราษฎร์ธานี',
-            'สุรินทร์',
-            'หนองคาย',
-            'หนองบัวลำภู',
-            'อ่างทอง',
-            'อำนาจเจริญ',
-            'อุดรธานี',
-            'อุตรดิตถ์',
-            'อุทัยธานี',
-            'อุบลราชธานี',
-        ],
+        ProvinceType: provinces,
     }),
+    mounted() {
+
+    },
     methods: {
         async submit(event) {
             const res = await event
@@ -224,9 +154,31 @@ export default {
                     vehicleType: this.sendData.type,
                     listType: this.sendData.listType,
                     userId: this.$store.state.userId ? this.$store.state.userId : '',
+                    cate: 'member'
                 }
-                await this.lp.CreateLP(this.$store.state.park, data, token).then(res => {
+                await this.lp.CreateLP(this.$store.state.park, data, token).then(async res => {
                     if (res.message === 'ok') {
+                        try {
+
+                            let devices = await this.getDevice();
+
+                            if (devices.length > 0) {
+
+                                //add all device
+                                for (let device of devices) {
+                                    try {
+
+                                        await this.addVehicle(device._id, data.licensePlate);
+
+                                    } catch (error) {
+                                        console.error(error.message);
+                                    }
+                                }
+                            }
+
+                        } catch (error) {
+
+                        }
                         this.$swal({
                             icon: 'success',
                             title: `เพิ่มข้อมูลสำเร็จ!`,
@@ -252,6 +204,11 @@ export default {
                             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
                             icon: 'warning',
                         })
+                    } else if (res.data.message === 'This license has been added') {
+                        this.$swal({
+                            title: 'มีป้ายทะเบียนนี้ในระบบแล้ว !',
+                            icon: 'warning',
+                        })
                     } else {
                         this.$swal({
                             icon: 'warning',
@@ -265,6 +222,27 @@ export default {
                     }
                 })
             }
+        },
+        async getDevice() {
+            await this.vehicle.getDevice(this.$store.state.park).then(res => {
+                if (res.message === 'get devices successfully') {
+                    return res.devices;
+                }
+            })
+        },
+        async addVehicle(deviceId, licenseId, listType = 'fixedlist') {
+
+            const DataToDevice = {
+                deviceId: deviceId,
+                licenseId: licenseId,
+                listType: listType,
+            }
+
+            await this.vehicle.AddDevice(DataToDevice).then(res => {
+
+            }).catch(error => {
+                console.error(error.message);
+            })
         }
     },
 }
