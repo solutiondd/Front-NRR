@@ -1192,8 +1192,9 @@ export default defineComponent({
             const tx = db.transaction('history', 'readwrite');
             const store = tx.objectStore('history');
 
-            const currentTime = new Date().getTime();
-            const expireTime = currentTime + 60 * 60 * 1000; // 1 ชม.
+            const now = new Date();
+            const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+            const expireTime = endOfYear.getTime();
 
             // 🔥 ดึงข้อมูลทั้งหมดในวันนี้
             const existingEntries = await store.getAll();
@@ -1385,13 +1386,14 @@ export default defineComponent({
                             }
                             const token = CheckToken;
                             const park = store.state.park;
+                            const expire = `${new Date().getFullYear()}-12-31`;
                             const data = {
                                 guestName: sendData.value.name,
                                 licensePlate: sendData.value.licensePlate.License,
                                 licensePlateProvince: '',
                                 start: dateFormatValue(sendData.value.time),
                                 listType: 'fixedlist',
-                                expire: '2025-12-31',
+                                expire: expire,
 
                                 identityNumber: sendData.value.identityNumber,
                                 address: sendData.value.address,
@@ -1503,13 +1505,14 @@ export default defineComponent({
                 } else {
                     const token = localStorage.getItem('token');
                     const park = store.state.park;
+                    const expire = `${new Date().getFullYear()}-12-31`;
                     const data = {
                         guestName: sendData.value.name,
                         licensePlate: sendData.value.licensePlate.License,
                         licensePlateProvince: '',
                         start: dateFormatValue(sendData.value.time),
                         listType: 'fixedlist',
-                        expire: '2025-12-31',
+                        expire: expire,
 
                         identityNumber: sendData.value.identityNumber,
                         vehicleType: sendData.value.vehicleType,
@@ -2098,13 +2101,14 @@ export default defineComponent({
                             }
                             const token = CheckToken;
                             const park = store.state.park;
+                            const expire = `${new Date().getFullYear()}-12-31`;
                             const data = {
                                 guestName: sendData.value.name,
                                 licensePlate: sendData.value.licensePlate.License,
                                 licensePlateProvince: '',
                                 start: dateFormatValue(sendData.value.time),
                                 listType: 'fixedlist',
-                                expire: '2025-12-31',
+                                expire: expire,
 
                                 identityNumber: '',
                                 address: '',

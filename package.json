@@ -10,6 +10,7 @@
     "deploy:production": "scp -r dist/* root@141.11.159.83:/var/www/sunsweet.zoftdd.com"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.1.0",
     "@mdi/font": "^7.4.47",
     "@vuepic/vue-datepicker": "^11.0.1",
     "axios": "^1.8.2",
