@@ -3,14 +3,14 @@
         <v-row>
             <v-col cols="12" class="pb-5">
                 <!-- //NOTE - Title ที่อัพเดทแล้ว [รอแบบไม่มียานพาหนะ] -->
-                <!-- <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก (มียานพาหนะ)<v-icon
-                        class="ml-2">mdi-history</v-icon>
-                </p> -->
-
-                <!-- //NOTE - Title แบบมียานพาหนะ -->
-                <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก<v-icon
+                <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก (มียานพาหนะ)<v-icon
                         class="ml-2">mdi-history</v-icon>
                 </p>
+
+                <!-- //NOTE - Title แบบมียานพาหนะ -->
+                <!-- <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก<v-icon
+                        class="ml-2">mdi-history</v-icon>
+                </p> -->
             </v-col>
             <v-col cols="12" class="pt-0">
                 <v-row class="d-flex align-center">

@@ -174,4 +174,25 @@ export class HistorylogSer {
 
     return data;
   }
+
+  async getPersonHistory(parkId, start, end, name = "", limit = 20, page = 1) {
+    let data = null;
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${this.baseUrl}api/v1/personhistory?parkId=${parkId}&start=${start}&end=${end}&name=${name}&limit=${limit}&page=${page}`,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    };
+    await axios
+      .request(config)
+      .then((response) => {
+        data = response.data;
+      })
+      .catch((error) => {
+        data = { error: error.message, data: error.response?.data };
+      });
+    return data;
+  }
 }
