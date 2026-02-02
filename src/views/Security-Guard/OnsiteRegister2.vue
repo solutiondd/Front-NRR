@@ -1167,6 +1167,16 @@ export default defineComponent({
             // 🔥 กรองเฉพาะรายการที่ msg เป็น "บุคคลภายนอก"
             const filteredEntries = allEntries.filter(entry => entry.msg === "บุคคลภายนอก");
 
+
+            // 🔥 Log ข้อมูลป้ายทะเบียนพร้อมวันที่ที่พบ
+            console.log('🔍 License plate entries with date:',
+                filteredEntries.map(e => ({
+                    licensePlate: e.licensePlate,
+                    date: e.date,
+                    timeStamp: e.timeStamp
+                }))
+            );
+
             // 🔥 กรองข้อมูลซ้ำก่อนแสดงผล
             const uniqueEntries = [];
             const seen = new Set();
@@ -1193,8 +1203,7 @@ export default defineComponent({
             const store = tx.objectStore('history');
 
             const now = new Date();
-            const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
-            const expireTime = endOfYear.getTime();
+            const expireTime = now.getTime() + 60 * 60 * 1000; // 1 ชั่วโมง
 
             // 🔥 ดึงข้อมูลทั้งหมดในวันนี้
             const existingEntries = await store.getAll();
@@ -1208,6 +1217,7 @@ export default defineComponent({
             if (!isDuplicate && newEntry.msg === "บุคคลภายนอก") {
                 const dataWithExpireTime = { ...newEntry, expireTime };
                 await store.add(dataWithExpireTime); // ✅ บันทึกเฉพาะข้อมูลใหม่ที่ตรงเงื่อนไข
+                console.log("✅ บันทึกข้อมูลใหม่ลง IndexedDB:", dataWithExpireTime);
                 loadTodayHistory(); // โหลดข้อมูลใหม่หลังเพิ่มรายการ
             }
         };
@@ -1596,8 +1606,13 @@ export default defineComponent({
             const currentTime = new Date().getTime();
             const allEntries = await store.getAll();
 
+            // ลบรายการที่ createdAt เกิน 1 ชั่วโมง
             const deletePromises = allEntries
-                .filter(entry => entry.expireTime < currentTime)
+                .filter(entry => {
+                    if (!entry.createdAt) return false;
+                    const created = new Date(entry.createdAt).getTime();
+                    return created + 60 * 60 * 1000 < currentTime;
+                })
                 .map(entry => store.delete(entry.id));
 
             await Promise.all(deletePromises);
