@@ -52,7 +52,7 @@
                                         @click="dialogStart = true">
                                         <v-dialog v-model="dialogStart" width="auto">
                                             <v-date-picker color="primary" v-model="sendData.start_date"
-                                                @click:save="dialogStart = false"
+                                                :min="minStartDate" @click:save="dialogStart = false"
                                                 @click:cancel="dialogStart = false"></v-date-picker>
                                         </v-dialog>
                                     </v-text-field>
@@ -64,8 +64,8 @@
                                         :rules="[v => !!v || 'โปรดระบุวันที่หมดอายุ']" required
                                         @click="dialogEnd = true">
                                         <v-dialog v-model="dialogEnd" width="auto">
-                                            <v-date-picker color="primary" v-model="sendData.end_date"
-                                                @click:save="dialogEnd = false"
+                                            <v-date-picker color="primary" v-model="sendData.end_date" :min="minEndDate"
+                                                :max="maxEndDate" @click:save="dialogEnd = false"
                                                 @click:cancel="dialogEnd = false"></v-date-picker>
                                         </v-dialog>
                                     </v-text-field>
@@ -136,6 +136,13 @@ export default {
             'TRUCK'
         ],
         ProvinceType: provinces,
+        minStartDate: new Date().toISOString().split('T')[0],
+        minEndDate: new Date().toISOString().split('T')[0],
+        maxEndDate: (() => {
+            const date = new Date();
+            date.setFullYear(date.getFullYear() + 5);
+            return date.toISOString().split('T')[0];
+        })(),
     }),
     mounted() {
 
@@ -199,12 +206,15 @@ export default {
                             end_date: new Date(),
                             listType: 'fixedlist',
                         }
-                    } else if (res.data.message === 'validate error') {
+                    } else if ((res.data && res.data.message === 'validate error') || res.message === 'validate error') {
                         this.$swal({
                             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
                             icon: 'warning',
                         })
-                    } else if (res.data.message === 'This license has been added') {
+                    } else if (
+                        (res.data && (res.data.message === 'This license has been added' || res.data.message === 'This stranger license has been added')) ||
+                        (res.message === 'This license has been added' || res.message === 'This stranger license has been added')
+                    ) {
                         this.$swal({
                             title: 'มีป้ายทะเบียนนี้ในระบบแล้ว !',
                             icon: 'warning',
