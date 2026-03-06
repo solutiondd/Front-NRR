@@ -34,13 +34,17 @@ export default {
             console.log("LicensePlateDB : ", this.LicensePlateDB);
             const park = this.$store.state.park;
             const token = localStorage.getItem("token");
+            // คำนวณวันสิ้นปีของปีปัจจุบัน
+            const now = new Date();
+            const expireYear = now.getFullYear();
+            const expireDate = `${expireYear}-12-31`;
             const data = {
                 guestName: this.LicensePlateDB.guestName,
                 licensePlate: this.LicensePlateDB.licensePlate.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
                 licensePlateProvince: this.LicensePlateDB.licensePlateProvince,
                 listType: this.LicensePlateDB.listType,
                 start: dateFormatValue(this.LicensePlateDB.start),
-                expire: '2025-12-31',
+                expire: expireDate,
 
                 agency: this.LicensePlateDB.agency,
                 identityNumber: this.LicensePlateDB.identityNumber || '',

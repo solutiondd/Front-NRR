@@ -1161,7 +1161,7 @@ export default {
                                 licensePlateProvince: '',
                                 start: dateFormatValue(sendData.value.time),
                                 listType: 'fixedlist',
-                                expire: '2025-12-31',
+                                expire: `${new Date().getFullYear()}-12-31`,
 
                                 identityNumber: sendData.value.identityNumber,
                                 address: sendData.value.address,
@@ -1242,13 +1242,17 @@ export default {
                 } else {
                     const token = localStorage.getItem('token');
                     const park = store.state.park;
+                    // คำนวณวันสิ้นปีของปีปัจจุบัน
+                    const now = new Date();
+                    const expireYear = now.getFullYear();
+                    const expireDate = `${expireYear}-12-31`;
                     const data = {
                         guestName: sendData.value.name,
                         licensePlate: sendData.value.licensePlate.License,
                         licensePlateProvince: '',
                         start: dateFormatValue(sendData.value.time),
                         listType: 'fixedlist',
-                        expire: '2025-12-31',
+                        expire: expireDate,
 
                         identityNumber: sendData.value.identityNumber,
                         vehicleType: sendData.value.vehicleType,

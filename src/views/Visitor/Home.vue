@@ -237,13 +237,17 @@ export default {
             const res = await event
             if (res.valid === true) {
                 // const token = import.meta.env.VITE_REFRESH_TOKEN;
+                // คำนวณวันสิ้นปีของปีปัจจุบัน
+                const now = new Date();
+                const expireYear = now.getFullYear();
+                const expireDate = `${expireYear}-12-31`;
                 const data = {
                     guestName: this.sendData.guestName,
                     licensePlate: this.sendData.licensePlate.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
                     licensePlateProvince: this.sendData.licensePlateProvince,
                     listType: this.sendData.listType,
                     start: dateFormatValue(this.sendData.date),
-                    expire: '2025-12-31',
+                    expire: expireDate,
 
                     agency: this.sendData.agency,
                     identityNumber: this.sendData.identityNumber || '',

@@ -58,13 +58,17 @@ export default {
                     console.log(this.sendData)
                     const park = this.$store.state.park;
                     const token = localStorage.getItem("token");
+                    // คำนวณวันสิ้นปีของปีปัจจุบัน
+                    const now = new Date();
+                    const expireYear = now.getFullYear();
+                    const expireDate = `${expireYear}-12-31`;
                     const data = {
                         guestName: this.sendData.guestName,
                         licensePlate: this.sendData.licensePlate.replace(/[^ก-ฮ0-9a-zA-Z]/g, ''),
                         licensePlateProvince: this.sendData.licensePlateProvince,
                         listType: this.sendData.listType,
                         start: dateFormatValue(this.sendData.start),
-                        expire: '2025-12-31',
+                        expire: expireDate,
 
                         address: this.sendData.address || '',
 
