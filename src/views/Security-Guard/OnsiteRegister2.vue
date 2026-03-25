@@ -876,7 +876,7 @@
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Car)</span> :
                     <span v-if="sendData.licensePlate?.License" style="font-weight: 400;">{{
                         sendData.licensePlate.License
-                        }}</span>
+                    }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 160px;">&nbsp;</span>
                 </p>
@@ -946,6 +946,7 @@
 
             <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed grey;">
                 <img :src="qrImage" data-print-footer-qr="true" alt="QR Code" style="height: 80px; width: 80px;">
+                <p style="margin-top: 6px; font-weight: bold; font-size: 12px;">กฎระเบียบบริษัทฯ</p>
             </div>
         </div>
     </div>
