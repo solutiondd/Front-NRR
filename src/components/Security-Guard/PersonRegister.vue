@@ -583,6 +583,11 @@
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact person sign)</span>
                 </p>
             </div>
+
+            <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed grey;">
+                <img :src="qrImage" data-print-footer-qr="true" alt="QR Code" style="height: 80px; width: 80px;">
+                <p style="margin-top: 6px; font-weight: bold; font-size: 12px;">กฎระเบียบบริษัทฯ</p>
+            </div>
         </div>
     </div>
     <!-- ################################################## -->
@@ -597,6 +602,7 @@ import { formatitemdevice, dateFormat, dateFormatValue, dateFormatDayandTime, da
 import CheckOut from './CheckOut.vue'
 import { CdataService } from '../../api/Cdata';
 import QrcodeVue from "qrcode.vue";
+import qrImage from '../../assets/qr-code.png';
 export default {
     components: {
         CheckOut,
@@ -746,6 +752,11 @@ export default {
                 qrImg.style.height = "100px";
 
                 qrCanvas.replaceWith(qrImg);
+            }
+
+            const footerQrImage = formContainer.querySelector('[data-print-footer-qr="true"]');
+            if (footerQrImage) {
+                footerQrImage.src = new URL(qrImage, window.location.href).href;
             }
 
             const formContent = formContainer.innerHTML;
@@ -1567,6 +1578,7 @@ export default {
             sendDataLicense,
             submitBylicenseId,
             printForm,
+            qrImage,
 
             //NOTE - Function Format Date
             formatitemdevice,

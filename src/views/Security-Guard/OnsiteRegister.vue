@@ -689,6 +689,11 @@
                     </v-col>
                 </v-row>
             </div>
+
+            <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed grey;">
+                <img :src="qrImage" data-print-footer-qr="true" alt="QR Code" style="height: 80px; width: 80px;">
+                <p style="margin-top: 6px; font-weight: bold; font-size: 12px;">กฎระเบียบบริษัทฯ</p>
+            </div>
         </div>
     </div>
 
@@ -707,6 +712,7 @@ import CheckOut from '../../components/Security-Guard/CheckOut.vue';
 import { ImageService } from "../../api/UploadImage";
 import ThtoEng from '../../utils/MapThToEng';
 import { websocket } from 'qz-tray';
+import qrImage from '../../assets/qr-code.png';
 export default {
     setup() {
         const store = useStore();
@@ -1105,6 +1111,11 @@ export default {
                 qrImg.style.height = "100px";
 
                 qrCanvas.replaceWith(qrImg);
+            }
+
+            const footerQrImage = formContainer.querySelector('[data-print-footer-qr="true"]');
+            if (footerQrImage) {
+                footerQrImage.src = new URL(qrImage, window.location.href).href;
             }
 
             const formContent = formContainer.innerHTML;
@@ -1813,6 +1824,7 @@ export default {
             dateFormatDayandTime,
             imgService,
             printForm,
+            qrImage,
             activeTab,
             inputField,
             dataLicense,
