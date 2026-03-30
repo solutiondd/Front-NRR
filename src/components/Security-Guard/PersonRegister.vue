@@ -488,7 +488,10 @@
             <v-btn @click="printForm()">พิมพ์ฟอร์ม</v-btn>
         </div> -->
         <div id="form-container" style="display: none;">
-            <div style="text-align: center;">
+            <div style="text-align: center;padding-bottom: 10px;">
+                <div style="padding-bottom: 5px;">
+                    <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
+                </div>
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h4>สแกนขาออก</h4>
                     <qrcode-vue :value="sendData._id" :size="100" level="H" render-as="canvas"
@@ -552,7 +555,7 @@
                 </p>
 
                 <p style="font-weight: bold;">ติดต่อแผนก : <span style="font-weight: 400;">{{ sendData.department
-                }}</span>
+                        }}</span>
                     <br /><span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Deparment)</span>
                 </p>
             </div>
