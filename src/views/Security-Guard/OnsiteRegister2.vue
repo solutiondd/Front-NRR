@@ -419,13 +419,16 @@
                                                             </v-row>
                                                             <v-divider class="mt-2" :thickness="2"></v-divider>
                                                             <v-card-actions class="px-0">
-                                                                <v-btn variant="flat"
-                                                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                                                <v-btn variant="flat" :disabled="isSaveDisabled"
                                                                     type="submit" color="#66BB6A" width="100%"
                                                                     class="mt-4" size="large">บันทึกขาเข้า
                                                                     <v-icon
                                                                         class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
                                                             </v-card-actions>
+                                                            <p v-if="isSaveDisabled"
+                                                                class="text-red text-caption text-center mt-1">
+                                                                {{ saveBlockReason }}
+                                                            </p>
                                                             <CheckOut @update="getData()" />
                                                         </v-form>
                                                     </v-tabs-window-item>
@@ -567,13 +570,16 @@
                                                             </v-row>
                                                             <v-divider class="mt-8" :thickness="2"></v-divider>
                                                             <v-card-actions class="px-0">
-                                                                <v-btn variant="flat"
-                                                                    :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
-                                                                    type=" submit" color="#66BB6A" width="100%"
+                                                                <v-btn variant="flat" :disabled="isSaveDisabled"
+                                                                    type="submit" color="#66BB6A" width="100%"
                                                                     class="mt-4" size="large">บันทึกขาเข้า
                                                                     <v-icon
                                                                         class="ml-2">mdi-tray-arrow-down</v-icon></v-btn>
                                                             </v-card-actions>
+                                                            <p v-if="isSaveDisabled"
+                                                                class="text-red text-caption text-center mt-1">
+                                                                {{ saveBlockReason }}
+                                                            </p>
                                                             <CheckOut @update="getData()" />
                                                         </v-form>
                                                     </v-tabs-window-item>
@@ -726,13 +732,16 @@
                                                                     </v-col>
                                                                 </v-col>
                                                             </v-row>
-                                                            <v-btn variant="flat"
-                                                                :disabled="sendData?.msg === 'บุคคลภายใน' || sendData?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ'"
+                                                            <v-btn variant="flat" :disabled="isSaveDisabled"
                                                                 type="submit" color="#66BB6A" width="100%" class="mt-4"
                                                                 size="large">
                                                                 บันทึกขาเข้า
                                                                 <v-icon class="ml-2">mdi-tray-arrow-down</v-icon>
                                                             </v-btn>
+                                                            <p v-if="isSaveDisabled"
+                                                                class="text-red text-caption text-center mt-1">
+                                                                {{ saveBlockReason }}
+                                                            </p>
 
                                                             <CheckOut @update="getData()" />
                                                         </v-form>
@@ -1182,6 +1191,51 @@ export default defineComponent({
             return !!resolveCdataId(sendData.value);
         })
 
+        const isSaveDisabled = computed(() => {
+            return sendData.value?.msg === 'บุคคลภายใน' || sendData.value?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ';
+        })
+
+        const saveBlockReason = computed(() => {
+            if (sendData.value?.msg === 'บุคคลภายใน') {
+                return 'ไม่สามารถบันทึกได้: สถานะนี้เป็นบุคคลภายใน';
+            }
+            if (sendData.value?.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ') {
+                return 'ไม่สามารถบันทึกได้: สถานะนี้เป็นผู้ติดต่อที่ได้รับอนุญาติแล้ว';
+            }
+            return '';
+        })
+
+        const showInvalidFormWarning = async () => {
+            await Swal.fire({
+                icon: 'warning',
+                title: 'ข้อมูลยังไม่ครบหรือรูปแบบไม่ถูกต้อง',
+                text: 'กรุณาตรวจสอบช่องที่มี * และรูปแบบข้อมูลอีกครั้ง',
+                confirmButtonText: 'ตกลง'
+            });
+        }
+
+        const getAuthToken = () => {
+            if (store.state.role === 'security') {
+                return localStorage.getItem('retoken') || localStorage.getItem('token') || '';
+            }
+            return localStorage.getItem('token') || localStorage.getItem('retoken') || '';
+        }
+
+        const getApiErrorText = (res) => {
+            if (!res) return 'ไม่พบข้อมูลตอบกลับจากระบบ';
+            return res?.data?.message || res?.message || res?.error || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
+        }
+
+        const showSaveError = async (title, resOrMessage) => {
+            const detail = typeof resOrMessage === 'string' ? resOrMessage : getApiErrorText(resOrMessage);
+            await Swal.fire({
+                icon: 'error',
+                title,
+                text: detail,
+                confirmButtonText: 'ตกลง'
+            });
+        }
+
         // 👉 ดึงข้อมูลของวันนี้จาก IndexedDB
         const loadTodayHistory = async () => {
             const db = await initDB();
@@ -1420,114 +1474,105 @@ export default defineComponent({
         };
 
         const submit = async (event) => {
-            const res = await event
-            if (res.valid === true) {
-                const cdataId = resolveCdataId(sendData.value);
-                if (!cdataId) {
-                    await Swal.fire({
-                        icon: 'error',
-                        title: 'ไม่พบข้อมูลทะเบียนรถ',
-                        text: 'กรุณาเลือกรถจากรายการ หรือกรอกข้อมูลทะเบียนรถให้ถูกต้อง',
-                        confirmButtonText: 'ตกลง'
-                    });
+            try {
+                if (isSaveDisabled.value) {
+                    await showSaveError('ไม่สามารถบันทึกได้', saveBlockReason.value || 'สถานะข้อมูลไม่อนุญาตให้บันทึก');
                     return;
                 }
+
+                const res = await event;
+                if (res?.valid !== true) {
+                    await showInvalidFormWarning();
+                    return;
+                }
+
+                const cdataId = resolveCdataId(sendData.value);
+                if (!cdataId) {
+                    await showSaveError('ไม่พบข้อมูลทะเบียนรถ', 'กรุณาเลือกรถจากรายการด้านซ้ายก่อนบันทึก');
+                    return;
+                }
+
+                if (!sendData.value.image) {
+                    await showSaveError('ไม่พบรูปจากบัตรประชาชน', 'กรุณาอ่านบัตรประชาชนก่อนบันทึก');
+                    return;
+                }
+
                 const formdata = new FormData();
                 formdata.append('image', sendData.value.image)
-                await imgService.uploadimg(formdata).then(async (res) => {
-                    if (res.message === 'ok') {
-                        let CheckToken = '';
-                        if (store.state.role === 'security') {
-                            CheckToken = localStorage.getItem('retoken');
-                        } else {
-                            CheckToken = localStorage.getItem('token');
-                        }
-                        const token = CheckToken;
-                        const park = store.state.park;
-                        const expire = `${new Date().getFullYear()}-12-31`;
-                        const data = {
-                            guestName: sendData.value.name,
-                            licensePlate: sendData.value.licensePlate.License,
-                            licensePlateProvince: '',
-                            start: dateFormatValue(sendData.value.time),
-                            listType: 'fixedlist',
-                            expire: expire,
+                const uploadRes = await imgService.uploadimg(formdata);
+                if (uploadRes?.message !== 'ok') {
+                    await showSaveError('อัปโหลดรูปภาพไม่สำเร็จ', uploadRes);
+                    return;
+                }
 
-                            identityNumber: sendData.value.identityNumber,
-                            address: sendData.value.address,
-                            vehicleType: sendData.value.vehicleType,
-                            cate: 'stranger',
-                            personImgUrl: res.data.filePath,
-                            cdataId,
-                            timeStamp: sendData.value.time,
-                            visitorTel: sendData.value.tel,
+                const token = getAuthToken();
+                if (!token) {
+                    await showSaveError('ไม่พบสิทธิ์การใช้งาน', 'ไม่พบ token กรุณาเข้าสู่ระบบใหม่');
+                    return;
+                }
 
-                            agency: sendData.value.agency || '',
-                            object: sendData.value.object || '',
-                            contactPerson: sendData.value.contactPerson || '',
-                            totalVisitor: sendData.value.totalVisitor || '',
-                            department: sendData.value.department || '',
-                        }
-                        await lp.CreateLP(park, data, token).then(async (res) => {
-                            if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: `บันทึกข้อมูลสำเร็จ!`,
-                                });
-                                await printForm();
-                                await deleteFromIndexedDB(sendData.value.id);
-                                sendData.value = {
-                                    msg: '',
-                                    licensePlate: { License: '' },
-                                    vehicleType: 'TRUCK',
-                                    time: new Date(),
-                                    name: '',
-                                    identityNumber: '',
-                                    address: '',
-                                    tel: '',
-                                    agency: '',
-                                    object: '',
-                                    contactPerson: '',
-                                    totalVisitor: 1,
-                                    department: '',
-                                };
-                                document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                                proxy.getData();
-                            } else if (res.data.message === 'validate error') {
-                                Swal.fire({
-                                    title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                                    icon: 'warning',
-                                })
-                            }
-                            // else if (res.data.message === 'This license has been added') {
-                            //     Swal.fire({
-                            //         title: 'มีข้อมูลป้ายทะเบียนนี้แล้ว !',
-                            //         text: 'กรุณาลองใหม่อีกครั้ง',
-                            //         icon: 'warning',
-                            //         showConfirmButton: true,
-                            //         confirmButtonColor: '#E53935',
-                            //     })
-                            // } 
-                            else {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: `มีบางอย่างผิดพลาด !`,
-                                    toast: true,
-                                    position: 'top-end',
-                                    showConfirmButton: false,
-                                    timer: 3000,
-                                    timerProgressBar: true,
-                                });
-                            }
-                        })
-                    } else {
-                        Swal.fire({
-                            title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
-                            html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
-                            icon: 'warning',
-                        });
-                    }
-                })
+                const park = store.state.park;
+                const expire = `${new Date().getFullYear()}-12-31`;
+                const data = {
+                    guestName: sendData.value.name,
+                    licensePlate: sendData.value.licensePlate.License,
+                    licensePlateProvince: '',
+                    start: dateFormatValue(sendData.value.time),
+                    listType: 'fixedlist',
+                    expire: expire,
+
+                    identityNumber: sendData.value.identityNumber,
+                    address: sendData.value.address,
+                    vehicleType: sendData.value.vehicleType,
+                    cate: 'stranger',
+                    personImgUrl: uploadRes?.data?.filePath || '',
+                    cdataId,
+                    timeStamp: sendData.value.time,
+                    visitorTel: sendData.value.tel,
+
+                    agency: sendData.value.agency || '',
+                    object: sendData.value.object || '',
+                    contactPerson: sendData.value.contactPerson || '',
+                    totalVisitor: sendData.value.totalVisitor || '',
+                    department: sendData.value.department || '',
+                }
+
+                const createRes = await lp.CreateLP(park, data, token);
+                if (createRes?.message === 'ok' || createRes?.data?.message === 'This license has been added') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `บันทึกข้อมูลสำเร็จ!`,
+                    });
+                    await printForm();
+                    await deleteFromIndexedDB(sendData.value.id);
+                    sendData.value = {
+                        msg: '',
+                        licensePlate: { License: '' },
+                        vehicleType: 'TRUCK',
+                        time: new Date(),
+                        name: '',
+                        identityNumber: '',
+                        address: '',
+                        tel: '',
+                        agency: '',
+                        object: '',
+                        contactPerson: '',
+                        totalVisitor: 1,
+                        department: '',
+                    };
+                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    proxy.getData();
+                    return;
+                }
+
+                if (createRes?.data?.message === 'validate error') {
+                    await showSaveError('บันทึกไม่สำเร็จ', 'ข้อมูลที่ส่งไปไม่ผ่านการตรวจสอบจากระบบ');
+                    return;
+                }
+
+                await showSaveError('บันทึกไม่สำเร็จ', createRes);
+            } catch (error) {
+                await showSaveError('เกิดข้อผิดพลาดระหว่างบันทึก', error?.message || 'ไม่ทราบสาเหตุ');
             }
         }
         // }
@@ -1552,82 +1597,92 @@ export default defineComponent({
 
 
         const submitBylicenseId = async (event) => {
-            const res = await event
-            if (res.valid === true) {
+            try {
+                if (isSaveDisabled.value) {
+                    await showSaveError('ไม่สามารถบันทึกได้', saveBlockReason.value || 'สถานะข้อมูลไม่อนุญาตให้บันทึก');
+                    return;
+                }
+
+                const res = await event;
+                if (res?.valid !== true) {
+                    await showInvalidFormWarning();
+                    return;
+                }
+
                 const cdataId = resolveCdataId(sendData.value);
                 if (!cdataId) {
-                    Swal.fire({
-                        title: 'กรุณาเลือกทะเบียนรถ !!',
-                        html: '<h2>จากทางด้านซ้ายมือ</h2>',
-                        icon: 'warning',
-                    });
-                } else {
-                    const token = localStorage.getItem('token');
-                    const park = store.state.park;
-                    const expire = `${new Date().getFullYear()}-12-31`;
-                    const data = {
-                        guestName: sendData.value.name,
-                        licensePlate: sendData.value.licensePlate.License,
-                        licensePlateProvince: '',
-                        start: dateFormatValue(sendData.value.time),
-                        listType: 'fixedlist',
-                        expire: expire,
-
-                        identityNumber: sendData.value.identityNumber,
-                        vehicleType: sendData.value.vehicleType,
-                        cate: 'stranger',
-                        cdataId,
-                        timeStamp: sendData.value.time,
-
-                        driverLicenseId: sendData.value.licenseId,
-                        visitorTel: sendData.value.tel,
-
-                        agency: sendData.value.agency || '',
-                        object: sendData.value.object || '',
-                        contactPerson: sendData.value.contactPerson || '',
-                        totalVisitor: sendData.value.totalVisitor || '',
-                        department: sendData.value.department || '',
-                    }
-                    await lp.CreateLP(park, data, token).then(async (res) => {
-                        if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: `บันทึกข้อมูลสำเร็จ!`,
-                            });
-                            await printForm();
-                            await deleteFromIndexedDB(sendData.value.id);
-                            sendData.value = {
-                                msg: '',
-                                licensePlate: { License: '' },
-                                vehicleType: 'TRUCK',
-                                time: new Date(),
-                                name: '',
-                                identityNumber: '',
-                                address: '',
-                                tel: '',
-                                agency: '',
-                                object: '',
-                                contactPerson: '',
-                                totalVisitor: 1,
-                                department: '',
-                            };
-                            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                            proxy.getData();
-                        } else if (res.data.message === 'validate error') {
-                            Swal.fire({
-                                title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                                icon: 'warning',
-                            })
-                        } else {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: `มีบางอย่างผิดพลาด !`,
-                                text: 'กรุณาลองใหม่อีกครั้ง',
-                            });
-                            console.log("Error : ", res.data)
-                        }
-                    })
+                    await showSaveError('กรุณาเลือกทะเบียนรถ', 'ต้องเลือกทะเบียนจากรายการด้านซ้ายก่อนบันทึก');
+                    return;
                 }
+
+                const token = getAuthToken();
+                if (!token) {
+                    await showSaveError('ไม่พบสิทธิ์การใช้งาน', 'ไม่พบ token กรุณาเข้าสู่ระบบใหม่');
+                    return;
+                }
+
+                const park = store.state.park;
+                const expire = `${new Date().getFullYear()}-12-31`;
+                const data = {
+                    guestName: sendData.value.name,
+                    licensePlate: sendData.value.licensePlate.License,
+                    licensePlateProvince: '',
+                    start: dateFormatValue(sendData.value.time),
+                    listType: 'fixedlist',
+                    expire: expire,
+
+                    identityNumber: sendData.value.identityNumber,
+                    vehicleType: sendData.value.vehicleType,
+                    cate: 'stranger',
+                    cdataId,
+                    timeStamp: sendData.value.time,
+
+                    driverLicenseId: sendData.value.licenseId,
+                    visitorTel: sendData.value.tel,
+
+                    agency: sendData.value.agency || '',
+                    object: sendData.value.object || '',
+                    contactPerson: sendData.value.contactPerson || '',
+                    totalVisitor: sendData.value.totalVisitor || '',
+                    department: sendData.value.department || '',
+                }
+
+                const createRes = await lp.CreateLP(park, data, token);
+                if (createRes?.message === 'ok' || createRes?.data?.message === 'This license has been added') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `บันทึกข้อมูลสำเร็จ!`,
+                    });
+                    await printForm();
+                    await deleteFromIndexedDB(sendData.value.id);
+                    sendData.value = {
+                        msg: '',
+                        licensePlate: { License: '' },
+                        vehicleType: 'TRUCK',
+                        time: new Date(),
+                        name: '',
+                        identityNumber: '',
+                        address: '',
+                        tel: '',
+                        agency: '',
+                        object: '',
+                        contactPerson: '',
+                        totalVisitor: 1,
+                        department: '',
+                    };
+                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    proxy.getData();
+                    return;
+                }
+
+                if (createRes?.data?.message === 'validate error') {
+                    await showSaveError('บันทึกไม่สำเร็จ', 'ข้อมูลที่ส่งไปไม่ผ่านการตรวจสอบจากระบบ');
+                    return;
+                }
+
+                await showSaveError('บันทึกไม่สำเร็จ', createRes);
+            } catch (error) {
+                await showSaveError('เกิดข้อผิดพลาดระหว่างบันทึก', error?.message || 'ไม่ทราบสาเหตุ');
             }
         }
 
@@ -2146,103 +2201,104 @@ export default defineComponent({
         }
 
         const submitWOther = async (event) => {
-            const res = await event
-            if (res.valid === true) {
+            try {
+                if (isSaveDisabled.value) {
+                    await showSaveError('ไม่สามารถบันทึกได้', saveBlockReason.value || 'สถานะข้อมูลไม่อนุญาตให้บันทึก');
+                    return;
+                }
+
+                const res = await event;
+                if (res?.valid !== true) {
+                    await showInvalidFormWarning();
+                    return;
+                }
+
                 const cdataId = resolveCdataId(sendData.value);
                 if (!cdataId) {
-                    Swal.fire({
-                        title: 'กรุณาเลือกทะเบียนรถ !!',
-                        html: '<h2>จากทางด้านซ้ายมือ</h2>',
-                        icon: 'warning',
-                    });
-                } else {
-                    const formdata = new FormData();
-                    formdata.append('image', UPimage.value)
-                    await imgService.uploadimg(formdata).then(async (res) => {
-                        if (res.message === 'ok') {
-                            let CheckToken = '';
-                            if (store.state.role === 'security') {
-                                CheckToken = localStorage.getItem('retoken');
-                            } else {
-                                CheckToken = localStorage.getItem('token');
-                            }
-                            const token = CheckToken;
-                            const park = store.state.park;
-                            const expire = `${new Date().getFullYear()}-12-31`;
-                            const data = {
-                                guestName: sendData.value.name,
-                                licensePlate: sendData.value.licensePlate.License,
-                                licensePlateProvince: '',
-                                start: dateFormatValue(sendData.value.time),
-                                listType: 'fixedlist',
-                                expire: expire,
-
-                                identityNumber: '',
-                                address: '',
-
-                                vehicleType: sendData.value.vehicleType,
-                                cate: 'stranger',
-                                personCardImgUrl: res.data.filePath,
-                                cdataId,
-                                timeStamp: sendData.value.time,
-                                visitorTel: sendData.value.tel,
-
-                                agency: sendData.value.agency || '',
-                                object: sendData.value.object || '',
-                                contactPerson: sendData.value.contactPerson || '',
-                                totalVisitor: sendData.value.totalVisitor || '',
-                                department: sendData.value.department || '',
-                            }
-                            await lp.CreateLP(park, data, token).then(async (res) => {
-                                if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: `บันทึกข้อมูลสำเร็จ!`,
-                                    });
-                                    await printForm();
-                                    await deleteFromIndexedDB(sendData.value.id);
-                                    sendData.value = {
-                                        msg: '',
-                                        licensePlate: { License: '' },
-                                        vehicleType: 'TRUCK',
-                                        time: new Date(),
-                                        name: '',
-                                        identityNumber: '',
-                                        address: '',
-                                        tel: '',
-                                    };
-                                    UPimage.value = null;
-                                    isCapturedDoc.value = false
-                                    capturedImage.value = null;
-                                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
-                                    proxy.getData();
-                                } else if (res.data.message === 'validate error') {
-                                    Swal.fire({
-                                        title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                                        icon: 'warning',
-                                    })
-                                }
-                                else {
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        title: `มีบางอย่างผิดพลาด !`,
-                                        toast: true,
-                                        position: 'top-end',
-                                        showConfirmButton: false,
-                                        timer: 3000,
-                                        timerProgressBar: true,
-                                    });
-                                }
-                            })
-                        } else {
-                            Swal.fire({
-                                title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
-                                html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
-                                icon: 'warning',
-                            });
-                        }
-                    })
+                    await showSaveError('กรุณาเลือกทะเบียนรถ', 'ต้องเลือกทะเบียนจากรายการด้านซ้ายก่อนบันทึก');
+                    return;
                 }
+
+                if (!UPimage.value) {
+                    await showSaveError('ยังไม่มีรูปเอกสาร', 'กรุณาถ่ายรูปเอกสารก่อนกดบันทึก');
+                    return;
+                }
+
+                const formdata = new FormData();
+                formdata.append('image', UPimage.value)
+                const uploadRes = await imgService.uploadimg(formdata);
+                if (uploadRes?.message !== 'ok') {
+                    await showSaveError('อัปโหลดรูปภาพไม่สำเร็จ', uploadRes);
+                    return;
+                }
+
+                const token = getAuthToken();
+                if (!token) {
+                    await showSaveError('ไม่พบสิทธิ์การใช้งาน', 'ไม่พบ token กรุณาเข้าสู่ระบบใหม่');
+                    return;
+                }
+
+                const park = store.state.park;
+                const expire = `${new Date().getFullYear()}-12-31`;
+                const data = {
+                    guestName: sendData.value.name,
+                    licensePlate: sendData.value.licensePlate.License,
+                    licensePlateProvince: '',
+                    start: dateFormatValue(sendData.value.time),
+                    listType: 'fixedlist',
+                    expire: expire,
+
+                    identityNumber: '',
+                    address: '',
+
+                    vehicleType: sendData.value.vehicleType,
+                    cate: 'stranger',
+                    personCardImgUrl: uploadRes?.data?.filePath || '',
+                    cdataId,
+                    timeStamp: sendData.value.time,
+                    visitorTel: sendData.value.tel,
+
+                    agency: sendData.value.agency || '',
+                    object: sendData.value.object || '',
+                    contactPerson: sendData.value.contactPerson || '',
+                    totalVisitor: sendData.value.totalVisitor || '',
+                    department: sendData.value.department || '',
+                }
+
+                const createRes = await lp.CreateLP(park, data, token);
+                if (createRes?.message === 'ok' || createRes?.data?.message === 'This license has been added') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `บันทึกข้อมูลสำเร็จ!`,
+                    });
+                    await printForm();
+                    await deleteFromIndexedDB(sendData.value.id);
+                    sendData.value = {
+                        msg: '',
+                        licensePlate: { License: '' },
+                        vehicleType: 'TRUCK',
+                        time: new Date(),
+                        name: '',
+                        identityNumber: '',
+                        address: '',
+                        tel: '',
+                    };
+                    UPimage.value = null;
+                    isCapturedDoc.value = false
+                    capturedImage.value = null;
+                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    proxy.getData();
+                    return;
+                }
+
+                if (createRes?.data?.message === 'validate error') {
+                    await showSaveError('บันทึกไม่สำเร็จ', 'ข้อมูลที่ส่งไปไม่ผ่านการตรวจสอบจากระบบ');
+                    return;
+                }
+
+                await showSaveError('บันทึกไม่สำเร็จ', createRes);
+            } catch (error) {
+                await showSaveError('เกิดข้อผิดพลาดระหว่างบันทึก', error?.message || 'ไม่ทราบสาเหตุ');
             }
         }
         // ################################################## //
@@ -2275,6 +2331,8 @@ export default defineComponent({
             datetimeFormatLimit,
             stranger,
             hasSelectedCdataId,
+            isSaveDisabled,
+            saveBlockReason,
 
             //NOTE - Function to Capture img from Web Cam
             videoRef,
