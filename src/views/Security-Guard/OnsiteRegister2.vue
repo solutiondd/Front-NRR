@@ -884,7 +884,7 @@
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Car)</span> :
                     <span v-if="sendData.licensePlate?.License" style="font-weight: 400;">{{
                         sendData.licensePlate.License
-                        }}</span>
+                    }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 160px;">&nbsp;</span>
                 </p>
@@ -1223,7 +1223,21 @@ export default defineComponent({
 
         const getApiErrorText = (res) => {
             if (!res) return 'ไม่พบข้อมูลตอบกลับจากระบบ';
-            return res?.data?.message || res?.message || res?.error || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
+            const message = res?.data?.message || res?.message || res?.error || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
+            const status = res?.status;
+            return status ? `[${status}] ${message}` : message;
+        }
+
+        const isInternalPlateResponse = (res) => {
+            const message = res?.data?.message || res?.message || '';
+            return message === 'This license has been added';
+        }
+
+        const isCreateLPSuccess = (res) => {
+            const message = res?.data?.message || res?.message || '';
+            return message === 'ok'
+                // || message === 'This license has been added'
+                || message === 'This stranger license has been added';
         }
 
         const showSaveError = async (title, resOrMessage) => {
@@ -1538,7 +1552,11 @@ export default defineComponent({
                 }
 
                 const createRes = await lp.CreateLP(park, data, token);
-                if (createRes?.message === 'ok' || createRes?.data?.message === 'This license has been added') {
+                if (isInternalPlateResponse(createRes)) {
+                    await showSaveError('บันทึกไม่สำเร็จ', 'เป็นป้ายทะเบียนบุคคลภายใน');
+                    return;
+                }
+                if (isCreateLPSuccess(createRes)) {
                     Swal.fire({
                         icon: 'success',
                         title: `บันทึกข้อมูลสำเร็จ!`,
@@ -1648,7 +1666,11 @@ export default defineComponent({
                 }
 
                 const createRes = await lp.CreateLP(park, data, token);
-                if (createRes?.message === 'ok' || createRes?.data?.message === 'This license has been added') {
+                if (isInternalPlateResponse(createRes)) {
+                    await showSaveError('บันทึกไม่สำเร็จ', 'เป็นป้ายทะเบียนบุคคลภายใน');
+                    return;
+                }
+                if (isCreateLPSuccess(createRes)) {
                     Swal.fire({
                         icon: 'success',
                         title: `บันทึกข้อมูลสำเร็จ!`,
@@ -2266,7 +2288,11 @@ export default defineComponent({
                 }
 
                 const createRes = await lp.CreateLP(park, data, token);
-                if (createRes?.message === 'ok' || createRes?.data?.message === 'This license has been added') {
+                if (isInternalPlateResponse(createRes)) {
+                    await showSaveError('บันทึกไม่สำเร็จ', 'เป็นป้ายทะเบียนบุคคลภายใน');
+                    return;
+                }
+                if (isCreateLPSuccess(createRes)) {
                     Swal.fire({
                         icon: 'success',
                         title: `บันทึกข้อมูลสำเร็จ!`,

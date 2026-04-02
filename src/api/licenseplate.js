@@ -32,7 +32,11 @@ export class LPService {
         data = response.data;
       })
       .catch((error) => {
-        data = { error: error.message, data: error.response.data };
+        data = {
+          error: error.message,
+          data: error.response?.data,
+          status: error.response?.status,
+        };
       });
 
     return data;
@@ -57,7 +61,11 @@ export class LPService {
         data = response.data;
       })
       .catch((error) => {
-        data = { error: error.message, data: error.response.data };
+        data = {
+          error: error.message,
+          data: error.response?.data,
+          status: error.response?.status,
+        };
       });
 
     return data;
@@ -82,7 +90,11 @@ export class LPService {
         data = response.data;
       })
       .catch((error) => {
-        data = { error: error.message, data: error.response.data };
+        data = {
+          error: error.message,
+          data: error.response?.data,
+          status: error.response?.status,
+        };
       });
 
     return data;
@@ -106,7 +118,11 @@ export class LPService {
         data = response.data;
       })
       .catch((error) => {
-        data = { error: error.message, data: error.response.data };
+        data = {
+          error: error.message,
+          data: error.response?.data,
+          status: error.response?.status,
+        };
       });
 
     return data;
