@@ -6,6 +6,8 @@
                     <v-icon :icon="typeMap[type]?.icon" size="small" class="mr-2" />
                     {{ typeMap[type]?.text || 'ไม่พบข้อมูล' }}
                 </v-toolbar-title>
+                <v-btn prepend-icon="mdi-file-excel" color="white" variant="text" :loading="exportLoading"
+                    :disabled="exportLoading" @click="exportExcel()">Export Excel</v-btn>
                 <v-btn icon="mdi-close" size="small" @click="closeDialog"></v-btn>
             </v-toolbar>
         </div>
@@ -81,6 +83,7 @@
 <script>
 import { dateFormatValue2, datetimeFormatLimit } from '../../function/day';
 import { StrangerService } from '../../api/ReportStranger';
+import ExcelJS from 'exceljs';
 import Detail from '../ReportVisitorGroup/Detail.vue';
 export default {
     props: {
@@ -186,6 +189,7 @@ export default {
         endDate: new Date(),
         searchQuery: '',
         timeEntry: '',
+        exportLoading: false,
     }),
     mounted() {
         // this.endDate = this.addDays(this.startDate, +1)
@@ -274,6 +278,77 @@ export default {
             this.searchQuery = '';
             this.$emit('update:modelValue', false);
         },
+        async exportExcel() {
+            this.exportLoading = true;
+
+            try {
+                const rows = this.filteredData;
+
+                if (!rows.length) {
+                    alert('ไม่พบข้อมูลสำหรับ Export');
+                    return;
+                }
+
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('ReportVisitorGroupByLP');
+
+                worksheet.columns = [
+                    { width: 8 },
+                    { width: 20 },
+                    { width: 32 },
+                    { width: 25 },
+                    { width: 25 },
+                    { width: 22 },
+                ];
+
+                worksheet.mergeCells('A1:F1');
+                const titleCell = worksheet.getCell('A1');
+                titleCell.value = `${this.typeMap[this.type]?.text || 'ไม่พบข้อมูล'}   วันที่ ${this.formatDateForExcelTitle(this.startDate)}`;
+                titleCell.font = { bold: true, size: 14 };
+                titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+                worksheet.getRow(1).height = 30;
+
+                const headerRow = worksheet.addRow([
+                    'ลำดับ',
+                    'หมายเลขทะเบียน',
+                    'เจ้าของ',
+                    'วันที่/เวลา (ขาเข้า)',
+                    'วันที่/เวลา (ขาออก)',
+                    'สถานะ',
+                ]);
+                headerRow.font = { bold: true };
+                headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+                headerRow.height = 20;
+
+                rows.forEach((item, index) => {
+                    worksheet.addRow([
+                        index + 1,
+                        item.license || '',
+                        Array.isArray(item.person) ? item.person.map((person) => person.name).filter(Boolean).join(', ') : '',
+                        this.formatDateTime(item.firstTimeStamp),
+                        this.formatDateTime(item.exitTime),
+                        item.msg || '',
+                    ]);
+                });
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                const startStr = this.formatDateForFileName(this.startDate);
+                link.href = url;
+                link.download = `${this.typeMap[this.type]?.text || 'ไม่พบข้อมูล'}-${startStr}.xlsx`;
+                link.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error(error);
+                alert('เกิดข้อผิดพลาดขณะ Export Excel');
+            } finally {
+                this.exportLoading = false;
+            }
+        },
         LastExit(AttData) {
             console.log("Att Data : ", AttData);
             if (!Array.isArray(AttData) || AttData.length === 0) {
@@ -291,6 +366,16 @@ export default {
             }, new Date(lastExit[0].time));
 
             return this.formatDateTime(lastExitTime);
+        },
+        formatDateForExcelTitle(dateValue) {
+            const date = new Date(dateValue);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        },
+        formatDateForFileName(dateValue) {
+            return this.formatDateForExcelTitle(dateValue).replaceAll('/', '-');
         },
         async getCRData(type) {
             try {

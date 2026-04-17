@@ -73,7 +73,7 @@ export default {
             return moment(this.sendData.TransactionTime).format('DD/MM/YYYY HH:mm:ss')
         },
         convertInput() {
-            return this.convertThtoEng(this.sendData.TransctionId);
+            return this.normalizeTransactionId(this.sendData.TransctionId);
         },
     },
     data: () => ({
@@ -153,6 +153,14 @@ export default {
             date.setHours(Rawdate.getHours() + offset);
 
             return date.toISOString();
+        },
+        normalizeTransactionId(input) {
+            const cleaned = String(input || '').trim();
+            const hexMatch = cleaned.match(/[a-fA-F0-9]{24}/);
+            if (hexMatch) {
+                return hexMatch[0].toLowerCase();
+            }
+            return this.convertThtoEng(cleaned);
         },
         convertThtoEng(text) {
             return text.split('').map(char => ThtoEng[char] || char).join('');

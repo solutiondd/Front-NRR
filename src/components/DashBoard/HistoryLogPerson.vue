@@ -2,10 +2,14 @@
     <div class="pa-5">
         <v-row>
             <v-col cols="12" class="pb-5">
-                <p style="font-size: 25px; font-weight: bold;">
-                    รายการประวัติการเข้า-ออก (ไม่มียานพาหนะ)
-                    <v-icon class="ml-2">mdi-history</v-icon>
-                </p>
+                <div class="d-flex justify-space-between align-center flex-wrap ga-3">
+                    <p class="mb-0" style="font-size: 25px; font-weight: bold;">
+                        รายการประวัติการเข้า-ออก (ไม่มียานพาหนะ)
+                        <v-icon class="ml-2">mdi-history</v-icon>
+                    </p>
+                    <v-btn prepend-icon="mdi-file-excel" color="success" :loading="exportLoading"
+                        :disabled="exportLoading" @click="exportExcel()">Export Excel</v-btn>
+                </div>
             </v-col>
             <v-col cols="12" class="pt-0">
                 <v-row class="d-flex align-center">
@@ -96,6 +100,7 @@
 <script>
 import { HistorylogSer } from "../../api/Historylog";
 import { dateFormatValue, datetimeFormat, datetimeFormatLimit } from "../../function/day";
+import ExcelJS from "exceljs";
 export default {
     setup() {
         const his = new HistorylogSer();
@@ -130,6 +135,7 @@ export default {
         data: [],
         search: '',
         personName: '',
+        exportLoading: false,
         headers: [
             { title: 'ลำดับ', align: 'center', sortable: false, key: 'index' },
             { title: 'ภาพ', align: 'center', sortable: false, key: 'personImgUrl' },
@@ -178,6 +184,126 @@ export default {
                 }
             })
         },
+        async fetchAllHistoryForExport() {
+            const start = this.datetimeFormatLimit(this.startDate);
+            const end = this.datetimeFormatLimit(this.endDate);
+            const park = this.$store.state.park;
+            const name = this.personName;
+            const candidateLimits = [...new Set([
+                Number(this.itemsPerPage) || 20,
+                100,
+                50,
+                20,
+                10,
+            ])]
+
+            const fetchByLimit = async (limit) => {
+                let page = 1
+                let totalPages = 1
+                let allItems = []
+
+                while (page <= totalPages) {
+                    const res = await this.his.getPersonHistory(park, start, end, name, limit, page)
+                    if (res.message !== 'ok') {
+                        throw new Error(res?.error || 'ไม่สามารถดึงข้อมูลสำหรับ Export ได้')
+                    }
+
+                    const pageItems = Array.isArray(res.data) ? res.data : []
+                    allItems = allItems.concat(pageItems)
+
+                    const totalItems = Number(
+                        res.total_items ?? res.totalItems ?? res.totalItem ?? pageItems.length
+                    )
+                    totalPages = totalItems > 0 ? Math.ceil(totalItems / limit) : 1
+                    page += 1
+                }
+
+                return allItems
+            }
+
+            let lastError = null
+            for (const limit of candidateLimits) {
+                try {
+                    return await fetchByLimit(limit)
+                } catch (error) {
+                    lastError = error
+                    if (!String(error?.message || '').includes('400')) {
+                        throw error
+                    }
+                }
+            }
+
+            throw lastError || new Error('ไม่สามารถดึงข้อมูลสำหรับ Export ได้')
+        },
+        async exportExcel() {
+            this.exportLoading = true
+
+            try {
+                const rows = await this.fetchAllHistoryForExport()
+
+                if (!rows.length) {
+                    alert('ไม่พบข้อมูลสำหรับ Export')
+                    return
+                }
+
+                const workbook = new ExcelJS.Workbook()
+                const worksheet = workbook.addWorksheet('HistoryLogPerson')
+
+                worksheet.columns = [
+                    { width: 8 },
+                    { width: 30 },
+                    { width: 25 },
+                    { width: 25 },
+                    { width: 40 },
+                    { width: 20 },
+                ]
+
+                worksheet.mergeCells('A1:F1')
+                const titleCell = worksheet.getCell('A1')
+                titleCell.value = `ประวัติการเข้า-ออก (ไม่มียานพาหนะ)   วันที่ ${this.formatDateForExcelTitle(this.startDate)}`
+                titleCell.font = { bold: true, size: 14 }
+                titleCell.alignment = { horizontal: 'center', vertical: 'middle' }
+                worksheet.getRow(1).height = 30
+
+                const headerRow = worksheet.addRow([
+                    'ลำดับ',
+                    'ชื่อผู้มาติดต่อ',
+                    'วันที่/เวลา (ขาเข้า)',
+                    'วันที่/เวลา (ขาออก)',
+                    'รายละเอียด',
+                    'ประเภทการเข้า/ออก',
+                ])
+                headerRow.font = { bold: true }
+                headerRow.alignment = { horizontal: 'center', vertical: 'middle' }
+                headerRow.height = 20
+
+                rows.forEach((item, index) => {
+                    worksheet.addRow([
+                        index + 1,
+                        item?.person?.name || '',
+                        this.formatDateTime(item.time),
+                        item.checkoutTimeStamp ? this.formatDateTime(item.checkoutTimeStamp) : '',
+                        item.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' ? 'ผู้ติดต่อที่ลงทะเบียน' : (item.msg || ''),
+                        item.inout || '',
+                    ])
+                })
+
+                const buffer = await workbook.xlsx.writeBuffer()
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                const startStr = dateFormatValue(this.startDate).replaceAll('/', '-')
+                a.href = url
+                a.download = `ประวัติการเข้า-ออก (ไม่มียานพาหนะ)-${startStr}.xlsx`
+                a.click()
+                URL.revokeObjectURL(url)
+            } catch (error) {
+                console.error(error)
+                alert('เกิดข้อผิดพลาดขณะ Export Excel')
+            } finally {
+                this.exportLoading = false
+            }
+        },
         formatDateTime(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString);
@@ -190,6 +316,13 @@ export default {
                 second: "2-digit",
                 hour12: false
             }).replace(",", "");
+        },
+        formatDateForExcelTitle(dateValue) {
+            const date = new Date(dateValue)
+            const day = String(date.getDate()).padStart(2, '0')
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const year = date.getFullYear()
+            return `${day}/${month}/${year}`
         },
         addDays(date, days) {
             const newDate = new Date(date);

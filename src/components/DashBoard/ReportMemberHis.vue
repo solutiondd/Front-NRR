@@ -6,6 +6,8 @@
                     <v-icon :icon="typeMap[type]?.icon" size="small" class="mr-2"></v-icon>
                     {{ typeMap[type]?.text || 'ไม่พบข้อมูลประเภท' }}
                 </v-toolbar-title>
+                <v-btn prepend-icon="mdi-file-excel" color="white" variant="text" :loading="exportLoading"
+                    :disabled="exportLoading" @click="exportExcel()">Export Excel</v-btn>
                 <v-btn icon="mdi-close" size="small" @click="closeDialog"></v-btn>
             </v-toolbar>
         </div>
@@ -69,6 +71,7 @@
 <script>
 import { HistorylogSer } from '../../api/Historylog';
 import { datetimeFormatLimit, dateFormatWTime } from '../../function/day';
+import ExcelJS from 'exceljs';
 import DetailMember from './DetailMember.vue';
 export default {
     props: {
@@ -150,6 +153,7 @@ export default {
         startDate: new Date(),
         endDate: new Date(),
         searchQuery: '',
+        exportLoading: false,
     }),
     mounted() {
 
@@ -191,6 +195,77 @@ export default {
             this.searchQuery = '';
             this.$emit('update:modelValue', false);
         },
+        async exportExcel() {
+            this.exportLoading = true;
+
+            try {
+                const rows = this.filteredData;
+
+                if (!rows.length) {
+                    alert('ไม่พบข้อมูลสำหรับ Export');
+                    return;
+                }
+
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('ReportMemberHistory');
+
+                worksheet.columns = [
+                    { width: 8 },
+                    { width: 20 },
+                    { width: 28 },
+                    { width: 25 },
+                    { width: 25 },
+                    { width: 20 },
+                ];
+
+                worksheet.mergeCells('A1:F1');
+                const titleCell = worksheet.getCell('A1');
+                titleCell.value = `${this.typeMap[this.type]?.text || 'ประวัติการเข้า-ออก'}   วันที่ ${this.formatDateForExcelTitle(this.startDate)}`;
+                titleCell.font = { bold: true, size: 14 };
+                titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+                worksheet.getRow(1).height = 30;
+
+                const headerRow = worksheet.addRow([
+                    'ลำดับ',
+                    'หมายเลขทะเบียน',
+                    'เจ้าของ',
+                    'วันที่/เวลา (ขาเข้า)',
+                    'วันที่/เวลา (ขาออก)',
+                    'สถานะ',
+                ]);
+                headerRow.font = { bold: true };
+                headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+                headerRow.height = 20;
+
+                rows.forEach((item, index) => {
+                    worksheet.addRow([
+                        index + 1,
+                        item.license || '',
+                        item.person || '',
+                        this.dateFormatWTime(item.firstTimeStamp) || '-',
+                        this.dateFormatWTime(item.exitTime) || '-',
+                        item.msg || '',
+                    ]);
+                });
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                const startStr = this.formatDateForFileName(this.startDate);
+                link.href = url;
+                link.download = `${this.typeMap[this.type]?.text || 'ประวัติการเข้า-ออก'}-${startStr}.xlsx`;
+                link.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error(error);
+                alert('เกิดข้อผิดพลาดขณะ Export Excel');
+            } finally {
+                this.exportLoading = false;
+            }
+        },
         formatDateTime(dateString) {
             if (dateString === null || dateString === undefined || !dateString || dateString === '-') {
                 return '-';
@@ -206,6 +281,16 @@ export default {
                     hour12: false
                 }).replace(",", "");
             }
+        },
+        formatDateForExcelTitle(dateValue) {
+            const date = new Date(dateValue);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        },
+        formatDateForFileName(dateValue) {
+            return this.formatDateForExcelTitle(dateValue).replaceAll('/', '-');
         },
     }
 }

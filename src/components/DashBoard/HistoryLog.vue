@@ -2,10 +2,13 @@
     <div class="pa-5">
         <v-row>
             <v-col cols="12" class="pb-5">
-                <!-- //NOTE - Title ที่อัพเดทแล้ว [รอแบบไม่มียานพาหนะ] -->
-                <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก (มียานพาหนะ)<v-icon
+                <div class="d-flex justify-space-between align-center flex-wrap ga-3">
+                    <p class="mb-0" style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก (มียานพาหนะ)<v-icon
                         class="ml-2">mdi-history</v-icon>
-                </p>
+                    </p>
+                    <v-btn prepend-icon="mdi-file-excel" color="success" :loading="exportLoading"
+                    :disabled="exportLoading" @click="exportExcel()">Export Excel</v-btn>
+                </div>
 
                 <!-- //NOTE - Title แบบมียานพาหนะ -->
                 <!-- <p style="font-size: 25px; font-weight: bold;">รายการประวัติการเข้า-ออก<v-icon
@@ -137,6 +140,7 @@
 <script>
 import { HistorylogSer } from "../../api/Historylog";
 import { dateFormatValue, datetimeFormat, datetimeFormatLimit } from "../../function/day";
+import ExcelJS from "exceljs";
 export default {
     props: {
         centerDate: Date,
@@ -180,6 +184,7 @@ export default {
         imagePreview: null,
         data: [],
         search: '',
+        exportLoading: false,
         headers: [
             { title: 'ลำดับ', align: 'center', sortable: false, key: 'index' },
             { title: 'ภาพป้ายทะเบียน 1', align: 'center', sortable: false, key: 'platesPhoto' },
@@ -215,9 +220,135 @@ export default {
                     this.data = res.data;
                     this.totalItems = res.totalItem;
                     this.itemsPerPage = Number(res.itemPerpage)
-                    console.log(this.data)
                 }
             })
+        },
+        buildImageUrl(path) {
+            if (!path) {
+                return '';
+            }
+
+            return path.startsWith('http') ? path : `${this.baseUrl}${path}`;
+        },
+        async fetchAllHistoryForExport() {
+            const start = datetimeFormatLimit(this.startDate)
+            const end = datetimeFormatLimit(this.endDate)
+            const license = this.licenseplate
+            const park = this.$store.state.park
+            const candidateLimits = [...new Set([
+                Number(this.itemsPerPage) || 20,
+                100,
+                50,
+                20,
+                10,
+            ])]
+
+            const fetchByLimit = async (limit) => {
+                let page = 1
+                let totalPages = 1
+                let allItems = []
+
+                while (page <= totalPages) {
+                    const res = await this.his.getRecHis(limit, page, start, end, license, park)
+                    if (res.message !== 'ok') {
+                        throw new Error(res?.error || 'ไม่สามารถดึงข้อมูลสำหรับ Export ได้')
+                    }
+
+                    const pageItems = Array.isArray(res.data) ? res.data : []
+                    allItems = allItems.concat(pageItems)
+
+                    const totalItems = Number(res.totalItem || 0)
+                    totalPages = totalItems > 0 ? Math.ceil(totalItems / limit) : 1
+                    page += 1
+                }
+
+                return allItems
+            }
+
+            let lastError = null
+            for (const limit of candidateLimits) {
+                try {
+                    return await fetchByLimit(limit)
+                } catch (error) {
+                    lastError = error
+                    if (!String(error?.message || '').includes('400')) {
+                        throw error
+                    }
+                }
+            }
+
+            throw lastError || new Error('ไม่สามารถดึงข้อมูลสำหรับ Export ได้')
+        },
+        async exportExcel() {
+            this.exportLoading = true
+
+            try {
+                const rows = await this.fetchAllHistoryForExport()
+
+                if (!rows.length) {
+                    alert('ไม่พบข้อมูลสำหรับ Export')
+                    return
+                }
+
+                const workbook = new ExcelJS.Workbook()
+                const worksheet = workbook.addWorksheet('HistoryLog')
+
+                // กำหนดความกว้างคอลัมน์
+                worksheet.columns = [
+                    { width: 8 },
+                    { width: 14 },
+                    { width: 12 },
+                    { width: 20 },
+                    { width: 25 },
+                    { width: 25 },
+                    { width: 25 },
+                    { width: 12 },
+                ]
+
+                worksheet.mergeCells('A1:H1')
+                const titleCell = worksheet.getCell('A1')
+                titleCell.value = `ประวัติการเข้า-ออก (มียานพาหนะ)   วันที่ ${this.formatDateForExcelTitle(this.startDate)}`
+                titleCell.font = { bold: true, size: 14 }
+                titleCell.alignment = { horizontal: 'center', vertical: 'middle' }
+                worksheet.getRow(1).height = 30
+
+                const headerRow = worksheet.addRow([
+                    'ลำดับ', 'หมายเลขทะเบียน', 'ยืนยันทะเบียน', 'ชื่อผู้ติดต่อ',
+                    'วันที่/เวลา (ขาเข้า)', 'วันที่/เวลา (ขาออก)', 'รายละเอียด', 'ประเภทการเข้า/ออก'
+                ])
+                headerRow.font = { bold: true }
+                headerRow.alignment = { horizontal: 'center', vertical: 'middle' }
+                headerRow.height = 20
+
+                rows.forEach((item, index) => {
+                    worksheet.addRow([
+                        index + 1,
+                        (item.plates || []).map((lp) => lp.License).join(', '),
+                        item.confirmLicensePlate || '',
+                        item?.person?.name || '',
+                        this.formatDateTime(item.time),
+                        item.checkoutTimeStamp ? this.formatDateTime(item.checkoutTimeStamp) : '',
+                        item.msg === 'ผู้ติดต่อที่ได้รับอนุญาติ' ? 'ผู้ติดต่อที่ลงทะเบียน' : (item.msg || ''),
+                        item.inout || '',
+                    ])
+                })
+
+                const buffer = await workbook.xlsx.writeBuffer()
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                const startStr = dateFormatValue(this.startDate).replaceAll('/', '-')
+                a.href = url
+                a.download = `ประวัติการเข้า-ออก (มียานพาหนะ)-${startStr}.xlsx`
+                a.click()
+                URL.revokeObjectURL(url)
+
+            } catch (error) {
+                console.error(error)
+                alert('เกิดข้อผิดพลาดขณะ Export Excel')
+            } finally {
+                this.exportLoading = false
+            }
         },
         formatDateTime(dateString) {
             const date = new Date(dateString);
@@ -230,6 +361,13 @@ export default {
                 second: "2-digit",
                 hour12: false
             }).replace(",", "");
+        },
+        formatDateForExcelTitle(dateValue) {
+            const date = new Date(dateValue)
+            const day = String(date.getDate()).padStart(2, '0')
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const year = date.getFullYear()
+            return `${day}/${month}/${year}`
         },
         addDays(date, days) {
             const newDate = new Date(date);

@@ -772,6 +772,9 @@
                                         คงเหลือในพื้นที่ทั้งหมด {{ this.data.length }} คัน
                                     </p>
                                 </v-toolbar-title>
+                                <v-btn prepend-icon="mdi-file-excel" color="white" variant="text"
+                                    :loading="exportLoading" :disabled="exportLoading"
+                                    @click="exportRemainingExcel()">Export Excel</v-btn>
                             </v-toolbar>
                         </div>
                         <div>
@@ -840,11 +843,11 @@
                 </div>
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h4 style="padding-bottom: 5px;">สแกนขาออก</h4>
-                    <qrcode-vue :value="sendData._id" :size="100" level="H" render-as="canvas"
-                        :key="sendData._id"></qrcode-vue>
+                    <qrcode-vue :value="printData._id" :size="100" level="H" render-as="canvas"
+                        :key="printData._id"></qrcode-vue>
                     <h4 style="padding-top: 10px;">ใบผ่าน เข้า-ออก รหัส
                         <span style="font-weight: 400;font-size: 12px;">(No.)</span>
-                        <p style="font-size: 12px;font-weight: 400;padding-top: 5px;">{{ sendData._id }}</p>
+                        <p style="font-size: 12px;font-weight: 400;padding-top: 5px;">{{ printData._id }}</p>
                     </h4>
                 </div>
 
@@ -855,7 +858,7 @@
                         style="font-size: 10px;color: #BDBDBD;font-weight: 300;">(Time
                         IN)</span> :
                     <span style="font-weight: 400;">
-                        {{ dateFormatDayandTime(sendData.time) }} - {{ formatitemdevice(sendData.time) }}
+                        {{ dateFormatDayandTime(printData.time) }} - {{ formatitemdevice(printData.time) }}
                     </span>
                 </p>
                 <p style="font-weight: bold;">เวลาออก <span
@@ -865,7 +868,7 @@
                 </p>
                 <p style="font-weight: bold;">
                     วัตถุประสงค์ :
-                    <span v-if="sendData.object" style="font-weight: 400;">{{ sendData.object }}</span>
+                    <span v-if="printData.object" style="font-weight: 400;">{{ printData.object }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 175px;">&nbsp;</span>
                     <br />
@@ -873,7 +876,7 @@
                 </p>
                 <p style="font-weight: bold;">
                     ชื่อ-นามสกุล :
-                    <span v-if="sendData.name" style="font-weight: 400;">{{ sendData.name }}</span>
+                    <span v-if="printData.name" style="font-weight: 400;">{{ printData.name }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 175px;">&nbsp;</span>
                     <br />
@@ -882,15 +885,15 @@
                 <p style="font-weight: bold;">
                     ทะเบียนรถ
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Car)</span> :
-                    <span v-if="sendData.licensePlate?.License" style="font-weight: 400;">{{
-                        sendData.licensePlate.License
+                    <span v-if="printData.licensePlate?.License" style="font-weight: 400;">{{
+                        printData.licensePlate.License
                     }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 160px;">&nbsp;</span>
                 </p>
                 <p style="font-weight: bold;">
                     จากบริษัท :
-                    <span v-if="sendData.agency" style="font-weight: 400;">{{ sendData.agency }}</span>
+                    <span v-if="printData.agency" style="font-weight: 400;">{{ printData.agency }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 190px;">&nbsp;</span>
                     <br />
@@ -898,9 +901,9 @@
                 </p>
                 <p style="font-weight: bold;">
                     จำนวนผู้มาติดต่อ :
-                    <span v-if="sendData.totalVisitor !== undefined && sendData.totalVisitor !== null"
+                    <span v-if="printData.totalVisitor !== undefined && printData.totalVisitor !== null"
                         style="font-weight: 400;">
-                        {{ sendData.totalVisitor }} คน
+                        {{ printData.totalVisitor }} คน
                     </span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 100px;">&nbsp;</span>
@@ -909,14 +912,14 @@
                 </p>
                 <p style="font-weight: bold;">
                     ผู้รับการติดต่อ :
-                    <span v-if="sendData.contactPerson" style="font-weight: 400;">{{ sendData.contactPerson }}</span>
+                    <span v-if="printData.contactPerson" style="font-weight: 400;">{{ printData.contactPerson }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 170px;">&nbsp;</span>
                     <br />
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Contact Person)</span>
                 </p>
-                <p style="font-weight: bold;">ติดต่อแผนก : <span v-if="sendData.department" style="font-weight: 400;">
-                        {{ sendData.department }}
+                <p style="font-weight: bold;">ติดต่อแผนก : <span v-if="printData.department" style="font-weight: 400;">
+                        {{ printData.department }}
                     </span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; width: 180px;">&nbsp;</span>
@@ -975,6 +978,7 @@ import { StrangerService } from '../../api/ReportStranger';
 import DetailRemain from '../../components/Security-Guard/DetailRemain.vue';
 import PersonRegister from '../../components/Security-Guard/PersonRegister.vue';
 import qrImage from '../../assets/qr-code.png';
+import ExcelJS from 'exceljs';
 
 export default defineComponent({
     setup() {
@@ -1002,6 +1006,35 @@ export default defineComponent({
             totalVisitor: 1,
             department: '',
         })
+
+        const printData = ref({
+            _id: '',
+            time: new Date(),
+            name: '',
+            object: '',
+            agency: '',
+            totalVisitor: 1,
+            contactPerson: '',
+            department: '',
+            licensePlate: { License: '' },
+        })
+
+        const syncPrintData = () => {
+            const snapshot = JSON.parse(JSON.stringify(sendData.value || {}));
+            printData.value = {
+                _id: snapshot?._id || '',
+                time: snapshot?.time || new Date(),
+                name: snapshot?.name || '',
+                object: snapshot?.object || '',
+                agency: snapshot?.agency || '',
+                totalVisitor: snapshot?.totalVisitor ?? 1,
+                contactPerson: snapshot?.contactPerson || '',
+                department: snapshot?.department || '',
+                licensePlate: {
+                    License: snapshot?.licensePlate?.License || '',
+                },
+            }
+        }
 
         const dataLicense = ref('');
         const inputField = ref(null);
@@ -1055,8 +1088,8 @@ export default defineComponent({
                 return; // ❌ หยุดการทำงานต่อถ้าพบอักษรไทย
             }
 
-
-            const lines = input.split("\n");
+            const normalizedInput = String(input || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            const lines = normalizedInput.split("\n");
 
             let foundName = false;
             let foundId = false;
@@ -1087,8 +1120,9 @@ export default defineComponent({
 
 
                 // ✅ ตรวจสอบเลขประจำตัวประชาชน
-                if (!foundId && line.startsWith(";")) {
-                    const match = line.match(/;600764(\d{13})/);
+                if (!foundId && trimmedLine.startsWith(";")) {
+                    const compactLine = trimmedLine.replace(/\s+/g, '');
+                    const match = compactLine.match(/;(\d{13})(?:=|\?|$)/) || compactLine.match(/;\d*(\d{13})(?:=|\?|$)/);
                     if (match) {
                         sendData.value.identityNumber = match[1];
                         foundId = true;
@@ -1096,8 +1130,8 @@ export default defineComponent({
                 }
 
                 // ✅ ตรวจสอบเลขที่ใบขับขี่
-                if (!foundLicenseId && line.startsWith("+")) {
-                    const match = line.match(/\d{4,5}\s+\d{1,2}\s+(\d{7,8})/);
+                if (!foundLicenseId && trimmedLine.startsWith("+")) {
+                    const match = trimmedLine.match(/\d{4,5}\s+\d{1,2}\s+(\d{7,8})/);
                     if (match) {
                         sendData.value.licenseId = match[1];
                         foundLicenseId = true;
@@ -1107,9 +1141,10 @@ export default defineComponent({
 
             // fallback สำหรับเลขบัตร ปชช.
             if (!foundId) {
-                const idMatch = input.match(/(\d{13})/);
-                if (idMatch) {
-                    sendData.value.identityNumber = idMatch[1];
+                const all13Digits = [...normalizedInput.matchAll(/\d{13}/g)].map((m) => m[0]);
+                const candidateId = all13Digits.find((v) => !v.startsWith('0')) || all13Digits[0];
+                if (candidateId) {
+                    sendData.value.identityNumber = candidateId;
                 }
             }
 
@@ -1557,6 +1592,8 @@ export default defineComponent({
                     return;
                 }
                 if (isCreateLPSuccess(createRes)) {
+                    // ✅ ใช้ cdataId (camera transaction) สำหรับ QR เพราะ backend checkout ค้นหาด้วย cdataId
+                    syncPrintData();
                     Swal.fire({
                         icon: 'success',
                         title: `บันทึกข้อมูลสำเร็จ!`,
@@ -1671,6 +1708,8 @@ export default defineComponent({
                     return;
                 }
                 if (isCreateLPSuccess(createRes)) {
+                    // ✅ ใช้ cdataId (camera transaction) สำหรับ QR เพราะ backend checkout ค้นหาด้วย cdataId
+                    syncPrintData();
                     Swal.fire({
                         icon: 'success',
                         title: `บันทึกข้อมูลสำเร็จ!`,
@@ -2293,6 +2332,8 @@ export default defineComponent({
                     return;
                 }
                 if (isCreateLPSuccess(createRes)) {
+                    // ✅ ใช้ cdataId (camera transaction) สำหรับ QR เพราะ backend checkout ค้นหาด้วย cdataId
+                    syncPrintData();
                     Swal.fire({
                         icon: 'success',
                         title: `บันทึกข้อมูลสำเร็จ!`,
@@ -2340,6 +2381,7 @@ export default defineComponent({
             toRaw,
             submit,
             sendData,
+            printData,
             dateFormat,
             readIDCard,
             loading,
@@ -2416,6 +2458,7 @@ export default defineComponent({
         itemsPerPage: 5,
         startDate: new Date(),
         endDate: new Date(),
+        exportLoading: false,
         tabs: {
             car: true,
             person: false,
@@ -2473,6 +2516,77 @@ export default defineComponent({
             newDate.setDate(newDate.getDate() + days);
             return newDate;
         },
+        async exportRemainingExcel() {
+            this.exportLoading = true;
+
+            try {
+                const rows = Array.isArray(this.data) ? this.data : [];
+
+                if (!rows.length) {
+                    alert('ไม่พบข้อมูลสำหรับ Export');
+                    return;
+                }
+
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('RemainingInSite');
+
+                worksheet.columns = [
+                    { width: 8 },
+                    { width: 20 },
+                    { width: 32 },
+                    { width: 25 },
+                    { width: 25 },
+                    { width: 20 },
+                ];
+
+                worksheet.mergeCells('A1:F1');
+                const titleCell = worksheet.getCell('A1');
+                titleCell.value = `คงเหลือในพื้นที่ทั้งหมด   วันที่ ${this.formatDateForExcelTitle(this.startDate)}`;
+                titleCell.font = { bold: true, size: 14 };
+                titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+                worksheet.getRow(1).height = 30;
+
+                const headerRow = worksheet.addRow([
+                    'ลำดับ',
+                    'หมายเลขทะเบียน',
+                    'เจ้าของ',
+                    'วันที่/เวลา (ขาเข้า)',
+                    'วันที่/เวลา (ขาออก)',
+                    'สถานะ',
+                ]);
+                headerRow.font = { bold: true };
+                headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+                headerRow.height = 20;
+
+                rows.forEach((item, index) => {
+                    worksheet.addRow([
+                        index + 1,
+                        item.license || '',
+                        Array.isArray(item.person) ? item.person.map((person) => person.name).filter(Boolean).join(', ') : '',
+                        this.formatDateTime(item.firstTimeStamp),
+                        this.formatDateTime(item.exitTime),
+                        item.msg || '',
+                    ]);
+                });
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                const startStr = this.formatDateForFileName(this.startDate);
+                link.href = url;
+                link.download = `คงเหลือในพื้นที่ทั้งหมด-${startStr}.xlsx`;
+                link.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error(error);
+                alert('เกิดข้อผิดพลาดขณะ Export Excel');
+            } finally {
+                this.exportLoading = false;
+            }
+        },
         formatDateTime(dateString) {
             if (dateString === null || dateString === undefined || !dateString) {
                 return '-';
@@ -2488,6 +2602,16 @@ export default defineComponent({
                     hour12: false
                 }).replace(",", "");
             }
+        },
+        formatDateForExcelTitle(dateValue) {
+            const date = new Date(dateValue);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        },
+        formatDateForFileName(dateValue) {
+            return this.formatDateForExcelTitle(dateValue).replaceAll('/', '-');
         },
     },
 })
