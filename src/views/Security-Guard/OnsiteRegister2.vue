@@ -131,10 +131,10 @@
                         <template v-slot:extension>
                             <v-tabs v-model="tabs" bg-color="" align-tabs="center">
                                 <v-tab value="car">
-                                    <p style="font-size: 18px;font-weight: bold;">มียานหาหนะ</p>
+                                    <p style="font-size: 18px;font-weight: bold;">มียานพาหนะ</p>
                                 </v-tab>
                                 <v-tab value="person">
-                                    <p style="font-size: 18px;font-weight: bold;">ไม่มียานหาหนะ</p>
+                                    <p style="font-size: 18px;font-weight: bold;">ไม่มียานพาหนะ</p>
                                 </v-tab>
                             </v-tabs>
                         </template>
@@ -836,7 +836,7 @@
         <!-- <div>
             <v-btn @click="printForm()">พิมพ์ฟอร์ม</v-btn>
         </div> -->
-        <div id="form-container" style="visibility: hidden; position: absolute; left: -9999px;">
+        <div id="form-container-onsite" style="visibility: hidden; position: absolute; left: -9999px;">
             <div style="text-align: center;padding-bottom: 10px;">
                 <div style="padding-bottom: 5px;">
                     <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
@@ -1021,8 +1021,9 @@ export default defineComponent({
 
         const syncPrintData = () => {
             const snapshot = JSON.parse(JSON.stringify(sendData.value || {}));
+            const printId = resolveCdataId(snapshot);
             printData.value = {
-                _id: snapshot?._id || '',
+                _id: printId,
                 time: snapshot?.time || new Date(),
                 name: snapshot?.name || '',
                 object: snapshot?.object || '',
@@ -1430,7 +1431,11 @@ export default defineComponent({
         //NOTE - Print Form
         const printForm = async () => {
             await nextTick(); // รอให้ Vue อัปเดต DOM
-            const formContainer = document.getElementById("form-container");
+            const formContainer = document.getElementById("form-container-onsite");
+            if (!formContainer) {
+                console.error('Print container not found: form-container-onsite');
+                return;
+            }
 
             // ✅ ป้องกันไม่ให้ element หาย เพราะ visibility แทน display
             formContainer.style.visibility = "visible";

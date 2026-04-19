@@ -487,7 +487,7 @@
         <!-- <div>
             <v-btn @click="printForm()">พิมพ์ฟอร์ม</v-btn>
         </div> -->
-        <div id="form-container" style="display: none;">
+        <div id="form-container-person" style="display: none;">
             <div style="text-align: center;padding-bottom: 10px;">
                 <div style="padding-bottom: 5px;">
                     <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
@@ -738,11 +738,32 @@ export default {
             }, 100);
         };
 
+        const resolvePrintId = (apiRes) => {
+            const rawId = apiRes?.data?._id
+                ?? apiRes?.data?.cdataId
+                ?? apiRes?._id
+                ?? apiRes?.cdataId;
+            if (rawId === undefined || rawId === null) {
+                return '';
+            }
+
+            const normalizedId = String(rawId).trim();
+            if (!normalizedId || normalizedId === 'undefined' || normalizedId === 'null') {
+                return '';
+            }
+
+            return normalizedId;
+        }
+
         // ########################################################
         //NOTE - Function Form Print
         const printForm = async () => {
             await nextTick(); // รอให้ Vue อัปเดต DOM
-            const formContainer = document.getElementById("form-container");
+            const formContainer = document.getElementById("form-container-person");
+            if (!formContainer) {
+                console.error('Print container not found: form-container-person');
+                return;
+            }
             const qrCanvas = formContainer.querySelector("canvas");
 
             if (qrCanvas) {
@@ -1237,106 +1258,96 @@ export default {
 
         //NOTE - กรณีมีทั้งรูปคน และรูปบัตร
         const PersonNCard = async () => {
-            //NOTE - รูปคน
-            const formdata = new FormData();
-            formdata.append('image', CapturePerson.value);
-            await imgService.uploadimg(formdata).then(async (res) => {
-                if (res.message === 'ok') {
-                    //NOTE - รูปบัตร
-                    sendData.value.PersonImage = res.data.filePath;
-                    const dataform = new FormData();
-                    dataform.append('image', UPimage.value);
-                    await imgService.uploadimg(formdata).then(async (res) => {
-                        if (res.message == 'ok') {
-                            sendData.value.PersonCardImage = res.data.filePath;
-                            let CheckToken = '';
-                            if (store.state.role === 'security') {
-                                CheckToken = localStorage.getItem('retoken');
-                            } else {
-                                CheckToken = localStorage.getItem('token');
-                            }
-                            const token = CheckToken;
-                            const park = store.state.park;
-                            const data = {
-                                guestName: sendData.value.name,
-                                driverLicenseId: '',
-                                identityNumber: '',
-                                cate: 'stranger',
-                                timeStamp: sendData.value.time,
-                                address: '',
-
-                                personImgUrl: sendData.value.PersonImage,
-                                personCardImgUrl: sendData.value.PersonCardImage,
-                                visitorTel: sendData.value.tel,
-
-                                agency: sendData.value.agency || '',
-                                object: sendData.value.object || '',
-                                contactPerson: sendData.value.contactPerson || '',
-                                totalVisitor: sendData.value.totalVisitor || '',
-                                department: sendData.value.department || '',
-
-                            }
-                            await cdata.Create(park, data, token).then(async (res) => {
-                                if (res.message === 'ok' || res.data.message === 'This license has been added') {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: `บันทึกข้อมูลสำเร็จ!`,
-                                    });
-                                    await printForm();
-                                    Object.assign(sendData.value, {
-                                        msg: '',
-                                        licensePlate: { License: '' },
-                                        vehicleType: 'TRUCK',
-                                        time: new Date(),
-                                        name: '',
-                                        identityNumber: '',
-                                        address: '',
-                                        image: null,
-                                        licenseId: '',
-                                        tel: '',
-                                        agency: '',
-                                        object: '',
-                                        contactPerson: '',
-                                        totalVisitor: 1,
-                                        department: '',
-                                    });
-                                    retakeImage();
-                                    retakeDocImage();
-                                    context.emit('created');
-                                } else if (res.data.message === 'validate error') {
-                                    Swal.fire({
-                                        title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
-                                        icon: 'warning',
-                                    })
-                                }
-                                else {
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        title: `มีบางอย่างผิดพลาด !`,
-                                        toast: true,
-                                        position: 'top-end',
-                                        showConfirmButton: false,
-                                        timer: 3000,
-                                        timerProgressBar: true,
-                                    });
-                                }
-                            })
-                        } else {
-                            Swal.fire({
-                                title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
-                                html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
-                                icon: 'warning',
-                            });
-                        }
-                    })
-                } else {
+            try {
+                //NOTE - รูปคน
+                const personFormData = new FormData();
+                personFormData.append('image', CapturePerson.value);
+                const personUploadRes = await imgService.uploadimg(personFormData);
+                if (personUploadRes.message !== 'ok') {
                     Swal.fire({
                         title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
-                        html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
+                        html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${personUploadRes.data.message}`,
                         icon: 'warning',
                     });
+                    return null;
                 }
-            })
+
+                sendData.value.PersonImage = personUploadRes.data.filePath;
+
+                //NOTE - รูปบัตร
+                const cardFormData = new FormData();
+                cardFormData.append('image', UPimage.value);
+                const cardUploadRes = await imgService.uploadimg(cardFormData);
+                if (cardUploadRes.message !== 'ok') {
+                    Swal.fire({
+                        title: 'ไม่สามารถอัพโหลดรูปภาพได้ !',
+                        html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${cardUploadRes.data.message}`,
+                        icon: 'warning',
+                    });
+                    return null;
+                }
+
+                sendData.value.PersonCardImage = cardUploadRes.data.filePath;
+
+                const token = store.state.role === 'security'
+                    ? localStorage.getItem('retoken')
+                    : localStorage.getItem('token');
+
+                const park = store.state.park;
+                const data = {
+                    guestName: sendData.value.name,
+                    driverLicenseId: '',
+                    identityNumber: '',
+                    cate: 'stranger',
+                    timeStamp: sendData.value.time,
+                    address: '',
+
+                    personImgUrl: sendData.value.PersonImage,
+                    personCardImgUrl: sendData.value.PersonCardImage,
+                    visitorTel: sendData.value.tel,
+
+                    agency: sendData.value.agency || '',
+                    object: sendData.value.object || '',
+                    contactPerson: sendData.value.contactPerson || '',
+                    totalVisitor: sendData.value.totalVisitor || '',
+                    department: sendData.value.department || '',
+                }
+
+                const createRes = await cdata.Create(park, data, token);
+                if (createRes.message === 'ok' || createRes.data.message === 'This license has been added') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `บันทึกข้อมูลสำเร็จ!`,
+                    });
+                    return createRes;
+                }
+
+                if (createRes.data.message === 'validate error') {
+                    Swal.fire({
+                        title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
+                        icon: 'warning',
+                    })
+                    return null;
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: `มีบางอย่างผิดพลาด !`,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+                return null;
+            } catch (error) {
+                Swal.fire({
+                    title: 'เกิดข้อผิดพลาด!',
+                    text: error.message || 'ไม่สามารถดำเนินการได้',
+                    icon: 'error',
+                });
+                return null;
+            }
         }
 
         //NOTE - กรณีมีแค่รูปคนหรือรูปบัตร
@@ -1404,36 +1415,13 @@ export default {
                             icon: 'success',
                             title: `บันทึกข้อมูลสำเร็จ!`,
                         });
-
-                        await printForm();
-
-                        // reset ข้อมูล
-                        Object.assign(sendData.value, {
-                            msg: '',
-                            licensePlate: { License: '' },
-                            vehicleType: 'TRUCK',
-                            time: new Date(),
-                            name: '',
-                            identityNumber: '',
-                            address: '',
-                            image: null,
-                            licenseId: '',
-                            tel: '',
-                            agency: '',
-                            object: '',
-                            contactPerson: '',
-                            totalVisitor: 1,
-                            department: '',
-                        });
-                        UPimage.value = null;
-                        capturedImage.value = null;
-                        document.getElementById('PhotoPerson').src = "/Logo-Sunsweet-Final.svg";
-                        context.emit('created');
+                        return lpRes;
                     } else if (lpRes.data.message === 'validate error') {
                         Swal.fire({
                             title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
                             icon: 'warning',
                         });
+                        return null;
                     } else {
                         Swal.fire({
                             icon: 'warning',
@@ -1444,6 +1432,7 @@ export default {
                             timer: 3000,
                             timerProgressBar: true,
                         });
+                        return null;
                     }
                 } else {
                     Swal.fire({
@@ -1451,6 +1440,7 @@ export default {
                         html: `กรุณาลองใหม่อีกครั้ง ! <br /> ${res.data.message}`,
                         icon: 'warning',
                     });
+                    return null;
                 }
             } catch (error) {
                 Swal.fire({
@@ -1458,17 +1448,52 @@ export default {
                     text: error.message || 'ไม่สามารถดำเนินการได้',
                     icon: 'error',
                 });
+                return null;
             }
         }
 
         const submitWOther = async (event) => {
             const res = await event
             if (res.valid === true) {
+                let createRes = null;
                 if (CapturePerson.value && UPimage.value) {
-                    PersonNCard();
+                    createRes = await PersonNCard();
                 } else {
-                    OnlyPersonOrCard();
+                    createRes = await OnlyPersonOrCard();
                 }
+
+                const printId = resolvePrintId(createRes);
+                if (!printId) {
+                    return;
+                }
+
+                sendData.value._id = printId;
+                await printForm();
+
+                // reset ข้อมูลหลังพิมพ์
+                Object.assign(sendData.value, {
+                    msg: '',
+                    licensePlate: { License: '' },
+                    vehicleType: 'TRUCK',
+                    time: new Date(),
+                    name: '',
+                    identityNumber: '',
+                    address: '',
+                    image: null,
+                    licenseId: '',
+                    tel: '',
+                    agency: '',
+                    object: '',
+                    contactPerson: '',
+                    totalVisitor: 1,
+                    department: '',
+                });
+                retakeImage();
+                retakeDocImage();
+                UPimage.value = null;
+                capturedImage.value = null;
+                document.getElementById('PhotoPerson').src = "/Logo-Sunsweet-Final.svg";
+                context.emit('created');
             }
         }
         // ################################################## //
