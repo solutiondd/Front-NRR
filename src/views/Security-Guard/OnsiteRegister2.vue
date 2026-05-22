@@ -1039,11 +1039,7 @@ export default defineComponent({
 
         const dataLicense = ref('');
         const inputField = ref(null);
-        const activeTab = ref({
-            id: true,
-            license: false,
-            person: false,
-        });
+        const activeTab = ref('id');
 
         const sendDataLicense = ref({
             name: '',
@@ -1053,31 +1049,110 @@ export default defineComponent({
         const { proxy } = getCurrentInstance()
 
         let timer = null;
+        let licenseScanStarted = false;
+
+        const escapeControlChars = (text) => {
+            return String(text || '')
+                .replace(/\r/g, '\\r')
+                .replace(/\n/g, '\\n')
+                .replace(/\t/g, '\\t');
+        };
+
+        const focusLicenseInput = () => {
+            if (activeTab.value !== 'license') {
+                return;
+            }
+
+            setTimeout(() => {
+                inputField.value?.focus?.();
+            }, 0);
+        };
+
+        const isEditableElement = (el) => {
+            if (!el) {
+                return false;
+            }
+
+            const tagName = el.tagName;
+            return (
+                el.isContentEditable ||
+                tagName === 'INPUT' ||
+                tagName === 'TEXTAREA' ||
+                tagName === 'SELECT'
+            );
+        };
+
+        const handleGlobalKeydown = (event) => {
+            if (activeTab.value !== 'license') {
+                return;
+            }
+
+            if (event.ctrlKey || event.metaKey || event.altKey) {
+                return;
+            }
+
+            const isTypingKey = event.key.length === 1 || event.key === 'Enter';
+            if (!isTypingKey) {
+                return;
+            }
+
+            if (isEditableElement(document.activeElement)) {
+                return;
+            }
+
+            focusLicenseInput();
+        };
+
+        const isLikelyCompleteLicensePayload = (raw) => {
+            const normalized = String(raw || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+            if (!normalized) {
+                return false;
+            }
+
+            // Driver license readers usually end with '?' or newline; keep length fallback for readers without terminator.
+            return normalized.includes('?') || normalized.includes('\n') || normalized.length >= 30;
+        };
 
         watch(activeTab, (newVal) => {
             if (newVal === 'license') {
-                // หน่วงเวลาก่อน focus เล็กน้อย เผื่อ Vuetify render UI ยังไม่เสร็จ
-                setTimeout(() => {
-                    inputField.value?.focus();
-                }, 100);
+                focusLicenseInput();
             }
         });
 
         watch(dataLicense, (newVal) => {
+            const raw = String(newVal || '');
+            if (!raw) {
+                licenseScanStarted = false;
+            } else if (!licenseScanStarted) {
+                licenseScanStarted = true;
+                const firstChar = raw.charAt(0);
+                console.groupCollapsed('🪪 License first input');
+                console.log('firstChar:', escapeControlChars(firstChar));
+                console.log('firstCharCode:', firstChar ? firstChar.charCodeAt(0) : null);
+                console.log('currentRaw:', escapeControlChars(raw));
+                console.groupEnd();
+            }
 
-            console.log("📌 dataLicense เปลี่ยนค่า:", newVal);
-            // ถ้ามีการเปลี่ยนค่าใหม่ ให้ยกเลิกการทำงานของฟังก์ชันก่อนหน้า
             clearTimeout(timer);
 
             timer = setTimeout(() => {
-                if (newVal) {
+                if (activeTab.value !== 'license') {
+                    return;
+                }
+
+                if (isLikelyCompleteLicensePayload(newVal)) {
                     parseDriverLicenseData(newVal);
                 }
-            }, 800);
+            }, 220);
         });
 
         // ฟังก์ชันแยกข้อมูลจากเครื่องอ่านใบขับขี่
         const parseDriverLicenseData = (input) => {
+            console.groupCollapsed('🪪 License payload before parse');
+            console.log('rawInput:', escapeControlChars(input));
+            console.log('rawLength:', String(input || '').length);
+            console.groupEnd();
+
             if (/[ก-๙]/.test(input)) {
                 Swal.fire({
                     icon: 'warning',
@@ -1098,14 +1173,12 @@ export default defineComponent({
 
             for (const line of lines) {
                 const trimmedLine = line.trim();
-                console.log("Checking line:", trimmedLine);
                 if (!foundName && trimmedLine.includes("$")) {
                     // 1. จับ pattern เต็ม: %  ^LASTNAME$FIRSTNAME$TITLE^^?
                     let matchFull = trimmedLine.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
                     if (matchFull) {
                         sendData.value.name = `${matchFull[2]} ${matchFull[1]}`; // FIRSTNAME LASTNAME
                         foundName = true;
-                        console.log("✅ Found name (pattern full):", sendData.value.name);
                         continue;
                     }
 
@@ -1114,7 +1187,6 @@ export default defineComponent({
                     if (matchShort) {
                         sendData.value.name = `${matchShort[2]} ${matchShort[1]}`; // TITLE FIRSTNAME
                         foundName = true;
-                        console.log("✅ Found name (pattern short):", sendData.value.name);
                         continue;
                     }
                 }
@@ -1172,6 +1244,7 @@ export default defineComponent({
             });
 
             dataLicense.value = "";
+            licenseScanStarted = false;
 
             setTimeout(() => {
                 inputField.value?.focus();
@@ -2161,6 +2234,8 @@ export default defineComponent({
             setInterval(checkExpire, 60000); // ตรวจสอบทุกๆ 1 นาที
 
             initWebsocket();
+            window.addEventListener('focus', focusLicenseInput);
+            document.addEventListener('keydown', handleGlobalKeydown, true);
         })
 
         const selectCar = async (entry) => {
@@ -2214,6 +2289,9 @@ export default defineComponent({
         })
 
         onBeforeUnmount(() => {
+            clearTimeout(timer);
+            window.removeEventListener('focus', focusLicenseInput);
+            document.removeEventListener('keydown', handleGlobalKeydown, true);
             if (stream) {
                 stream.getTracks().forEach(track => track.stop())
             }
