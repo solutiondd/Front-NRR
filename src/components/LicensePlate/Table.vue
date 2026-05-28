@@ -8,6 +8,7 @@
             </v-col>
             <v-col cols="12" sm="6" class="pb-3 text-end">
                 <Create @success="getData()" />
+                <Import class="ml-2" @success="getData()" />
             </v-col>
             <v-col cols="12" class="pt-0">
                 <v-row class="d-flex align-center">
@@ -110,6 +111,7 @@ import { LPService } from "../../api/licenseplate";
 import UploadToCloud from './UploadToCloud.vue';
 import Delete from "../../components/LicensePlate/Delete.vue";
 import Create from "../../components/LicensePlate/Create.vue";
+import Import from './import.vue';
 import { dateFormat } from "../../function/day";
 import Detail from '../../components/LicensePlate/Detail.vue';
 import DetailStranger from "./Detail-stranger.vue";
@@ -126,6 +128,7 @@ export default {
         UploadToCloud,
         Delete,
         Create,
+        Import,
         Detail,
         DetailStranger,
         UpgradStranger
