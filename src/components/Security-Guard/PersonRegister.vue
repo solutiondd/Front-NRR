@@ -894,6 +894,7 @@ export default {
                                 Swal.fire({
                                     icon: 'warning',
                                     title: `มีบางอย่างผิดพลาด !`,
+                                    text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง',
                                     toast: true,
                                     position: 'top-end',
                                     showConfirmButton: false,
@@ -984,7 +985,7 @@ export default {
                         Swal.fire({
                             icon: 'warning',
                             title: `มีบางอย่างผิดพลาด !`,
-                            text: 'กรุณาลองใหม่อีกครั้ง',
+                            text: cRes?.data?.message || cRes?.message || cRes?.error || 'กรุณาลองใหม่อีกครั้ง',
                         });
                         console.log("Error : ", cRes.data);
                     }
@@ -1333,6 +1334,7 @@ export default {
                 Swal.fire({
                     icon: 'warning',
                     title: `มีบางอย่างผิดพลาด !`,
+                    text: createRes?.data?.message || createRes?.message || createRes?.error || 'ไม่สามารถดำเนินการได้\nกรุณาลองใหม่อีกครั้ง !',
                     toast: true,
                     position: 'top-end',
                     showConfirmButton: false,
@@ -1426,6 +1428,7 @@ export default {
                         Swal.fire({
                             icon: 'warning',
                             title: `มีบางอย่างผิดพลาด !`,
+                            text: lpRes?.data?.message || lpRes?.message || lpRes?.error || 'ไม่สามารถดำเนินการได้\nกรุณาลองใหม่อีกครั้ง !',
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,

@@ -1037,8 +1037,8 @@ export default {
         };
 
         const connectScreen = () => {
-            const token = import.meta.env.VITE_ACCESS_TOKEN_WS
-            ScreenSocket = new WebSocket('wss://lprapi.zoftdd.com:8080/socket', token)
+            const token = localStorage.getItem('retoken') || import.meta.env.VITE_ACCESS_TOKEN_WS
+            ScreenSocket = new WebSocket('wss://lprapi.zoftdd.com/socket', token)
 
             ScreenSocket.onopen = () => console.log('✅ Connected to WebSocket')
 
@@ -1224,6 +1224,7 @@ export default {
                                     Swal.fire({
                                         icon: 'warning',
                                         title: `มีบางอย่างผิดพลาด !`,
+                                        text: res?.data?.message || res?.message || res?.error || 'ไม่สามารถดำเนินการได้\nกรุณาลองใหม่อีกครั้ง !',
                                         toast: true,
                                         position: 'top-end',
                                         showConfirmButton: false,
@@ -1306,7 +1307,7 @@ export default {
                             Swal.fire({
                                 icon: 'warning',
                                 title: `มีบางอย่างผิดพลาด !`,
-                                text: 'กรุณาลองใหม่อีกครั้ง',
+                                text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง',
                             });
                             console.log("Error : ", res.data)
                         }
@@ -1475,6 +1476,7 @@ export default {
                     Swal.fire({
                         title: 'มีบางอย่างผิดพลาด !',
                         icon: 'error',
+                        text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง',
                     })
                 }
 
@@ -1520,7 +1522,7 @@ export default {
                 if (msgObj.Status == -1001) {
                     Swal.fire({
                         title: 'มีบางอย่างผิดพลาด !',
-                        text: 'กรุณาลองใหม่อีกครั้ง [-1001]',
+                        text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง [-1001]',
                         icon: 'error',
                         showConfirmButton: true,
                     })
@@ -1530,7 +1532,7 @@ export default {
             if (msgObj.Status === -1004) {
                 Swal.fire({
                     title: 'ไม่สามารถดึงข้อมูลจากบัตรได้ !',
-                    text: 'กรุณาลองใหม่อีกครั้ง',
+                    text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง',
                     icon: 'error',
                     showConfirmButton: true,
                     confirmButtonColor: '#E53935',
@@ -1538,7 +1540,7 @@ export default {
             } else if (msgObj.Status === -7) {
                 Swal.fire({
                     title: 'บัตรที่อ่านไม่ใช่บัตรประชาชน !',
-                    text: 'กรุณาลองใหม่อีกครั้ง',
+                    text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง',
                     icon: 'error',
                     showConfirmButton: true,
                     confirmButtonColor: '#E53935',

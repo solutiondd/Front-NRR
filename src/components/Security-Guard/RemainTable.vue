@@ -139,7 +139,7 @@ export default {
                     this.$swal({
                         icon: 'error',
                         title: 'มีบางอย่างผิดพลาด',
-                        text: 'กรุณาลองใหม่อีกครั้ง !',
+                        text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง !',
                     });
                 }
             });

@@ -434,6 +434,7 @@ export default {
                 this.$swal({
                     icon: 'error',
                     title: `มีบางอย่างผิดพลาด!`,
+                    text: error?.data?.message || error?.message || error?.error || 'กรุณาลองใหม่อีกครั้ง',
                     toast: true,
                     position: 'top-end',
                     showConfirmButton: false,

@@ -73,6 +73,7 @@ export default {
                     this.$swal({
                         icon: 'warning',
                         title: `มีบางอย่างผิดพลาด !`,
+                        text: res?.data?.message || res?.message || res?.error || 'กรุณาลองใหม่อีกครั้ง',
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,

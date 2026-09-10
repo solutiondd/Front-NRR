@@ -887,7 +887,7 @@
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Car)</span> :
                     <span v-if="printData.licensePlate?.License" style="font-weight: 400;">{{
                         printData.licensePlate.License
-                    }}</span>
+                        }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 160px;">&nbsp;</span>
                 </p>
@@ -1430,8 +1430,8 @@ export default defineComponent({
         };
 
         const connectScreen = () => {
-            const token = import.meta.env.VITE_ACCESS_TOKEN_WS
-            ScreenSocket = new WebSocket('wss://lprapi.zoftdd.com:8080/socket', token)
+            const token = localStorage.getItem('retoken') || import.meta.env.VITE_ACCESS_TOKEN_WS
+            ScreenSocket = new WebSocket('wss://lprapi.zoftdd.com/socket', token)
 
             ScreenSocket.onopen = () => console.log('✅ Connected to WebSocket')
 
@@ -2056,6 +2056,7 @@ export default defineComponent({
                 } else {
                     Swal.fire({
                         title: 'มีบางอย่างผิดพลาด !',
+                        text: msgObj?.data?.message || msgObj?.message || msgObj?.error || 'ไม่สามารถดำเนินการได้\nกรุณาลองใหม่อีกครั้ง !',
                         icon: 'error',
                     })
                 }
@@ -2102,7 +2103,7 @@ export default defineComponent({
                 if (msgObj.Status == -1001) {
                     Swal.fire({
                         title: 'มีบางอย่างผิดพลาด !',
-                        text: 'กรุณาลองใหม่อีกครั้ง [-1001]',
+                        text: msgObj?.data?.message || msgObj?.message || msgObj?.error || 'กรุณาลองใหม่อีกครั้ง [-1001]',
                         icon: 'error',
                         showConfirmButton: true,
                     })
@@ -2589,7 +2590,7 @@ export default defineComponent({
                     this.$swal({
                         icon: 'error',
                         title: 'มีบางอย่างผิดพลาด',
-                        text: 'กรุณาลองใหม่อีกครั้ง !',
+                        text: res?.data?.message || res?.message || res?.error || 'ไม่สามารถดำเนินการได้\nกรุณาลองใหม่อีกครั้ง !',
                     });
                 }
             });
