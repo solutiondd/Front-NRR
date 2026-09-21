@@ -1,7 +1,7 @@
 <template>
     <v-app-bar :elevation="2" :color="$store.state.colorNavbarMode">
         <div class="d-flex align-center ml-5">
-            <img src="../assets/Logo-Sunsweet-Final.svg" width="70px" />
+            <img src="../assets/nrLogo.png" width="50px" />
             <p class="ml-2"></p>
         </div>
         <v-spacer></v-spacer>

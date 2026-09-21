@@ -6,7 +6,7 @@
         <div id="form-container" style="display: none;">
             <div style="text-align: center;padding-bottom: 10px;">
                 <div style="padding-bottom: 5px;">
-                    <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
+                    <img style="height: 90px; justify-content: center;" src="/nrLogo.png" alt="Img">
                 </div>
                 <v-row>
                     <v-col cols="6" class="text-start">

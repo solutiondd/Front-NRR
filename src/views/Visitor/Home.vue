@@ -40,7 +40,7 @@
                                     <span style="color: red;">*</span>
                                 </p>
                                 <v-text-field prepend-inner-icon="mdi-domain" density="compact" variant="outlined"
-                                    placeholder="ตัวอย่าง. SunSweet"
+                                    placeholder="ตัวอย่าง. Nareerat"
                                     :rules="sendData.agency ? [] : [v => !!v || 'โปรดระบุหน่วยงาน']" required
                                     v-model="sendData.agency"></v-text-field>
                             </v-col>

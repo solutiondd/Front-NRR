@@ -307,7 +307,7 @@
                                                                 <v-col cols="12" lg="7"
                                                                     class="d-flex align-center justify-center">
                                                                     <img id="Photo"
-                                                                        src="../../assets/Logo-Sunsweet-Final.svg"
+                                                                        src="../../assets/nrLogo.png"
                                                                         alt="image" style="width: 130px;">
                                                                 </v-col>
                                                                 <v-col cols="12" lg="5" class="text-start pt-2">
@@ -839,7 +839,7 @@
         <div id="form-container-onsite" style="visibility: hidden; position: absolute; left: -9999px;">
             <div style="text-align: center;padding-bottom: 10px;">
                 <div style="padding-bottom: 5px;">
-                    <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
+                    <img style="height: 90px; justify-content: center;" src="/nrLogo.png" alt="Img">
                 </div>
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h4 style="padding-bottom: 5px;">สแกนขาออก</h4>
@@ -1693,7 +1693,7 @@ export default defineComponent({
                         totalVisitor: 1,
                         department: '',
                     };
-                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    document.getElementById('Photo').src = "/nrLogo.png";
                     proxy.getData();
                     return;
                 }
@@ -1724,7 +1724,7 @@ export default defineComponent({
                 address: '',
                 tel: '',
             };
-            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+            document.getElementById('Photo').src = "/nrLogo.png";
         }
         //#####################################################
 
@@ -1809,7 +1809,7 @@ export default defineComponent({
                         totalVisitor: 1,
                         department: '',
                     };
-                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    document.getElementById('Photo').src = "/nrLogo.png";
                     proxy.getData();
                     return;
                 }
@@ -2185,7 +2185,7 @@ export default defineComponent({
                 );
             } else {
                 // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
-                photo.src = "/Logo-Sunsweet-Final.svg";
+                photo.src = "/nrLogo.png";
             }
 
             if (debugFlag) {
@@ -2244,7 +2244,7 @@ export default defineComponent({
             sendData.value = JSON.parse(JSON.stringify(entry));
             sendData.value._id = resolveCdataId(entry);
             sendData.value.vehicleType = 'TRUCK'
-            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+            document.getElementById('Photo').src = "/nrLogo.png";
             await nextTick(); // รอให้ form ref update หลังเปลี่ยน sendData
         }
 
@@ -2437,7 +2437,7 @@ export default defineComponent({
                     UPimage.value = null;
                     isCapturedDoc.value = false
                     capturedImage.value = null;
-                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                    document.getElementById('Photo').src = "/nrLogo.png";
                     proxy.getData();
                     return;
                 }

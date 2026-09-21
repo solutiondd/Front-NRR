@@ -1,5 +1,5 @@
 {
-  "name": "sdd-sunsweet-frontend",
+  "name": "sdd-Nareerat-frontend",
   "private": true,
   "version": "1.2.2",
   "type": "module",
@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy:production": "scp -r -P 3322 dist/* root@141.11.159.83:/var/www/sunsweet.zoftdd.com"
+    "deploy:production": "scp -r -P 3322 dist/* root@141.11.159.83:/var/www/Nareerat.zoftdd.com"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",

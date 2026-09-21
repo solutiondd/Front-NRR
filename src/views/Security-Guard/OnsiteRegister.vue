@@ -268,7 +268,7 @@
                                                 <p>รูปภาพ</p>
                                             </v-col>
                                             <v-col cols="12" lg="7" class="d-flex align-center justify-center">
-                                                <img id="Photo" src="../../assets/Logo-Sunsweet-Final.svg" alt="image"
+                                                <img id="Photo" src="../../assets/nrLogo.png" alt="image"
                                                     style="width: 130px;">
                                             </v-col>
                                             <v-col cols="12" lg="5" class="text-start pt-2">
@@ -520,7 +520,7 @@
                                     <p>รูปภาพ</p>
                                 </v-col>
                                 <v-col cols="12" lg="7" class="d-flex align-center justify-center">
-                                    <img id="Photo" src="../../assets/Logo-Sunsweet-Final.svg" alt="image"
+                                    <img id="Photo" src="../../assets/nrLogo.png" alt="image"
                                         style="width: 130px;">
                                 </v-col>
                                 <v-col cols="12" lg="5" class="text-start pt-2">
@@ -630,7 +630,7 @@
         <div id="form-container" style="display: none;">
             <div style="text-align: center;padding-bottom: 10px;">
                 <div style="padding-bottom: 5px;">
-                    <img style="height: 90px; justify-content: center;" src="/Logo-Sunsweet-Final.png" alt="Img">
+                    <img style="height: 90px; justify-content: center;" src="/nrLogo.png" alt="Img">
                 </div>
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h4>สแกนขาออก</h4>
@@ -1204,7 +1204,7 @@ export default {
                                         address: '',
                                         tel: '',
                                     };
-                                    document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                                    document.getElementById('Photo').src = "/nrLogo.png";
                                 } else if (res.data.message === 'validate error') {
                                     Swal.fire({
                                         title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
@@ -1297,7 +1297,7 @@ export default {
                                 address: '',
                                 tel: '',
                             };
-                            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+                            document.getElementById('Photo').src = "/nrLogo.png";
                         } else if (res.data.message === 'validate error') {
                             Swal.fire({
                                 title: 'กรุณากรอกข้อมูลให้ครบถ้วน !',
@@ -1604,7 +1604,7 @@ export default {
                 );
             } else {
                 // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
-                photo.src = "/Logo-Sunsweet-Final.svg";
+                photo.src = "/nrLogo.png";
             }
 
             if (debugFlag) {
@@ -1646,7 +1646,7 @@ export default {
             selectedCar.value = { ...entry } // กดเลือกรายการ -> อัปเดตแถวกลาง
             sendData.value = JSON.parse(JSON.stringify(entry));
             sendData.value.vehicleType = 'TRUCK'
-            document.getElementById('Photo').src = "/Logo-Sunsweet-Final.svg";
+            document.getElementById('Photo').src = "/nrLogo.png";
         }
 
         const resetSendData = () => {
@@ -1768,7 +1768,7 @@ export default {
                 );
             } else {
                 // กรณีที่ไม่มี Base64 หรือค่าภาพเป็น null ให้แสดงภาพปกติ
-                photo.src = "/Logo-Sunsweet-Final.svg";
+                photo.src = "/nrLogo.png";
             }
 
             if (debugFlag) {
