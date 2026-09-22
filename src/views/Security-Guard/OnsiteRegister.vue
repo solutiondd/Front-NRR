@@ -639,7 +639,7 @@
                     <p style="font-size: 12px;">{{ sendData._id }}</p>
                 </div>
                 <h3 style="padding-bottom: 0px;">บันทึกการเข้า-ออก</h3>
-                <h3>บริษัท ซันสวีท จำกัด (มหาชน)</h3>
+                <h3>โรงเรียนนารีรัตน์จังหวัดแพร่</h3>
             </div>
             <div style="text-align: start; font-size: 12px;">
                 <p style="font-weight: bold;">วันที่ :

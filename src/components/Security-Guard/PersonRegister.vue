@@ -502,7 +502,7 @@
                     </h4>
                 </div>
 
-                <h4>บริษัท ซันสวีท จำกัด (มหาชน)</h4>
+                <h4>โรงเรียนนารีรัตน์จังหวัดแพร่</h4>
             </div>
             <div style="text-align: start; font-size: 12px;">
                 <!-- <p style="font-weight: bold;">วันที่ :
