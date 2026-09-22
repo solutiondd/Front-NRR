@@ -929,7 +929,7 @@
 
             <div style="text-align: center;font-weight: 400;font-size: 12px;">
                 <p>
-                    ข้าพเจ้ายินยอมให้บันทึกข้อมูลส่วนบุคคล <br> เพื่อใช้ตามวัตถุประสงค์ของบริษัทฯ
+                    ข้าพเจ้ายินยอมให้บันทึกข้อมูลส่วนบุคคล <br> เพื่อใช้ตามวัตถุประสงค์ของโรงเรียน
                 </p>
                 <p>
                     <br>
@@ -955,10 +955,10 @@
                 </p>
             </div>
 
-            <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed grey;">
+            <!-- <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed grey;">
                 <img :src="qrImage" data-print-footer-qr="true" alt="QR Code" style="height: 80px; width: 80px;">
                 <p style="margin-top: 6px; font-weight: bold; font-size: 12px;">กฎระเบียบบริษัทฯ</p>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
