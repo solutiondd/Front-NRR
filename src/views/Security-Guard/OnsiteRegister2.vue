@@ -992,7 +992,7 @@ export default defineComponent({
         const sendData = ref({
             msg: '',
             licensePlate: { License: '' },
-            vehicleType: 'TRUCK',
+            vehicleType: 'CAR',
             time: new Date(),
             name: '',
             identityNumber: '',
@@ -1792,7 +1792,7 @@ export default defineComponent({
                     sendData.value = {
                         msg: '',
                         licensePlate: { License: '' },
-                        vehicleType: 'TRUCK',
+                        vehicleType: 'CAR',
                         time: new Date(),
                         name: '',
                         identityNumber: '',
@@ -1828,7 +1828,7 @@ export default defineComponent({
             sendData.value = {
                 msg: '',
                 licensePlate: { License: '' },
-                vehicleType: 'TRUCK',
+                vehicleType: 'CAR',
                 time: new Date(),
                 name: '',
                 identityNumber: '',
@@ -1908,7 +1908,7 @@ export default defineComponent({
                     sendData.value = {
                         msg: '',
                         licensePlate: { License: '' },
-                        vehicleType: 'TRUCK',
+                        vehicleType: 'CAR',
                         time: new Date(),
                         name: '',
                         identityNumber: '',
@@ -2354,7 +2354,7 @@ export default defineComponent({
             selectedCar.value = { ...entry } // กดเลือกรายการ -> อัปเดตแถวกลาง
             sendData.value = JSON.parse(JSON.stringify(entry));
             sendData.value._id = resolveCdataId(entry);
-            sendData.value.vehicleType = 'TRUCK'
+            sendData.value.vehicleType = 'CAR'
             document.getElementById('Photo').src = "/nrLogo.png";
             await nextTick(); // รอให้ form ref update หลังเปลี่ยน sendData
         }
@@ -2539,7 +2539,7 @@ export default defineComponent({
                     sendData.value = {
                         msg: '',
                         licensePlate: { License: '' },
-                        vehicleType: 'TRUCK',
+                        vehicleType: 'CAR',
                         time: new Date(),
                         name: '',
                         identityNumber: '',
