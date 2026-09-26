@@ -1173,32 +1173,46 @@ export default defineComponent({
 
             for (const line of lines) {
                 const trimmedLine = line.trim();
-                if (!foundName && trimmedLine.includes("$")) {
+                const upperLine = trimmedLine.toUpperCase();
+                if (!foundName && upperLine.includes("$")) {
                     // 1. จับ pattern เต็ม: %  ^LASTNAME$FIRSTNAME$TITLE^^?
-                    let matchFull = trimmedLine.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
+                    let matchFull = upperLine.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
                     if (matchFull) {
                         sendData.value.name = `${matchFull[2]} ${matchFull[1]}`; // FIRSTNAME LASTNAME
                         foundName = true;
-                        continue;
+                    }
+
+                    // 1.1 รองรับรูปแบบที่ไม่มี ^? ท้ายบรรทัด เช่น ~LAST$FIRST$TITLE.^600764...
+                    let matchFlexible = !foundName ? upperLine.match(/(?:\^|~|%)([A-Z]+)\$([A-Z]+)\$([A-Z.]+)/) : null;
+                    if (matchFlexible && !foundName) {
+                        sendData.value.name = `${matchFlexible[2]} ${matchFlexible[1]}`; // FIRSTNAME LASTNAME
+                        foundName = true;
                     }
 
                     // 2. จับ pattern สั้น: %  ^$FIRSTNAME$TITLE^^?
-                    let matchShort = trimmedLine.match(/\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
-                    if (matchShort) {
+                    let matchShort = !foundName ? upperLine.match(/\$([A-Z]+)\$([A-Z.]+)\^\^?\?/) : null;
+                    if (matchShort && !foundName) {
                         sendData.value.name = `${matchShort[2]} ${matchShort[1]}`; // TITLE FIRSTNAME
                         foundName = true;
-                        continue;
                     }
                 }
 
 
                 // ✅ ตรวจสอบเลขประจำตัวประชาชน
-                if (!foundId && trimmedLine.startsWith(";")) {
-                    const compactLine = trimmedLine.replace(/\s+/g, '');
-                    const match = compactLine.match(/;(\d{13})(?:=|\?|$)/) || compactLine.match(/;\d*(\d{13})(?:=|\?|$)/);
-                    if (match) {
-                        sendData.value.identityNumber = match[1];
+                if (!foundId) {
+                    const compactLine = upperLine.replace(/\s+/g, '');
+
+                    // เคสบางรุ่นจะส่งเป็น 600764 + เลขบัตร 13 หลัก
+                    const prefixedThaiId = compactLine.match(/600764(\d{13})/);
+                    if (prefixedThaiId) {
+                        sendData.value.identityNumber = prefixedThaiId[1];
                         foundId = true;
+                    } else if (compactLine.startsWith(";")) {
+                        const match = compactLine.match(/;(\d{13})(?:=|\?|$)/) || compactLine.match(/;\d*(\d{13})(?:=|\?|$)/);
+                        if (match) {
+                            sendData.value.identityNumber = match[1];
+                            foundId = true;
+                        }
                     }
                 }
 
@@ -1214,9 +1228,14 @@ export default defineComponent({
 
             // fallback สำหรับเลขบัตร ปชช.
             if (!foundId) {
+                const prefixedThaiId = normalizedInput.toUpperCase().match(/600764(\d{13})/);
+                if (prefixedThaiId) {
+                    sendData.value.identityNumber = prefixedThaiId[1];
+                }
+
                 const all13Digits = [...normalizedInput.matchAll(/\d{13}/g)].map((m) => m[0]);
                 const candidateId = all13Digits.find((v) => !v.startsWith('0')) || all13Digits[0];
-                if (candidateId) {
+                if (!sendData.value.identityNumber && candidateId) {
                     sendData.value.identityNumber = candidateId;
                 }
             }
