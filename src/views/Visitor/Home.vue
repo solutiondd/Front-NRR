@@ -227,7 +227,7 @@ export default {
             { name: 'รถส่งมันหวาน' },
             { name: 'รถส่งถั่วลายเสือ' },
         ],
-        parkId: '67ca794c6330c7d2ca7f5585',
+        parkId: '6ab0ef6f4533a95d6cfca5a1',
     }),
     mounted() {
 
