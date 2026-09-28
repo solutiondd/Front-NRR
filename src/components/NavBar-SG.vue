@@ -16,6 +16,7 @@
                 </v-btn>
             </template>
             <v-list class="bg-grey-darken-3">
+                <ChangePassword />
                 <v-list-item value="2">
                     <template v-slot:prepend>
                         <v-icon icon="mdi-logout"></v-icon>
@@ -28,7 +29,12 @@
 </template>
 
 <script>
+import ChangePassword from "./Change-password.vue";
+
 export default {
+    components: {
+        ChangePassword,
+    },
     methods: {
         async logout() {
             this.$swal({

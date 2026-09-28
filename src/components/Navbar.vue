@@ -11,6 +11,7 @@
                 </v-btn>
             </template>
             <v-list class="bg-grey-darken-3">
+                <ChangePassword />
                 <v-list-item value="2">
                     <template v-slot:prepend>
                         <v-icon icon="mdi-logout"></v-icon>
@@ -26,8 +27,12 @@
 <script>
 import { UserService } from "../api/user";
 import { mapActions, mapState, mapMutations } from "vuex";
+import ChangePassword from "./Change-password.vue";
 
 export default {
+    components: {
+        ChangePassword,
+    },
     setup() {
         const baseUrl = import.meta.env.VITE_APP_BASE_URL;
         const user = new UserService();

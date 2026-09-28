@@ -6,7 +6,17 @@
                 <v-col v-if="isHorizontal" cols="3" class="pa-0">
                     <v-sheet width="100%" height="101.5vh" class="pa-4 overflow-y-auto"
                         style="background-color: #EEEEEE;">
-                        <h2 class="text-h5 font-weight-bold mb-4" style="color:black ;">🚗 รายการล่าสุด</h2>
+                        <div class="d-flex justify-space-between align-center mb-4">
+                            <h2 class="text-h5 font-weight-bold ma-0" style="color:black ;">🚗 รายการล่าสุด</h2>
+                            <div class="secret-trigger" @click="onSecretTrigger" style="width: 36px; height: 36px;">
+                            </div>
+                        </div>
+                        <v-expand-transition>
+                            <v-list v-if="showSecurityChangePassword" density="compact" class="pa-0 mb-3"
+                                style="background-color: #FAFAFA; border-radius: 8px;">
+                                <ChangePassword />
+                            </v-list>
+                        </v-expand-transition>
                         <v-list class="pa-0" style="background-color: #EEEEEE;">
                             <v-list-item v-for="(entry, index) in recentEntries" :key="index" @click="selectCar(entry)"
                                 class="pa-0 mb-3">
@@ -62,8 +72,17 @@
                                             รายการล่าสุด
                                         </h2>
                                     </v-toolbar-title>
+                                    <v-spacer></v-spacer>
+                                    <div class="secret-trigger" @click="onSecretTrigger"
+                                        style="width: 36px; height: 36px;"></div>
                                 </v-toolbar>
                             </div>
+                            <v-expand-transition>
+                                <v-list v-if="showSecurityChangePassword" density="compact" class="pa-0 ma-3"
+                                    style="background-color: #BDBDBD; border-radius: 8px;">
+                                    <ChangePassword />
+                                </v-list>
+                            </v-expand-transition>
                             <div class="pa-3">
                                 <v-list class="d-flex flex-row overflow-x-auto no-scrollbar pa-0"
                                     style="white-space: nowrap;background-color: #EEEEEE;">
@@ -306,8 +325,7 @@
                                                                 </v-col>
                                                                 <v-col cols="12" lg="7"
                                                                     class="d-flex align-center justify-center">
-                                                                    <img id="Photo"
-                                                                        src="../../assets/nrLogo.png"
+                                                                    <img id="Photo" src="../../assets/nrLogo.png"
                                                                         alt="image" style="width: 130px;">
                                                                 </v-col>
                                                                 <v-col cols="12" lg="5" class="text-start pt-2">
@@ -887,7 +905,7 @@
                     <span style="font-weight: 300; font-size: 10px;color:#BDBDBD;">(Car)</span> :
                     <span v-if="printData.licensePlate?.License" style="font-weight: 400;">{{
                         printData.licensePlate.License
-                        }}</span>
+                    }}</span>
                     <span v-else
                         style="display: inline-block; border-bottom: 1px dashed grey; min-width: 160px;">&nbsp;</span>
                 </p>
@@ -977,6 +995,7 @@ import { ImageService } from "../../api/UploadImage";
 import { StrangerService } from '../../api/ReportStranger';
 import DetailRemain from '../../components/Security-Guard/DetailRemain.vue';
 import PersonRegister from '../../components/Security-Guard/PersonRegister.vue';
+import ChangePassword from '../../components/Change-password.vue';
 import qrImage from '../../assets/qr-code.png';
 import ExcelJS from 'exceljs';
 
@@ -2503,7 +2522,8 @@ export default defineComponent({
         CheckOut,
         // RemainTable,
         DetailRemain,
-        PersonRegister
+        PersonRegister,
+        ChangePassword,
     },
     computed: {
         formatTime() {
@@ -2548,6 +2568,10 @@ export default defineComponent({
             person: false,
         },
         interval: null,
+        // ซ่อนหาปุ่มเปลี่ยนรหัสผ่าน: คลิกซ้ายติดกัน 3 ครั้งภายใน 1.5 วินาที
+        secretClickCount: 0,
+        secretClickTimer: null,
+        showSecurityChangePassword: false,
     }),
     mounted() {
         this.checkOrientation();
@@ -2696,6 +2720,18 @@ export default defineComponent({
         },
         formatDateForFileName(dateValue) {
             return this.formatDateForExcelTitle(dateValue).replaceAll('/', '-');
+        },
+        onSecretTrigger() {
+            clearTimeout(this.secretClickTimer);
+            this.secretClickCount++;
+            if (this.secretClickCount >= 3) {
+                this.showSecurityChangePassword = true;
+                this.secretClickCount = 0;
+                return;
+            }
+            this.secretClickTimer = setTimeout(() => {
+                this.secretClickCount = 0;
+            }, 1500);
         },
     },
 })

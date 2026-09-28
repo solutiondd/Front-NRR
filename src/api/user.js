@@ -62,6 +62,33 @@ export class UserService {
     return data;
   }
 
+  async ChangePassword(passwordData) {
+    let data = null;
+    const body = new URLSearchParams(passwordData).toString();
+
+    let config = {
+      method: "patch",
+      maxBodyLength: Infinity,
+      url: `${this.baseUrl}api/v1/user/changepassword`,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+      data: body,
+    };
+
+    await axios
+      .request(config)
+      .then((response) => {
+        data = response.data;
+      })
+      .catch((error) => {
+        data = { error: error.message, data: error.response.data };
+        console.log(error);
+      });
+
+    return data;
+  }
+
   //NOTE - Call Me
   async AuthState() {
     let data = null;
