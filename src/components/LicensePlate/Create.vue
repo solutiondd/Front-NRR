@@ -15,7 +15,7 @@
                                     <p class="mb-2" style="color: white;">เลขทะเบียน</p>
                                     <v-text-field prepend-inner-icon="mdi-card-text" variant="outlined"
                                         density="compact" placeholder="ทะเบียนรถ" v-model="sendData.lp" required
-                                        :rules="[v => !!v || 'โปรดระบุทะเบียนรถ']"></v-text-field>
+                                        :rules="lpRules"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" class="px-2 pb-0">
                                     <p class="mb-2" style="color: white;">จังหวัด</p>
@@ -134,6 +134,11 @@ export default {
             'CAR',
             'MOTORCYCLE',
             'TRUCK'
+        ],
+        lpRules: [
+            v => !!v || 'โปรดระบุทะเบียนรถ',
+            v => !v || !/\s/.test(v) || 'ห้ามมีช่องว่าง',
+            v => !v || /^[ก-ฮ0-9a-zA-Z]+$/.test(v) || 'กรอกได้เฉพาะพยัญชนะไทย ตัวเลข หรือตัวอักษรภาษาอังกฤษเท่านั้น (ห้ามมีสระ วรรณยุกต์ หรือสัญลักษณ์)',
         ],
         ProvinceType: provinces,
         minStartDate: new Date().toISOString().split('T')[0],

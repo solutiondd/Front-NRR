@@ -72,17 +72,19 @@
                     </td>
                     <td class="text-center" style="width: 220px;">
                         <div v-for="device in row.item.devices" :key="device._id" class="py-1">
-                            <v-chip color="primary">
-                                <p>{{ device.name }}</p>
-                            </v-chip>
-                            <v-chip color="teal-lighten-1">
-                                <p>{{ device.gate }}</p>
-                            </v-chip>
+                            <v-tooltip :text="device.name" location="top" open-on-click>
+                                <template v-slot:activator="{ props }">
+                                    <v-chip v-bind="props" :color="deviceStatusColor(device.status)">
+                                        {{ device.gate }}
+                                    </v-chip>
+                                </template>
+                            </v-tooltip>
                         </div>
                     </td>
                     <td class="text-center">
-                        <UpgradStranger @success="getData()" :id="row.item._id" :data="row.item" />
-                        <UploadToCloud @success="getData()" :id="row.item._id" :data="row.item" />
+                        <UpgradStranger @success="refreshData()" :id="row.item._id" :data="row.item" />
+                        <UploadToCloud @success="refreshData()" :id="row.item._id" :data="row.item"
+                            :total-devices="totalDevices" />
                     </td>
                     <td class="text-center">
                         <v-chip v-if="row.item.cate == 'member' || row.item.cate === ''"
@@ -116,11 +118,14 @@ import { dateFormat } from "../../function/day";
 import Detail from '../../components/LicensePlate/Detail.vue';
 import DetailStranger from "./Detail-stranger.vue";
 import UpgradStranger from "./UpgradStranger.vue";
+import { vehicleService } from "../../api/Vehicle";
 export default {
     setup() {
         const lp = new LPService();
+        const vehicle = new vehicleService();
         return {
             lp,
+            vehicle,
             dateFormat
         }
     },
@@ -142,6 +147,7 @@ export default {
         page: 1,
         itemsPerPage: 10,
         totalItems: 0,
+        totalDevices: null,
         data: [],
         search: '',
         headers: [
@@ -166,9 +172,26 @@ export default {
         ],
     }),
     async mounted() {
-        await this.getData();
+        await this.refreshData();
     },
     methods: {
+        async refreshData() {
+            await Promise.all([this.getData(), this.getDeviceCount()]);
+        },
+        async getDeviceCount() {
+            const res = await this.vehicle.getDevice(this.$store.state.park);
+            if (res?.message === 'get devices successfully') {
+                this.totalDevices = res.devices.length;
+            }
+        },
+        deviceStatusColor(status) {
+            const colors = {
+                0: 'amber-darken-2',
+                2: 'green',
+                4: 'red'
+            };
+            return colors[status] || 'grey';
+        },
         async getData() {
             const licenseplate = this.search
             if (this.filterStatus) {

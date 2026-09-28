@@ -1,10 +1,10 @@
 <template>
-    <div v-if="this.data.devices?.length === 0 && this.data.cate !== 'stranger'">
+    <div v-if="totalDevices !== null && connectedDeviceCount !== totalDevices && this.data.cate !== 'stranger'">
         <v-btn v-if="role != 'visitor'" color="success" icon="" size="small" variant="flat"
             @click="getData()"><v-icon>mdi-check</v-icon>
         </v-btn>
     </div>
-    <div v-else-if="this.data.devices?.length > 0">
+    <div v-else-if="totalDevices !== null && this.data.cate !== 'stranger'">
         <v-chip color="green">อนุมัติสำเร็จ</v-chip>
     </div>
 
@@ -39,7 +39,11 @@ export default {
     emits: ['success'],
     props: {
         id: String,
-        data: Object
+        data: Object,
+        totalDevices: {
+            type: Number,
+            default: null
+        }
     },
     setup() {
         const vehicle = new vehicleService();
@@ -48,6 +52,9 @@ export default {
         }
     },
     computed: {
+        connectedDeviceCount() {
+            return this.data.devices?.length || 0;
+        },
         role() {
             return this.$store.state.role
         },

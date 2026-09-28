@@ -73,6 +73,32 @@
                                 </tbody>
                             </v-table>
                         </v-col>
+
+                        <v-col cols="12" v-if="importResults.length">
+                            <v-alert :type="failedResults.length ? 'warning' : 'success'" variant="tonal" class="mb-3">
+                                สรุปผลการนำเข้า: สำเร็จ {{ successResults.length }} รายการ, ไม่สำเร็จ
+                                {{ failedResults.length }} รายการ
+                            </v-alert>
+                            <template v-if="failedResults.length">
+                                <p class="font-weight-bold mb-2">รายการที่บันทึกไม่สำเร็จ</p>
+                                <v-table density="compact" class="preview-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ทะเบียน</th>
+                                            <th>ชื่อ-นามสกุล</th>
+                                            <th>สาเหตุ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in failedResults" :key="index">
+                                            <td>{{ item.licensePlate || '-' }}</td>
+                                            <td>{{ item.guestName || '-' }}</td>
+                                            <td>{{ item.reason }}</td>
+                                        </tr>
+                                    </tbody>
+                                </v-table>
+                            </template>
+                        </v-col>
                     </v-row>
                 </v-card-text>
                 <v-card-actions class="justify-end px-5 pb-5">
@@ -104,6 +130,7 @@ export default {
         sheetHeaders: [],
         sheetRows: [],
         uploading: false,
+        importResults: [],
         columnMap: {
             guestName: null,
             licensePlate: null,
@@ -120,6 +147,12 @@ export default {
         },
         canImport() {
             return this.sheetRows.length > 0 && !this.uploading;
+        },
+        successResults() {
+            return this.importResults.filter((item) => item.status === 'success');
+        },
+        failedResults() {
+            return this.importResults.filter((item) => item.status === 'fail');
         },
         previewRows() {
             return this.sheetRows.slice(0, 3).map((row) => ({
@@ -140,6 +173,7 @@ export default {
             this.sheetHeaders = [];
             this.sheetRows = [];
             this.uploading = false;
+            this.importResults = [];
             this.columnMap = {
                 guestName: null,
                 licensePlate: null,
@@ -150,6 +184,7 @@ export default {
         async handleFileChange(file) {
             this.sheetHeaders = [];
             this.sheetRows = [];
+            this.importResults = [];
 
             const selectedFile = Array.isArray(file) ? file[0] : file;
 
@@ -250,13 +285,35 @@ export default {
 
             return map[normalized] || String(value).trim().toUpperCase() || 'CAR';
         },
+        validateLicensePlate(value) {
+            if (!value) {
+                return { valid: false, reason: 'ไม่พบเลขทะเบียน' };
+            }
+            if (/\s/.test(value)) {
+                return { valid: false, reason: 'มีช่องว่างในเลขทะเบียน' };
+            }
+            if (!/^[ก-ฮ0-9a-zA-Z]+$/.test(value)) {
+                return { valid: false, reason: 'มีสระ วรรณยุกต์ หรือสัญลักษณ์ที่ไม่อนุญาต' };
+            }
+            return { valid: true };
+        },
+        getFailReason(res) {
+            const message = res?.data?.message || res?.message || res?.error;
+            if (message === 'validate error') {
+                return 'ข้อมูลไม่ครบถ้วน';
+            }
+            if (message === 'This license has been added' || message === 'This stranger license has been added') {
+                return 'มีทะเบียนนี้ในระบบแล้ว';
+            }
+            return message || 'ไม่ทราบสาเหตุ';
+        },
         buildPayload(row) {
             const importDate = new Date();
             const expireDate = new Date(importDate);
             expireDate.setFullYear(expireDate.getFullYear() + 5);
 
             const guestName = this.getCellValue(row, this.columnMap.guestName);
-            const licensePlate = this.getCellValue(row, this.columnMap.licensePlate).replace(/[^ก-ฮ0-9a-zA-Z]/g, '');
+            const licensePlate = this.getCellValue(row, this.columnMap.licensePlate);
             const licensePlateProvince = this.getCellValue(row, this.columnMap.licensePlateProvince);
             const vehicleType = this.getVehicleType(this.getCellValue(row, this.columnMap.vehicleType));
 
@@ -300,27 +357,65 @@ export default {
 
             this.uploading = true;
 
+            const results = [];
             let successCount = 0;
             let failCount = 0;
 
             try {
                 for (const payload of rows) {
-                    const res = await this.lp.CreateLP(park, payload, token);
-                    if (res?.message === 'ok') {
-                        successCount += 1;
-                    } else {
+                    const validation = this.validateLicensePlate(payload.licensePlate);
+
+                    if (!validation.valid) {
                         failCount += 1;
+                        results.push({
+                            licensePlate: payload.licensePlate,
+                            guestName: payload.guestName,
+                            status: 'fail',
+                            reason: validation.reason,
+                        });
+                        continue;
+                    }
+
+                    try {
+                        const res = await this.lp.CreateLP(park, payload, token);
+                        if (res?.message === 'ok') {
+                            successCount += 1;
+                            results.push({
+                                licensePlate: payload.licensePlate,
+                                guestName: payload.guestName,
+                                status: 'success',
+                            });
+                        } else {
+                            failCount += 1;
+                            results.push({
+                                licensePlate: payload.licensePlate,
+                                guestName: payload.guestName,
+                                status: 'fail',
+                                reason: this.getFailReason(res),
+                            });
+                        }
+                    } catch (error) {
+                        failCount += 1;
+                        results.push({
+                            licensePlate: payload.licensePlate,
+                            guestName: payload.guestName,
+                            status: 'fail',
+                            reason: error?.message || 'เกิดข้อผิดพลาดขณะบันทึก',
+                        });
                     }
                 }
+
+                this.importResults = results;
 
                 this.$swal({
                     icon: failCount > 0 ? 'warning' : 'success',
                     title: 'นำเข้าข้อมูลเสร็จสิ้น',
-                    text: `สำเร็จ ${successCount} รายการ${failCount > 0 ? `, ไม่สำเร็จ ${failCount} รายการ` : ''}`,
+                    text: `สำเร็จ ${successCount} รายการ${failCount > 0 ? `, ไม่สำเร็จ ${failCount} รายการ (ดูรายละเอียดในตาราง)` : ''}`,
                 });
 
-                this.$emit('success');
-                this.closeDialog();
+                if (successCount > 0) {
+                    this.$emit('success');
+                }
             } catch (error) {
                 this.$swal({
                     icon: 'warning',
