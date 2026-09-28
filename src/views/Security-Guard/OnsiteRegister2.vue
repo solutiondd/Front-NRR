@@ -1011,7 +1011,7 @@ export default defineComponent({
         const sendData = ref({
             msg: '',
             licensePlate: { License: '' },
-            vehicleType: 'TRUCK',
+            vehicleType: 'CAR',
             time: new Date(),
             name: '',
             identityNumber: '',
@@ -1192,32 +1192,46 @@ export default defineComponent({
 
             for (const line of lines) {
                 const trimmedLine = line.trim();
-                if (!foundName && trimmedLine.includes("$")) {
+                const upperLine = trimmedLine.toUpperCase();
+                if (!foundName && upperLine.includes("$")) {
                     // 1. จับ pattern เต็ม: %  ^LASTNAME$FIRSTNAME$TITLE^^?
-                    let matchFull = trimmedLine.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
+                    let matchFull = upperLine.match(/\^([A-Z]+)\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
                     if (matchFull) {
                         sendData.value.name = `${matchFull[2]} ${matchFull[1]}`; // FIRSTNAME LASTNAME
                         foundName = true;
-                        continue;
+                    }
+
+                    // 1.1 รองรับรูปแบบที่ไม่มี ^? ท้ายบรรทัด เช่น ~LAST$FIRST$TITLE.^600764...
+                    let matchFlexible = !foundName ? upperLine.match(/(?:\^|~|%)([A-Z]+)\$([A-Z]+)\$([A-Z.]+)/) : null;
+                    if (matchFlexible && !foundName) {
+                        sendData.value.name = `${matchFlexible[2]} ${matchFlexible[1]}`; // FIRSTNAME LASTNAME
+                        foundName = true;
                     }
 
                     // 2. จับ pattern สั้น: %  ^$FIRSTNAME$TITLE^^?
-                    let matchShort = trimmedLine.match(/\$([A-Z]+)\$([A-Z.]+)\^\^?\?/);
-                    if (matchShort) {
+                    let matchShort = !foundName ? upperLine.match(/\$([A-Z]+)\$([A-Z.]+)\^\^?\?/) : null;
+                    if (matchShort && !foundName) {
                         sendData.value.name = `${matchShort[2]} ${matchShort[1]}`; // TITLE FIRSTNAME
                         foundName = true;
-                        continue;
                     }
                 }
 
 
                 // ✅ ตรวจสอบเลขประจำตัวประชาชน
-                if (!foundId && trimmedLine.startsWith(";")) {
-                    const compactLine = trimmedLine.replace(/\s+/g, '');
-                    const match = compactLine.match(/;(\d{13})(?:=|\?|$)/) || compactLine.match(/;\d*(\d{13})(?:=|\?|$)/);
-                    if (match) {
-                        sendData.value.identityNumber = match[1];
+                if (!foundId) {
+                    const compactLine = upperLine.replace(/\s+/g, '');
+
+                    // เคสบางรุ่นจะส่งเป็น 600764 + เลขบัตร 13 หลัก
+                    const prefixedThaiId = compactLine.match(/600764(\d{13})/);
+                    if (prefixedThaiId) {
+                        sendData.value.identityNumber = prefixedThaiId[1];
                         foundId = true;
+                    } else if (compactLine.startsWith(";")) {
+                        const match = compactLine.match(/;(\d{13})(?:=|\?|$)/) || compactLine.match(/;\d*(\d{13})(?:=|\?|$)/);
+                        if (match) {
+                            sendData.value.identityNumber = match[1];
+                            foundId = true;
+                        }
                     }
                 }
 
@@ -1233,9 +1247,14 @@ export default defineComponent({
 
             // fallback สำหรับเลขบัตร ปชช.
             if (!foundId) {
+                const prefixedThaiId = normalizedInput.toUpperCase().match(/600764(\d{13})/);
+                if (prefixedThaiId) {
+                    sendData.value.identityNumber = prefixedThaiId[1];
+                }
+
                 const all13Digits = [...normalizedInput.matchAll(/\d{13}/g)].map((m) => m[0]);
                 const candidateId = all13Digits.find((v) => !v.startsWith('0')) || all13Digits[0];
-                if (candidateId) {
+                if (!sendData.value.identityNumber && candidateId) {
                     sendData.value.identityNumber = candidateId;
                 }
             }
@@ -1270,7 +1289,8 @@ export default defineComponent({
             }, 100);
         };
 
-        let ScreenSocket = null
+        let screenStreamAbortController = null
+        let screenReconnectTimer = null
 
         // 👉 เปิดหรือสร้างฐานข้อมูล IndexedDB
         const initDB = async () => {
@@ -1448,47 +1468,157 @@ export default defineComponent({
             }
         };
 
-        const connectScreen = () => {
-            const token = localStorage.getItem('retoken') || import.meta.env.VITE_ACCESS_TOKEN_WS
-            ScreenSocket = new WebSocket('wss://lprapi.zoftdd.com/socket', token)
+        const scheduleScreenReconnect = () => {
+            if (screenReconnectTimer) {
+                return;
+            }
 
-            ScreenSocket.onopen = () => console.log('✅ Connected to WebSocket')
-
-            ScreenSocket.onmessage = async (event) => {
-                try {
-                    const Resdata = JSON.parse(event.data);
-                    if (Resdata['IN']) {
-                        const newEntry = {
-                            ...Resdata['IN'],
-                            licensePlate: Resdata['IN'].plates?.[0] || { License: "ไม่พบป้ายทะเบียน" },
-                            timeStamp: Date.now(),
-                            date: new Date().toISOString().split('T')[0]
-                        };
-
-                        const cdataId = resolveCdataId(newEntry);
-                        if (cdataId) {
-                            newEntry._id = cdataId;
-                        }
-
-                        // selectedCar.value = newEntry; // อัปเดตแถวกลาง
-                        if (!hasValidCdataId(newEntry)) {
-                            console.warn("⚠️ WebSocket entry ไม่มี _id ข้ามการบันทึก:", newEntry);
-                            return;
-                        }
-
-                        console.log(newEntry)
-                        await saveHistory(newEntry);
-                    }
-                } catch (error) {
-                    console.error("❌ JSON Parse Error:", error);
+            screenReconnectTimer = setTimeout(() => {
+                screenReconnectTimer = null;
+                if (navigator.onLine) {
+                    connectScreen();
                 }
+            }, 3000);
+        }
+
+        const closeScreenStream = () => {
+            if (screenReconnectTimer) {
+                clearTimeout(screenReconnectTimer);
+                screenReconnectTimer = null;
+            }
+
+            if (screenStreamAbortController) {
+                screenStreamAbortController.abort();
+                screenStreamAbortController = null;
+            }
+        }
+
+        const parseSSEData = async (eventBlock) => {
+            const lines = eventBlock
+                .split('\n')
+                .map((line) => line.trimEnd())
+                .filter(Boolean);
+
+            const dataLines = lines
+                .filter((line) => line.startsWith('data:'))
+                .map((line) => line.slice(5).trim());
+
+            if (!dataLines.length) {
+                return;
+            }
+
+            const dataText = dataLines.join('\n');
+            if (!dataText) {
+                return;
+            }
+
+            const resData = JSON.parse(dataText);
+            const inData = resData?.IN || resData;
+            if (!inData) {
+                return;
+            }
+
+            const newEntry = {
+                ...inData,
+                licensePlate: inData.plates?.[0] || { License: "ไม่พบป้ายทะเบียน" },
+                timeStamp: Date.now(),
+                date: new Date().toISOString().split('T')[0]
             };
 
-            ScreenSocket.onerror = (error) => console.error('WebSocket Error:', error)
+            const cdataId = resolveCdataId(newEntry);
+            if (cdataId) {
+                newEntry._id = cdataId;
+            }
 
-            ScreenSocket.onclose = () => {
-                console.log('🔴 WebSocket Closed');
-                reconnectWebSocket();
+            if (!hasValidCdataId(newEntry)) {
+                console.warn("⚠️ SSE entry ไม่มี _id ข้ามการบันทึก:", newEntry);
+                return;
+            }
+
+            console.log(newEntry)
+            await saveHistory(newEntry);
+        }
+
+        const connectScreen = async () => {
+            const token = localStorage.getItem('retoken')
+            const parkId = store.state.park;
+
+            if (!parkId) {
+                console.warn('⚠️ ไม่พบ parkId สำหรับเชื่อมต่อ SSE');
+                return;
+            }
+
+            if (!token) {
+                console.warn('⚠️ ไม่พบ token สำหรับเชื่อมต่อ SSE');
+                return;
+            }
+
+            closeScreenStream();
+
+            const streamUrl = `https://lprapi.zoftdd.com/lpr/cdata/park/${encodeURIComponent(parkId)}/stream`;
+            const abortController = new AbortController();
+            screenStreamAbortController = abortController;
+
+            try {
+                const response = await fetch(streamUrl, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'text/event-stream',
+                    },
+                    signal: abortController.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`SSE request failed with status ${response.status}`);
+                }
+
+                if (!response.body) {
+                    throw new Error('SSE response body is empty');
+                }
+
+                console.log('✅ Connected to SSE');
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
+
+                    let splitIndex = buffer.indexOf('\n\n');
+                    while (splitIndex !== -1) {
+                        const eventBlock = buffer.slice(0, splitIndex).trim();
+                        buffer = buffer.slice(splitIndex + 2);
+
+                        if (eventBlock) {
+                            try {
+                                await parseSSEData(eventBlock);
+                            } catch (error) {
+                                console.error('❌ SSE Parse Error:', error);
+                            }
+                        }
+
+                        splitIndex = buffer.indexOf('\n\n');
+                    }
+                }
+
+                if (!abortController.signal.aborted) {
+                    console.warn('SSE stream closed by server, reconnecting...');
+                    scheduleScreenReconnect();
+                }
+            } catch (error) {
+                if (abortController.signal.aborted) {
+                    return;
+                }
+
+                console.error('SSE stream error:', error);
+                scheduleScreenReconnect();
             }
         }
 
@@ -1700,7 +1830,7 @@ export default defineComponent({
                     sendData.value = {
                         msg: '',
                         licensePlate: { License: '' },
-                        vehicleType: 'TRUCK',
+                        vehicleType: 'CAR',
                         time: new Date(),
                         name: '',
                         identityNumber: '',
@@ -1736,7 +1866,7 @@ export default defineComponent({
             sendData.value = {
                 msg: '',
                 licensePlate: { License: '' },
-                vehicleType: 'TRUCK',
+                vehicleType: 'CAR',
                 time: new Date(),
                 name: '',
                 identityNumber: '',
@@ -1816,7 +1946,7 @@ export default defineComponent({
                     sendData.value = {
                         msg: '',
                         licensePlate: { License: '' },
-                        vehicleType: 'TRUCK',
+                        vehicleType: 'CAR',
                         time: new Date(),
                         name: '',
                         identityNumber: '',
@@ -2262,7 +2392,7 @@ export default defineComponent({
             selectedCar.value = { ...entry } // กดเลือกรายการ -> อัปเดตแถวกลาง
             sendData.value = JSON.parse(JSON.stringify(entry));
             sendData.value._id = resolveCdataId(entry);
-            sendData.value.vehicleType = 'TRUCK'
+            sendData.value.vehicleType = 'CAR'
             document.getElementById('Photo').src = "/nrLogo.png";
             await nextTick(); // รอให้ form ref update หลังเปลี่ยน sendData
         }
@@ -2312,6 +2442,7 @@ export default defineComponent({
             clearTimeout(timer);
             window.removeEventListener('focus', focusLicenseInput);
             document.removeEventListener('keydown', handleGlobalKeydown, true);
+            closeScreenStream();
             if (stream) {
                 stream.getTracks().forEach(track => track.stop())
             }
@@ -2446,7 +2577,7 @@ export default defineComponent({
                     sendData.value = {
                         msg: '',
                         licensePlate: { License: '' },
-                        vehicleType: 'TRUCK',
+                        vehicleType: 'CAR',
                         time: new Date(),
                         name: '',
                         identityNumber: '',
